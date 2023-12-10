@@ -11,6 +11,12 @@ declare global {
     }
 }
 
+export interface CreateBlogData {
+    title: string;
+    content: [];
+    tags: string[];
+}
+
 export enum httpStatusCode {
     OK = 200,
     CREATED = 201,

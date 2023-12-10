@@ -15,5 +15,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  blogs Blog[]
+
   @@index([email, id])
+}
+
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  content   Json     @db.Json
+  tags      String[]
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
