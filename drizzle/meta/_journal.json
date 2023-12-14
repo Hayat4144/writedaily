@@ -50,6 +50,13 @@
       "when": 1702535703422,
       "tag": "0006_striped_barracuda",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1702550263754,
+      "tag": "0007_windy_mongoose",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,11 @@ declare global {
     }
 }
 
+export enum commentType {
+    article,
+    comment,
+}
+
 export interface CreateBlogData {
     title: string;
     content: [];

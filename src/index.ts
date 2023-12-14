@@ -5,6 +5,7 @@ import cors from 'cors';
 import ErrorMiddleware from 'middleware/ErrorMiddleware';
 import authrouter from 'routes/authroutes';
 import blogsroutes from 'routes/blogroutes';
+import commentroutes from 'routes/commentroutes';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -25,6 +26,7 @@ app.use(express.json());
 //app routes
 app.use(authrouter);
 app.use(blogsroutes);
+app.use(commentroutes);
 app.use(ErrorMiddleware);
 
 app.listen(port, async () => {

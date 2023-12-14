@@ -1,0 +1,1 @@
+ALTER TYPE "comment_type" ADD VALUE 'comment';

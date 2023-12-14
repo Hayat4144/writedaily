@@ -2,6 +2,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { varchar, text, jsonb, timestamp, pgTable } from 'drizzle-orm/pg-core';
+import { type } from 'os';
 
 export const users = pgTable('user', {
     id: text('id')
@@ -54,7 +55,7 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
     comments: many(comments),
 }));
 
-export const commentEnum = pgEnum('comment_type', ['article']);
+export const commentEnum = pgEnum('comment_type', ['article', 'comment']);
 
 export const comments = pgTable('comments', {
     id: text('id')
@@ -68,6 +69,9 @@ export const comments = pgTable('comments', {
     parentId: text('parent_id'),
     createdAt: timestamp('created_at').defaultNow(),
 });
+
+export type Newcomment = typeof comments.$inferInsert;
+export type CommentData = typeof comments.$inferSelect;
 
 export const commentRelations = relations(comments, ({ one }) => ({
     user: one(users, {
