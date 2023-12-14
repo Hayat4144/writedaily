@@ -37,6 +37,12 @@ class BlogService implements Blogs {
                 'Blog does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
+        if (isBlogExist.authorId !== userId) {
+            throw new CustomError(
+                "You don't have rights to update the blog.",
+                httpStatusCode.FORBIDDEN,
+            );
+        }
         const updatedBlog = await db
             .update(articles)
             .set(updateData)
@@ -52,6 +58,12 @@ class BlogService implements Blogs {
                 'Blog does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
+        if (isBlogExist.authorId !== userId) {
+            throw new CustomError(
+                "You don't have rights to update the blog.",
+                httpStatusCode.FORBIDDEN,
+            );
+        }
         const isBlogDeleted = await db
             .delete(articles)
             .where(and(eq(articles.authorId, userId), eq(articles.id, id)))

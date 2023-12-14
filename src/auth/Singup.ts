@@ -5,16 +5,13 @@ import bcrypt from 'bcrypt';
 import db from 'db';
 import { eq } from 'drizzle-orm';
 import { NewUser, users } from 'db/schema';
-import logger from '@utils/logger';
 
 const Signup = asyncHandler(async (req: Request, res: Response) => {
     const { name, email, password } = await req.body;
     const saltRound = 10;
-    console.log(name, email, password);
     const IsUserExist = await db.query.users.findFirst({
         where: eq(users.email, email),
     });
-    logger.info(IsUserExist);
     if (IsUserExist) {
         return res
             .status(httpStatusCode.BAD_REQUEST)
