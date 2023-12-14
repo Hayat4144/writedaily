@@ -10,12 +10,7 @@ const readBlog = asyncHandler(async (req: Request, res: Response) => {
     const currentPage = Number(page) || 1;
     const skip = pagination(perpage, currentPage);
     const service = new BlogService();
-    const blogs = await service.getBlogs(
-        req.user_id,
-        { title: 'asc' },
-        skip,
-        perpage,
-    );
+    const blogs = await service.getBlogs(req.user_id, skip, perpage);
     return res
         .status(httpStatusCode.OK)
         .json({ data: { results: blogs[0], total_result: blogs[1] } });

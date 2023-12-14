@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import logger from '@utils/logger';
-import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import ErrorMiddleware from 'middleware/ErrorMiddleware';
@@ -20,7 +20,6 @@ app.use(
         optionsSuccessStatus: 200,
     }),
 );
-dotenv.config();
 app.use(express.json());
 
 //app routes
@@ -28,6 +27,6 @@ app.use(authrouter);
 app.use(blogsroutes);
 app.use(ErrorMiddleware);
 
-app.listen(port, () => {
+app.listen(port, async () => {
     logger.info(`Sever is running at http://localhost:${port}`);
 });

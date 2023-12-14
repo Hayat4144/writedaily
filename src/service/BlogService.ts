@@ -1,36 +1,28 @@
 import prisma from '@config/databaseConfig';
-import { CreateBlogData, httpStatusCode } from '@customtype/index';
-import { Blog as PrismaBlog } from '@prisma/client';
+import { httpStatusCode } from '@customtype/index';
 import { CustomError } from '@utils/CustomError';
+import db from 'db';
+import { Article, NewArticle, articles } from 'db/schema';
+import { and, asc, eq, sql } from 'drizzle-orm';
 
 interface Blogs {
-    createBlog(data: CreateBlogData, userId: string): Promise<PrismaBlog>;
-    updateBlog(
-        update: any,
-        user_id: string,
-        blogId: string,
-    ): Promise<PrismaBlog>;
-    deleteBlog(id: string, userId: string): Promise<PrismaBlog>;
+    createBlog(data: NewArticle): Promise<Article[]>;
+    updateBlog(update: any, user_id: string, blogId: string): Promise<Article>;
+    deleteBlog(id: string, userId: string): Promise<Article>;
     getBlogs(
         userId: string,
-        sortIn: object | [],
         Skip: number,
         ResultPerPage: number,
-    ): Promise<[PrismaBlog[], number]>;
-    BlogById(id: string): Promise<PrismaBlog | null>;
+    ): Promise<[Article[], number]>;
+    BlogById(id: string): Promise<Article | undefined>;
 }
 
 class BlogService implements Blogs {
-    async createBlog(
-        data: CreateBlogData,
-        userId: string,
-    ): Promise<PrismaBlog> {
-        const createnewBlog = await prisma.blog.create({
-            data: {
-                ...data,
-                author: { connect: { id: userId } },
-            },
-        });
+    async createBlog(data: NewArticle): Promise<Article[]> {
+        const createnewBlog = await db
+            .insert(articles)
+            .values(data)
+            .returning();
         return createnewBlog;
     }
 
@@ -38,70 +30,60 @@ class BlogService implements Blogs {
         updateData: any,
         userId: string,
         blogId: string,
-    ): Promise<PrismaBlog> {
+    ): Promise<Article> {
         const isBlogExist = await this.BlogById(blogId);
         if (!isBlogExist)
             throw new CustomError(
                 'Blog does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
-        const updatedBlog = await prisma.blog.update({
-            where: {
-                id: isBlogExist.id,
-                authorId: userId,
-            },
-            data: updateData,
-        });
-
-        return updatedBlog;
+        const updatedBlog = await db
+            .update(articles)
+            .set(updateData)
+            .where(and(eq(articles.id, blogId), eq(articles.authorId, userId)))
+            .returning();
+        return updatedBlog[0];
     }
 
-    async deleteBlog(id: string, userId: string): Promise<PrismaBlog> {
+    async deleteBlog(id: string, userId: string): Promise<Article> {
         const isBlogExist = await this.BlogById(id);
         if (!isBlogExist)
             throw new CustomError(
                 'Blog does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
+        const isBlogDeleted = await db
+            .delete(articles)
+            .where(and(eq(articles.authorId, userId), eq(articles.id, id)))
+            .returning();
 
-        const isBlogDeleted = await prisma.blog.delete({
-            where: {
-                id,
-                authorId: userId,
-            },
-        });
-        return isBlogDeleted;
+        return isBlogDeleted[0];
     }
 
     async getBlogs(
         userId: string,
-        sort: [] | object,
         skip: number,
         ResultPerPage: number,
-    ): Promise<[PrismaBlog[], number]> {
-        const blogs = await prisma.blog.findMany({
-            where: {
-                authorId: userId,
-            },
-            take: ResultPerPage,
-            skip,
-            orderBy: sort,
+    ): Promise<[Article[], number]> {
+        const blogs = await db.query.articles.findMany({
+            where: eq(articles.authorId, userId),
+            limit: ResultPerPage,
+            offset: skip,
+            orderBy: [asc(articles.title)],
         });
-        const totalBlogs = await prisma.blog.count({
-            where: {
-                authorId: userId,
-            },
-            orderBy: sort,
-        });
-        const blogPromise = await Promise.all([blogs, totalBlogs]);
+        const [{ count }] = await db
+            .select({
+                count: sql`count(*)`.mapWith(Number).as('count'),
+            })
+            .from(articles)
+            .where(eq(articles.authorId, userId));
+        const blogPromise = await Promise.all([blogs, count]);
         return blogPromise;
     }
 
-    async BlogById(id: string): Promise<PrismaBlog | null> {
-        const isBlogExist = await prisma.blog.findUnique({
-            where: {
-                id,
-            },
+    async BlogById(id: string): Promise<Article | undefined> {
+        const isBlogExist = await db.query.articles.findFirst({
+            where: eq(articles.id, id),
         });
         return isBlogExist;
     }

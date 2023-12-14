@@ -3,17 +3,17 @@ import { Request, Response } from 'express';
 import asyncHandler from '@utils/asynHandler';
 import bcrypt from 'bcrypt';
 import { payload } from '@customtype/index';
-import prisma from '@config/databaseConfig';
 import { getAccessToken, getRefreshToken } from '@utils/jwt';
+import db from 'db';
+import { users } from 'db/schema';
+import { eq } from 'drizzle-orm';
 
 const Signin = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const isUserExist = await prisma.user.findUnique({
-        where: {
-            email: email as string,
-        },
+    const IsUserExist = await db.query.users.findFirst({
+        where: eq(users.email, email),
     });
-    if (!isUserExist) {
+    if (!IsUserExist) {
         return res
             .status(httpStatusCode.BAD_REQUEST)
             .json({ error: `${email} does not exist.` });
@@ -21,16 +21,16 @@ const Signin = asyncHandler(async (req: Request, res: Response) => {
 
     const isValidPassword = await bcrypt.compare(
         password as string,
-        isUserExist.password,
+        IsUserExist.password,
     );
     if (!isValidPassword)
         return res
             .status(httpStatusCode.BAD_REQUEST)
             .json({ error: 'Invalid email/password' });
     const payload: payload = {
-        id: isUserExist.id,
-        name: isUserExist.name,
-        email: isUserExist.email,
+        id: IsUserExist.id,
+        name: IsUserExist.name,
+        email: IsUserExist.email,
     };
     const token = await Promise.all([
         getAccessToken(payload),

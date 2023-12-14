@@ -36,9 +36,7 @@ export const ErrorMiddleware = (
         return res.status(err.statusCode).json({ error: err.message });
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-        logger.info(err.message);
-    }
+    logger.error(err.message);
 
     return res.status(err.statusCode).json({
         error: err.message,
