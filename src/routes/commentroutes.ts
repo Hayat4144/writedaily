@@ -1,4 +1,5 @@
 import addComment from '@controller/comments/api/addComment';
+import articleComments from '@controller/comments/api/articleComment';
 import deleteComment from '@controller/comments/api/deleteComment';
 import editComment from '@controller/comments/api/editComments';
 import express from 'express';
@@ -13,5 +14,6 @@ commentroutes.delete(
     authMiddleware,
     deleteComment,
 );
+commentroutes.get('/api/:version/article/comments/:id/', articleComments);
 
 export default commentroutes;

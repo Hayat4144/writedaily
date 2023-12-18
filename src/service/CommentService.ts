@@ -1,9 +1,10 @@
 import { commentType, httpStatusCode } from '@customtype/index';
 import db from '@db/index';
-import { CommentData, comments, Article, Newcomment } from '@db/schema';
-import { and, eq } from 'drizzle-orm';
+import { CommentData, Article, Newcomment, comments } from '@db/schema';
+import { and, eq, sql } from 'drizzle-orm';
 import BlogService from './BlogService';
 import { CustomError } from '@utils/CustomError';
+import { queryRemoveField } from '@utils/constant';
 
 type CommentType = keyof typeof commentType;
 
@@ -21,6 +22,7 @@ interface CommentServiceInterface {
         content: string,
     ): Promise<CommentData>;
     isCommentExist(commentId: string): Promise<CommentData | undefined>;
+    articleComments(commentId: string): void;
 }
 
 type targetType = CommentData | Article | undefined;
@@ -48,9 +50,9 @@ class CommentService implements CommentServiceInterface {
 
         if (commentType !== 'article') {
             target = await this.isCommentExist(commentableId);
-            data = { ...data, parentId: commentableId };
+            data = { ...data };
         } else {
-            target = await this.article.BlogById(commentableId);
+            target = await this.article.isArticleExist(commentableId);
         }
 
         if (!target) {
@@ -122,6 +124,28 @@ class CommentService implements CommentServiceInterface {
             where: eq(comments.id, commentId),
         });
         return isExist;
+    }
+
+    async articleComments(articleId: string): Promise<any> {
+        const allarticles = await db.query.comments.findMany({
+            where: eq(comments.commentableId, articleId),
+            with: {
+                user: queryRemoveField.user,
+                like: {
+                    columns: queryRemoveField.userIdField,
+                    with: {
+                        user: queryRemoveField.user,
+                    },
+                },
+                commentReply: {
+                    columns: queryRemoveField.userIdField,
+                    with: {
+                        user: queryRemoveField.user,
+                    },
+                },
+            },
+        });
+        return allarticles;
     }
 }
 

@@ -1,0 +1,1 @@
+ALTER TABLE "comments" ADD PRIMARY KEY ("commentable_id");

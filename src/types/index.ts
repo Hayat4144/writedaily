@@ -16,6 +16,11 @@ export enum commentType {
     comment,
 }
 
+export enum likeType {
+    article,
+    comment,
+}
+
 export interface CreateBlogData {
     title: string;
     content: [];
