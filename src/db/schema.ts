@@ -134,3 +134,5 @@ export type Article = typeof articles.$inferSelect;
 export type NewArticle = typeof articles.$inferInsert;
 export type NewLike = typeof likes.$inferInsert;
 export type LikedData = typeof likes.$inferSelect;
+export type NewFollows = typeof follows.$inferInsert;
+export type FollowsData = typeof follows.$inferSelect;
