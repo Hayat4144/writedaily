@@ -42,6 +42,8 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
     }),
     comments: many(comments),
     likes: many(likes),
+    categories: many(ArticleCategory),
+    tags: many(ArticleTags),
 }));
 
 export const commentEnum = pgEnum('comment_type', ['article', 'comment']);
@@ -126,6 +128,69 @@ export const followsRelations = relations(follows, ({ one }) => ({
     }),
 }));
 
+export const Category = pgTable('category', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId()),
+    name: text('name'),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const CategoryRelation = relations(Category, ({ many }) => ({
+    articlesCategory: many(ArticleCategory),
+}));
+
+export const ArticleCategory = pgTable('ArticleCategory', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId()),
+    articleId: text('article_id').notNull(),
+    categoryId: text('category_id').notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const ArticleCategoryRelation = relations(
+    ArticleCategory,
+    ({ one }) => ({
+        article: one(articles, {
+            fields: [ArticleCategory.articleId],
+            references: [articles.id],
+        }),
+        category: one(Category, {
+            fields: [ArticleCategory.categoryId],
+            references: [Category.id],
+        }),
+    }),
+);
+
+export const Tags = pgTable('tags', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId()),
+    name: text('name'),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const ArticleTags = pgTable('articleTags', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId()),
+    tagId: text('tag_id').notNull(),
+    articleId: text('article_id').notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const ArticleTagsRelation = relations(ArticleTags, ({ one }) => ({
+    article: one(articles, {
+        fields: [ArticleTags.articleId],
+        references: [articles.id],
+    }),
+    tag: one(Tags, {
+        fields: [ArticleTags.tagId],
+        references: [Tags.id],
+    }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Newcomment = typeof comments.$inferInsert;
@@ -136,3 +201,11 @@ export type NewLike = typeof likes.$inferInsert;
 export type LikedData = typeof likes.$inferSelect;
 export type NewFollows = typeof follows.$inferInsert;
 export type FollowsData = typeof follows.$inferSelect;
+export type NewTag = typeof Tags.$inferInsert;
+export type TagData = typeof Tags.$inferSelect;
+export type NewArticleTags = typeof Tags.$inferInsert;
+export type ArticleTagsData = typeof Tags.$inferSelect;
+export type NewCategory = typeof Tags.$inferInsert;
+export type CategoryData = typeof Tags.$inferSelect;
+export type ArticleCategoryData = typeof Tags.$inferSelect;
+export type NewArticleCategory = typeof Tags.$inferInsert;
