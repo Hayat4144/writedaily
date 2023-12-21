@@ -1,35 +1,37 @@
 import { httpStatusCode } from '@customtype/index';
-import TagsService from '@service/TagsService';
+import TopicsService from '@service/TopicService';
 import asyncHandler from '@utils/asynHandler';
-import logger from '@utils/logger';
 import { Request, Response } from 'express';
 
-export const addTag = asyncHandler(async (req: Request, res: Response) => {
+export const addTopics = asyncHandler(async (req: Request, res: Response) => {
     const { name } = req.body;
-    const tagService = new TagsService();
+    const tagService = new TopicsService();
     const tag = await tagService.createTag(name);
     return res.status(httpStatusCode.OK).json({ data: tag[0] });
 });
 
-export const readTag = asyncHandler(async (req: Request, res: Response) => {
-    const tagService = new TagsService();
-    const tags = await tagService.readTags();
-    logger.info(tags);
+export const readTopics = asyncHandler(async (req: Request, res: Response) => {
+    const tagService = new TopicsService();
+    const tags = await tagService.readTopics();
     return res.status(httpStatusCode.OK).json({ data: tags });
 });
 
-export const updateTag = asyncHandler(async (req: Request, res: Response) => {
-    const { name, id } = req.body;
-    const tagService = new TagsService();
-    const updatedtag = await tagService.updateTag(id, name);
-    return res.status(httpStatusCode.OK).json({ data: updatedtag[0] });
-});
+export const updateTopics = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { name, id } = req.body;
+        const tagService = new TopicsService();
+        const updatedtag = await tagService.updateTopics(id, name);
+        return res.status(httpStatusCode.OK).json({ data: updatedtag[0] });
+    },
+);
 
-export const deleteTag = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.body;
-    const tagService = new TagsService();
-    const deletedtag = await tagService.deleteTag(id);
-    return res
-        .status(httpStatusCode.OK)
-        .json({ data: `${deletedtag.Name} has been deleted successfully.` });
-});
+export const deleteTopics = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { id } = req.body;
+        const tagService = new TopicsService();
+        const deletedtag = await tagService.deleteTopic(id);
+        return res.status(httpStatusCode.OK).json({
+            data: `${deletedtag.Name} has been deleted successfully.`,
+        });
+    },
+);

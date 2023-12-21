@@ -1,5 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
+import { boolean } from 'drizzle-orm/pg-core';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { varchar, text, jsonb, timestamp, pgTable } from 'drizzle-orm/pg-core';
 
@@ -29,9 +30,9 @@ export const articles = pgTable('article', {
         .$defaultFn(() => createId()),
     title: varchar('title', { length: 256 }).notNull(),
     description: varchar('description', { length: 256 }),
+    isPublished: boolean('is_published').default(true),
     authorId: text('author_id').notNull(),
     content: jsonb('content'),
-    tags: text('tags').array(),
     createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -42,8 +43,7 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
     }),
     comments: many(comments),
     likes: many(likes),
-    categories: many(ArticleCategory),
-    tags: many(ArticleTags),
+    topics: many(ArticleTopics),
 }));
 
 export const commentEnum = pgEnum('comment_type', ['article', 'comment']);
@@ -128,7 +128,7 @@ export const followsRelations = relations(follows, ({ one }) => ({
     }),
 }));
 
-export const Category = pgTable('category', {
+export const Topics = pgTable('topics', {
     id: text('id')
         .notNull()
         .$defaultFn(() => createId()),
@@ -136,58 +136,23 @@ export const Category = pgTable('category', {
     createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const CategoryRelation = relations(Category, ({ many }) => ({
-    articlesCategory: many(ArticleCategory),
-}));
-
-export const ArticleCategory = pgTable('ArticleCategory', {
+export const ArticleTopics = pgTable('articletopics', {
     id: text('id')
         .notNull()
         .$defaultFn(() => createId()),
-    articleId: text('article_id').notNull(),
-    categoryId: text('category_id').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
-});
-
-export const ArticleCategoryRelation = relations(
-    ArticleCategory,
-    ({ one }) => ({
-        article: one(articles, {
-            fields: [ArticleCategory.articleId],
-            references: [articles.id],
-        }),
-        category: one(Category, {
-            fields: [ArticleCategory.categoryId],
-            references: [Category.id],
-        }),
-    }),
-);
-
-export const Tags = pgTable('tags', {
-    id: text('id')
-        .notNull()
-        .$defaultFn(() => createId()),
-    name: text('name'),
-    createdAt: timestamp('created_at').defaultNow(),
-});
-
-export const ArticleTags = pgTable('articleTags', {
-    id: text('id')
-        .notNull()
-        .$defaultFn(() => createId()),
-    tagId: text('tag_id').notNull(),
+    topicId: text('topic_id').notNull(),
     articleId: text('article_id').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const ArticleTagsRelation = relations(ArticleTags, ({ one }) => ({
+export const ArticleTopicsRelation = relations(ArticleTopics, ({ one }) => ({
     article: one(articles, {
-        fields: [ArticleTags.articleId],
+        fields: [ArticleTopics.articleId],
         references: [articles.id],
     }),
-    tag: one(Tags, {
-        fields: [ArticleTags.tagId],
-        references: [Tags.id],
+    topics: one(Topics, {
+        fields: [ArticleTopics.topicId],
+        references: [Topics.id],
     }),
 }));
 
@@ -201,11 +166,7 @@ export type NewLike = typeof likes.$inferInsert;
 export type LikedData = typeof likes.$inferSelect;
 export type NewFollows = typeof follows.$inferInsert;
 export type FollowsData = typeof follows.$inferSelect;
-export type NewTag = typeof Tags.$inferInsert;
-export type TagData = typeof Tags.$inferSelect;
-export type NewArticleTags = typeof Tags.$inferInsert;
-export type ArticleTagsData = typeof Tags.$inferSelect;
-export type NewCategory = typeof Tags.$inferInsert;
-export type CategoryData = typeof Tags.$inferSelect;
-export type ArticleCategoryData = typeof Tags.$inferSelect;
-export type NewArticleCategory = typeof Tags.$inferInsert;
+export type NewTopic = typeof Topics.$inferInsert;
+export type TopicData = typeof Topics.$inferSelect;
+export type NewArticleTopics = typeof ArticleTopics.$inferInsert;
+export type ArticleTopicsData = typeof ArticleTopics.$inferSelect;
