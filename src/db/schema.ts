@@ -188,6 +188,34 @@ export const UserPrefrencesRelations = relations(UserPrefrences, ({ one }) => ({
     }),
 }));
 
+export const ReadingList = pgTable('readinglist', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId())
+        .primaryKey(),
+    articleId: text('article_id')
+        .notNull()
+        .unique()
+        .references(() => articles.id),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const ReadingListRelation = relations(ReadingList, ({ one }) => ({
+    user: one(users, {
+        fields: [ReadingList.userId],
+        references: [users.id],
+    }),
+    artilce: one(articles, {
+        fields: [ReadingList.articleId],
+        references: [articles.id],
+    }),
+}));
+
+export type ReadingListData = typeof ReadingList.$inferSelect;
+export type NewreadingList = typeof ReadingList.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Newcomment = typeof comments.$inferInsert;

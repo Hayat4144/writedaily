@@ -141,6 +141,13 @@
       "when": 1703172998236,
       "tag": "0019_faithful_wallow",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1703217400705,
+      "tag": "0020_ancient_nick_fury",
+      "breakpoints": true
     }
   ]
 }

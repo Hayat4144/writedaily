@@ -9,6 +9,7 @@ import commentroutes from 'routes/commentroutes';
 import likeroutes from 'routes/likeroutes';
 import followroutes from 'routes/followroutes';
 import topicRoutes from 'routes/topicroutes';
+import readinglistRoutes from 'routes/readinglistroutes';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -33,6 +34,7 @@ app.use(commentroutes);
 app.use(likeroutes);
 app.use(followroutes);
 app.use(topicRoutes);
+app.use(readinglistRoutes);
 app.use(ErrorMiddleware);
 
 app.listen(port, async () => {
