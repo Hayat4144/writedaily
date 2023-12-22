@@ -21,6 +21,7 @@ export const usersRelations = relations(users, ({ many }) => ({
     likes: many(likes),
     follows: many(follows, { relationName: 'follows' }),
     followers: many(follows, { relationName: 'followers' }),
+    prefrence: many(UserPrefrences),
 }));
 
 export const articles = pgTable('article', {
@@ -30,7 +31,7 @@ export const articles = pgTable('article', {
         .$defaultFn(() => createId()),
     title: varchar('title', { length: 256 }).notNull(),
     description: varchar('description', { length: 256 }),
-    isPublished: boolean('is_published').default(true),
+    isPublished: boolean('is_published').default(false),
     authorId: text('author_id').notNull(),
     content: jsonb('content'),
     createdAt: timestamp('created_at').defaultNow(),
@@ -131,7 +132,8 @@ export const followsRelations = relations(follows, ({ one }) => ({
 export const Topics = pgTable('topics', {
     id: text('id')
         .notNull()
-        .$defaultFn(() => createId()),
+        .$defaultFn(() => createId())
+        .primaryKey(),
     name: text('name'),
     createdAt: timestamp('created_at').defaultNow(),
 });
@@ -139,9 +141,14 @@ export const Topics = pgTable('topics', {
 export const ArticleTopics = pgTable('articletopics', {
     id: text('id')
         .notNull()
-        .$defaultFn(() => createId()),
-    topicId: text('topic_id').notNull(),
-    articleId: text('article_id').notNull(),
+        .$defaultFn(() => createId())
+        .primaryKey(),
+    topicId: text('topic_id')
+        .notNull()
+        .references(() => Topics.id),
+    articleId: text('article_id')
+        .notNull()
+        .references(() => articles.id),
     createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -152,6 +159,31 @@ export const ArticleTopicsRelation = relations(ArticleTopics, ({ one }) => ({
     }),
     topics: one(Topics, {
         fields: [ArticleTopics.topicId],
+        references: [Topics.id],
+    }),
+}));
+
+export const UserPrefrences = pgTable('userprefrence', {
+    id: text('id')
+        .notNull()
+        .$defaultFn(() => createId())
+        .primaryKey(),
+    topicId: text('topic_id')
+        .notNull()
+        .references(() => Topics.id),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const UserPrefrencesRelations = relations(UserPrefrences, ({ one }) => ({
+    user: one(users, {
+        fields: [UserPrefrences.userId],
+        references: [users.id],
+    }),
+    topics: one(Topics, {
+        fields: [UserPrefrences.topicId],
         references: [Topics.id],
     }),
 }));

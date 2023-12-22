@@ -5,12 +5,11 @@ import { NewArticle } from 'db/schema';
 import { Request, Response } from 'express';
 
 const createBlog = asyncHandler(async (req: Request, res: Response) => {
-    const { title, content, tags } = req.body;
+    const { title, content } = req.body;
     const service = new BlogService();
     const data: NewArticle = {
         title,
         content,
-        tags,
         authorId: req.user_id,
     };
     const addblog = await service.createBlog(data);
