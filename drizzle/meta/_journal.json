@@ -169,6 +169,13 @@
       "when": 1703267196141,
       "tag": "0023_jazzy_thaddeus_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1703311175513,
+      "tag": "0024_curved_dragon_lord",
+      "breakpoints": true
     }
   ]
 }

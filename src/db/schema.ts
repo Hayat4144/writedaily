@@ -24,8 +24,8 @@ export const tokens = pgTable('token', {
         .notNull()
         .unique()
         .references(() => users.id, { onDelete: 'cascade' }),
-    token: text('token').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
+    token: text('token').notNull().$defaultFn(()=>createId()),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 export const tokenRelation = relations(tokens, ({ one }) => ({
@@ -235,6 +235,8 @@ export const ReadingListRelation = relations(ReadingList, ({ one }) => ({
     }),
 }));
 
+export type NewToken = typeof tokens.$inferInsert;
+export type TokenData = typeof tokens.$inferSelect;
 export type ReadingListData = typeof ReadingList.$inferSelect;
 export type NewreadingList = typeof ReadingList.$inferInsert;
 export type User = typeof users.$inferSelect;

@@ -1,5 +1,25 @@
 import { JwtPayload } from 'jsonwebtoken';
 
+export interface changePasswordInterface {
+    success: boolean;
+}
+
+export interface DeletedData {
+    deleted: boolean;
+    id: string;
+    name?: string;
+}
+
+export interface updatedResponse {
+    updated: boolean;
+    name?: string;
+}
+
+export interface ResetPasswordTokenData {
+    user_id: string;
+    email: string;
+}
+
 // Define custom properties for Request object
 declare global {
     namespace Express {

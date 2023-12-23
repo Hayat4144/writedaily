@@ -1,14 +1,12 @@
 import {
-    DeletedData,
     ResetPasswordTokenData,
     changePasswordInterface,
     httpStatusCode,
-    updatedResponse,
 } from '@customtype/index';
 import db from '@db/index';
-import { TokenData, User, tokens, users } from '@db/schema';
+import { NewToken, TokenData, User, tokens, users } from '@db/schema';
 import { CustomError } from '@utils/CustomError';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { getPrivateKeySecret, options } from '@utils/jwt';
@@ -26,10 +24,7 @@ interface userservice {
     isTokenExist(userId: string): Promise<any | undefined>;
     isUserByEmail(email: string): Promise<UserDetails | undefined>;
     generateResetPasswordToken(data: ResetPasswordTokenData): string;
-    addResetPasswordToken(token: string, user_id: string): Promise<TokenData>;
-    isValidToken(token: string): Promise<TokenData | undefined>;
-    deleteToken(id: string): Promise<DeletedData>;
-    updatePassword(userId: string, password: string): Promise<updatedResponse>;
+    addResetPasswordToken(token: string, user_id: string): Promise<NewToken>;
 }
 
 class UserService implements userservice {
@@ -39,45 +34,14 @@ class UserService implements userservice {
         this.jwtTokenOption = options;
     }
 
-    async updatePassword(
-        userId: string,
-        password: string,
-    ): Promise<updatedResponse> {
-        const updatePassword = await db
-            .update(users)
-            .set({ password })
-            .where(eq(users.id, userId));
-        return updatePassword?.rowCount === 1
-            ? { updated: true }
-            : { updated: false };
-    }
-
-    async deleteToken(id: string): Promise<DeletedData> {
-        const droptoken = await db
-            .delete(tokens)
-            .where(eq(tokens.id, id))
-            .returning({ id: tokens.id });
-        return { deleted: true, id: droptoken[0].id };
-    }
-
-    async isValidToken(
-        token: string,
-    ): Promise<TokenData | undefined> {
-        const isValid = await db.query.tokens.findFirst({
-            where: (eq(tokens.token, token)),
-        });
-        return isValid;
-    }
-
     async addResetPasswordToken(
         token: string,
         userId: string,
-    ): Promise<TokenData> {
+    ): Promise<NewToken> {
         const insertToken = await db
             .insert(tokens)
             .values({ token, userId })
             .returning();
-        return insertToken[0];
     }
 
     generateResetPasswordToken(data: ResetPasswordTokenData): string {
@@ -147,11 +111,14 @@ class UserService implements userservice {
 
         const hashPassword = await bcrypt.hash(newpassword, 10);
 
-        const updatePassword = await this.updatePassword(
-            isUserExist.id,
-            hashPassword,
-        );
-        return updatePassword.updated ? { success: true } : { success: false };
+        const updatePassword = await db
+            .update(users)
+            .set({ password: hashPassword })
+            .where(eq(users.id, user_id));
+
+        return updatePassword?.rowCount === 1
+            ? { success: true }
+            : { success: false };
     }
 
     async isUserExist(id: string): Promise<UserDetails | undefined> {
