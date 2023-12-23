@@ -3,6 +3,7 @@ import createBlog from '@controller/blogs/api/createBlog';
 import deleteBlog from '@controller/blogs/api/deleteBlog';
 import publishArticle from '@controller/blogs/api/publishArticle';
 import readBlog from '@controller/blogs/api/readBlog';
+import SearchArticle from '@controller/blogs/api/searchArticle';
 import updateBlog from '@controller/blogs/api/updateBlog';
 import express from 'express';
 import authMiddleware from 'middleware/authMiddleware';
@@ -19,5 +20,6 @@ articleroutes.post(
     authMiddleware,
     publishArticle,
 );
+articleroutes.get('/api/:version/search', SearchArticle);
 
 export default articleroutes;

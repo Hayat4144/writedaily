@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { boolean } from 'drizzle-orm/pg-core';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { varchar, text, jsonb, timestamp, pgTable } from 'drizzle-orm/pg-core';
@@ -15,13 +15,34 @@ export const users = pgTable('user', {
     createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const tokens = pgTable('token', {
+    id: text('id')
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => createId()),
+    userId: text('user_id')
+        .notNull()
+        .unique()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    token: text('token').notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const tokenRelation = relations(tokens, ({ one }) => ({
+    user: one(users, {
+        fields: [tokens.userId],
+        references: [users.id],
+    }),
+}));
+
+export const usersRelations = relations(users, ({ many, one }) => ({
     articles: many(articles),
     comments: many(comments),
     likes: many(likes),
     follows: many(follows, { relationName: 'follows' }),
     followers: many(follows, { relationName: 'followers' }),
     prefrence: many(UserPrefrences),
+    token: one(tokens),
 }));
 
 export const articles = pgTable('article', {

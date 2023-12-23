@@ -10,7 +10,7 @@ import {
     likes,
     users,
 } from 'db/schema';
-import { and, asc, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
 
 interface Blogs {
@@ -25,6 +25,7 @@ interface Blogs {
         publishUnderTopicId: string[],
         userId: string,
     ): Promise<publishArticleReturnType>;
+    searchArticles(query: string): Promise<any>;
 }
 
 type publishArticleReturnType = {
@@ -91,6 +92,33 @@ class BlogService implements Blogs {
         });
 
         return publishedArticle;
+    }
+
+    async searchArticles(query: string) {
+        const { authorId, ...articleColumns } = getTableColumns(articles);
+        const { password, email, createdAt, ...userfield } =
+            getTableColumns(users);
+
+        const result = await db
+            .select({
+                ...articleColumns,
+                author: userfield,
+                rank: sql`ts_rank(searchable,to_tsquery(${query}))`.as('rank'),
+                totalLikes: sql<number>`cast(count(distinct ${likes.id}) as int)`,
+                totalComments: sql<number>`cast(count(distinct ${comments.id}) as int)`,
+            })
+            .from(articles)
+            .where(
+                sql`searchable @@ to_tsquery(${query}) AND is_published=true`,
+            )
+            .leftJoin(users, eq(articles.authorId, users.id))
+            .leftJoin(likes, eq(articles.id, likes.likebleId))
+            .leftJoin(comments, eq(articles.id, comments.commentableId))
+            .limit(20)
+            .groupBy(articles.id, users.id)
+            .orderBy(desc(sql`rank`));
+
+        return result;
     }
 
     async ArtcleById(id: string) {
