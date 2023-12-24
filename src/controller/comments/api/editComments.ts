@@ -5,12 +5,12 @@ import asyncHandler from '@utils/asynHandler';
 import { Request, Response } from 'express';
 
 const editComment = asyncHandler(async (req: Request, res: Response) => {
-    const { content, id } = req.body;
+    const { content, commentId } = req.body;
     const articleService = new BlogService();
     const commentService = new CommentService(articleService);
     const editedComment = await commentService.editComment(
         req.user_id,
-        id,
+        commentId,
         content,
     );
     if (!editedComment || editComment.length < 1) {

@@ -5,10 +5,10 @@ import asyncHandler from '@utils/asynHandler';
 import { Request, Response } from 'express';
 
 const articleComments = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { articleId } = req.params;
     const articleService = new BlogService();
     const commentService = new CommentService(articleService);
-    const Allcomments = await commentService.articleComments(id);
+    const Allcomments = await commentService.articleComments(articleId);
     return res.status(httpStatusCode.OK).json({ data: Allcomments });
 });
 

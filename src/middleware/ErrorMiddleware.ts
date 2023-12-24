@@ -11,15 +11,7 @@ export const ErrorMiddleware = (
 ) => {
     err.statusCode = err.statusCode || httpStatusCode.INTERNAL_SERVER_ERROR;
     err.message = err.message || 'Internal server Errors';
-    const BAD_REQUEST = httpStatusCode.BAD_REQUEST;
     switch (err.name) {
-        case 'CastError':
-            err.message =
-                process.env.NODE_ENV === 'production'
-                    ? `Invalid ${err.stringValue}`
-                    : `Invalid ${err.stringValue} of  ${err.kind} for ${err.path} `;
-            err = new CustomError(err.message, BAD_REQUEST);
-            break;
         case 'JsonWebTokenError':
             err.message = `Json Web Token is invalid, Try again `;
             err.statusCode = httpStatusCode.UNAUTHORIZED;
@@ -36,7 +28,15 @@ export const ErrorMiddleware = (
         return res.status(err.statusCode).json({ error: err.message });
     }
 
-    logger.error(err.message);
+    if (
+        !(err instanceof CustomError) &&
+        err.name !== 'TokenExpiredError' &&
+        err.name !== 'JsonWebTokenError'
+    ) {
+        process.env.NODE_ENV === 'production'
+            ? logger.error(err.message)
+            : logger.error(err);
+    }
 
     return res.status(err.statusCode).json({
         error: err.message,

@@ -6,10 +6,6 @@ import { SignOptions } from 'jsonwebtoken';
 
 const RefreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
     const { refreshtoken } = req.query;
-    if (!refreshtoken)
-        return res
-            .status(httpStatusCode.BAD_REQUEST)
-            .json({ error: 'Refreshtoken is required.' });
     const option: SignOptions = { ...options, expiresIn: '30d' };
     const { id, name, email } = await verifyToken(
         refreshtoken as string,

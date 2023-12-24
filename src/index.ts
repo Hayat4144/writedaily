@@ -1,5 +1,5 @@
+import 'tsconfig-paths/register';
 import 'dotenv/config';
-import logger from '@utils/logger';
 import express from 'express';
 import cors from 'cors';
 import ErrorMiddleware from 'middleware/ErrorMiddleware';
@@ -10,11 +10,26 @@ import likeroutes from 'routes/likeroutes';
 import followroutes from 'routes/followroutes';
 import topicRoutes from 'routes/topicroutes';
 import readinglistRoutes from 'routes/readinglistroutes';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import logger from '@utils/logger';
 
 const app = express();
 const port = process.env.PORT || 8080;
 
 // app configuration
+
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 100,
+    message: 'You have exceeded the 100 requests in 10 minute limit!',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+app.use(helmet());
+app.use(limiter);
 app.use(
     cors({
         origin:
@@ -26,6 +41,8 @@ app.use(
     }),
 );
 app.use(express.json());
+app.use(hpp());
+app.disable('x-powered-by');
 
 //app routes
 app.use(authrouter);
@@ -38,5 +55,5 @@ app.use(readinglistRoutes);
 app.use(ErrorMiddleware);
 
 app.listen(port, async () => {
-    logger.info(`Sever is running at http://localhost:${port}`);
+    logger.info(`Sever is running at port ${port}`);
 });

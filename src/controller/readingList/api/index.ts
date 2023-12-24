@@ -36,8 +36,8 @@ export const addReadingList = asyncHandler(
 
 export const deleteReadingList = asyncHandler(
     async (req: Request, res: Response) => {
-        const { id } = req.params;
-        const data = await readinListService.delete(id, req.user_id);
+        const { listId } = req.params;
+        const data = await readinListService.delete(listId, req.user_id);
         return res
             .status(httpStatusCode.OK)
             .json({ data: data[0], action: 'deleted' });

@@ -27,9 +27,9 @@ export const updateTopics = asyncHandler(
 
 export const deleteTopics = asyncHandler(
     async (req: Request, res: Response) => {
-        const { id } = req.body;
+        const { deleteId } = req.params;
         const tagService = new TopicsService();
-        const deletedtag = await tagService.deleteTopic(id);
+        const deletedtag = await tagService.deleteTopic(deleteId);
         return res.status(httpStatusCode.OK).json({
             data: `${deletedtag.Name} has been deleted successfully.`,
         });
