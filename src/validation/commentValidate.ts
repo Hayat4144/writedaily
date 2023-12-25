@@ -9,8 +9,8 @@ export const articleCommentValidate = [
 ];
 
 export const deleteCommentValidate = [
-    validateCuid('deleteId'),
-    checkUnknownField(['deleteId']),
+    validateCuid('commentId'),
+    checkUnknownField(['commentId']),
 ];
 
 export const editCommentValidate = [

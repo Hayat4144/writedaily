@@ -6,6 +6,7 @@ import { deleteArticleValidate } from '@validation/articleValidation';
 import {
     addCommentValidate,
     articleCommentValidate,
+    deleteCommentValidate,
     editCommentValidate,
 } from '@validation/commentValidate';
 import validate from '@validation/index';
@@ -31,7 +32,7 @@ commentroutes.put(
 
 commentroutes.delete(
     '/api/:version/delete/comment',
-    deleteArticleValidate,
+    deleteCommentValidate,
     validate,
     authMiddleware,
     deleteComment,
