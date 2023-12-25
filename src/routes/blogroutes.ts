@@ -1,10 +1,10 @@
-import article from '@controller/blogs/api/article';
-import createBlog from '@controller/blogs/api/createBlog';
-import deleteBlog from '@controller/blogs/api/deleteBlog';
-import publishArticle from '@controller/blogs/api/publishArticle';
-import readBlog from '@controller/blogs/api/readBlog';
-import SearchArticle from '@controller/blogs/api/searchArticle';
-import updateBlog from '@controller/blogs/api/updateBlog';
+import article from '@controller/articles/api/article';
+import createArticle from '@controller/articles/api/createArticle';
+import deleteArticle from '@controller/articles/api/deleteArticle';
+import publishArticle from '@controller/articles/api/publishArticle';
+import readArticle from '@controller/articles/api/readArticles';
+import SearchArticle from '@controller/articles/api/searchArticle';
+import updateArticle from '@controller/articles/api/updateArticle';
 import {
     addArticleValidate,
     deleteArticleValidate,
@@ -12,7 +12,6 @@ import {
     readPrivateArticleValidate,
     updateArticleValidate,
 } from '@validation/articleValidation';
-import { articleCommentValidate } from '@validation/commentValidate';
 import validate from '@validation/index';
 import validateCuid from '@validation/validateCuid';
 import express from 'express';
@@ -21,32 +20,32 @@ import authMiddleware from 'middleware/authMiddleware';
 const articleroutes = express.Router();
 
 articleroutes.post(
-    '/api/:version/create/blog',
+    '/api/:version/create/article',
     addArticleValidate,
     validate,
     authMiddleware,
-    createBlog,
+    createArticle,
 );
 articleroutes.post(
-    '/api/:version/update/blog',
+    '/api/:version/update/article',
     updateArticleValidate,
     validate,
     authMiddleware,
-    updateBlog,
+    updateArticle,
 );
 articleroutes.delete(
-    '/api/:version/delete/blog',
+    '/api/:version/delete/article',
     deleteArticleValidate,
     validate,
     authMiddleware,
-    deleteBlog,
+    deleteArticle,
 );
 articleroutes.get(
-    '/api/:version/read/blog',
+    '/api/:version/read/articles',
     readPrivateArticleValidate,
     validate,
     authMiddleware,
-    readBlog,
+    readArticle,
 );
 articleroutes.get(
     '/api/:version/article/:id',
@@ -61,6 +60,6 @@ articleroutes.post(
     authMiddleware,
     publishArticle,
 );
-articleroutes.get('/api/:version/search', SearchArticle);
+articleroutes.get('/api/:version/search/articles', SearchArticle);
 
 export default articleroutes;

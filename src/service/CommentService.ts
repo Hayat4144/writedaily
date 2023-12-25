@@ -2,7 +2,7 @@ import { commentType, httpStatusCode } from '@customtype/index';
 import db from '@db/index';
 import { CommentData, Article, Newcomment, comments } from '@db/schema';
 import { and, eq, sql } from 'drizzle-orm';
-import BlogService from './BlogService';
+import BlogService from './ArticleService';
 import { CustomError } from '@utils/CustomError';
 import { queryRemoveField } from '@utils/constant';
 

@@ -13,11 +13,11 @@ import {
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
 
-interface Blogs {
-    createBlog(data: NewArticle): Promise<Article[]>;
-    updateBlog(update: any, user_id: string, blogId: string): Promise<Article>;
-    deleteBlog(id: string, userId: string): Promise<Article>;
-    getBlogs(userId: string, Skip: number, ResultPerPage: number): Promise<any>;
+interface Articles {
+    createArticle(data: NewArticle): Promise<Article[]>;
+    updateArticle(update: any, user_id: string, ArticleId: string): Promise<Article>;
+    deleteArticle(id: string, userId: string): Promise<Article>;
+    getArticles(userId: string, Skip: number, ResultPerPage: number): Promise<any>;
     isArticleExist(id: string): Promise<Article | undefined>;
     ArtcleById(id: string): Promise<any>;
     PublishArticle(
@@ -34,7 +34,7 @@ type publishArticleReturnType = {
 
 const topicService = new TopicsService();
 
-class BlogService implements Blogs {
+class ArticleService implements Articles {
     async PublishArticle(
         articleId: string,
         publishUnderTopicId: string[],
@@ -125,7 +125,7 @@ class BlogService implements Blogs {
         const isExist = await this.isArticleExist(id);
         if (!isExist)
             throw new CustomError(
-                'Blog does not exist.',
+                'Article does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
         const { ...rest } = getTableColumns(articles);
@@ -148,66 +148,66 @@ class BlogService implements Blogs {
         return article;
     }
 
-    async createBlog(data: NewArticle): Promise<Article[]> {
-        const createnewBlog = await db
+    async createArticle(data: NewArticle): Promise<Article[]> {
+        const createnewArticle = await db
             .insert(articles)
             .values(data)
             .returning();
-        return createnewBlog;
+        return createnewArticle;
     }
 
-    async updateBlog(
+    async updateArticle(
         updateData: any,
         userId: string,
-        blogId: string,
+        ArticleId: string,
     ): Promise<Article> {
-        const isBlogExist = await this.isArticleExist(blogId);
-        if (!isBlogExist)
+        const isArticleExist = await this.isArticleExist(ArticleId);
+        if (!isArticleExist)
             throw new CustomError(
-                'Blog does not exist.',
+                'Article does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
-        if (isBlogExist.authorId !== userId) {
+        if (isArticleExist.authorId !== userId) {
             throw new CustomError(
-                "You don't have rights to update the blog.",
+                "You don't have rights to update the Article.",
                 httpStatusCode.FORBIDDEN,
             );
         }
-        const updatedBlog = await db
+        const updatedArticle = await db
             .update(articles)
             .set(updateData)
-            .where(and(eq(articles.id, blogId), eq(articles.authorId, userId)))
+            .where(and(eq(articles.id, ArticleId), eq(articles.authorId, userId)))
             .returning();
-        return updatedBlog[0];
+        return updatedArticle[0];
     }
 
-    async deleteBlog(id: string, userId: string): Promise<Article> {
-        const isBlogExist = await this.isArticleExist(id);
-        if (!isBlogExist)
+    async deleteArticle(id: string, userId: string): Promise<Article> {
+        const isArticleExist = await this.isArticleExist(id);
+        if (!isArticleExist)
             throw new CustomError(
-                'Blog does not exist.',
+                'Article does not exist.',
                 httpStatusCode.BAD_REQUEST,
             );
-        if (isBlogExist.authorId !== userId) {
+        if (isArticleExist.authorId !== userId) {
             throw new CustomError(
-                "You don't have rights to update the blog.",
+                "You don't have rights to update the Article.",
                 httpStatusCode.FORBIDDEN,
             );
         }
-        const isBlogDeleted = await db
+        const isArticleDeleted = await db
             .delete(articles)
             .where(and(eq(articles.authorId, userId), eq(articles.id, id)))
             .returning();
 
-        return isBlogDeleted[0];
+        return isArticleDeleted[0];
     }
 
-    async getBlogs(
+    async getArticles(
         userId: string,
         skip: number,
         ResultPerPage: number,
     ): Promise<[Article[], number]> {
-        const blogs = await db.query.articles.findMany({
+        const Articles = await db.query.articles.findMany({
             where: eq(articles.authorId, userId),
             limit: ResultPerPage,
             offset: skip,
@@ -219,16 +219,16 @@ class BlogService implements Blogs {
             })
             .from(articles)
             .where(eq(articles.authorId, userId));
-        const blogPromise = await Promise.all([blogs, count]);
-        return blogPromise;
+        const ArticlePromise = await Promise.all([Articles, count]);
+        return ArticlePromise;
     }
 
     async isArticleExist(id: string): Promise<Article | undefined> {
-        const isBlogExist = await db.query.articles.findFirst({
+        const isArticleExist = await db.query.articles.findFirst({
             where: eq(articles.id, id),
         });
-        return isBlogExist;
+        return isArticleExist;
     }
 }
 
-export default BlogService;
+export default ArticleService;

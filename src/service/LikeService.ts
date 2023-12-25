@@ -3,17 +3,14 @@ import db from '@db/index';
 import {
     Article,
     CommentData,
-    likes as LikeModal,
     NewLike,
-    articles,
     likes,
     users,
 } from '@db/schema';
-import { userRemoveField } from '@utils/constant';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import CommentService from './CommentService';
 import { CustomError } from '@utils/CustomError';
-import BlogService from './BlogService';
+import ArticleService from './ArticleService';
 
 type LikeType = keyof typeof likeType;
 
@@ -21,8 +18,8 @@ type targetType = Article | CommentData | undefined | null;
 const { userId, ...likeColumns } = getTableColumns(likes);
 const { password, email, createdAt, ...userfield } = getTableColumns(users);
 
-const ArticleService = new BlogService();
-const commentService = new CommentService(ArticleService);
+const articleService = new ArticleService();
+const commentService = new CommentService(articleService);
 
 class LikeService {
     async getArticleLikes(articleId: string) {

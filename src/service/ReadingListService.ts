@@ -1,6 +1,6 @@
 import db from '@db/index';
-import { NewreadingList, ReadingList, ReadingListData } from '@db/schema';
-import BlogService from './BlogService';
+import { NewreadingList, ReadingList } from '@db/schema';
+import BlogService from './ArticleService';
 import { CustomError } from '@utils/CustomError';
 import { httpStatusCode } from '@customtype/index';
 import { and, asc, eq, sql } from 'drizzle-orm';

@@ -1,5 +1,5 @@
 import { httpStatusCode } from '@customtype/index';
-import BlogService from '@service/BlogService';
+import BlogService from '@service/ArticleService';
 import asyncHandler from '@utils/asynHandler';
 import { Response, Request } from 'express';
 
