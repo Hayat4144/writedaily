@@ -176,6 +176,13 @@
       "when": 1703311175513,
       "tag": "0024_curved_dragon_lord",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1703519087097,
+      "tag": "0025_cloudy_stellaris",
+      "breakpoints": true
     }
   ]
 }

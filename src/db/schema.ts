@@ -1,5 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
-import { relations, sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
+import { index } from 'drizzle-orm/pg-core';
 import { boolean } from 'drizzle-orm/pg-core';
 import { pgEnum } from 'drizzle-orm/pg-core';
 import { varchar, text, jsonb, timestamp, pgTable } from 'drizzle-orm/pg-core';
@@ -21,10 +22,12 @@ export const tokens = pgTable('token', {
         .primaryKey()
         .$defaultFn(() => createId()),
     userId: text('user_id')
-        .notNull()
         .unique()
-        .references(() => users.id, { onDelete: 'cascade' }),
-    token: text('token').notNull().$defaultFn(()=>createId()),
+        .references(() => users.id, { onDelete: 'cascade' })
+        .notNull(),
+    token: text('token')
+        .notNull()
+        .$defaultFn(() => createId()),
     createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -53,7 +56,10 @@ export const articles = pgTable('article', {
     title: varchar('title', { length: 256 }).notNull(),
     description: varchar('description', { length: 256 }),
     isPublished: boolean('is_published').default(false),
-    authorId: text('author_id').notNull(),
+    authorId: text('author_id')
+        .references(() => users.id, { onDelete: 'cascade' })
+        .notNull(),
+
     content: jsonb('content'),
     createdAt: timestamp('created_at').defaultNow(),
 });
@@ -71,16 +77,25 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
 export const commentEnum = pgEnum('comment_type', ['article', 'comment']);
 export const likeEnum = pgEnum('like_type', ['article', 'comment']);
 
-export const likes = pgTable('likes', {
-    id: text('id')
-        .notNull()
-        .primaryKey()
-        .$defaultFn(() => createId()),
-    userId: text('user_id').notNull(),
-    likeType: likeEnum('like_type').notNull(),
-    likebleId: text('like_id').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
-});
+export const likes = pgTable(
+    'likes',
+    {
+        id: text('id')
+            .notNull()
+            .primaryKey()
+            .$defaultFn(() => createId()),
+        userId: text('user_id')
+            .references(() => users.id, { onDelete: 'cascade' })
+            .notNull(),
+        likeType: likeEnum('like_type').notNull(),
+        likebleId: text('like_id').notNull(),
+        createdAt: timestamp('created_at').defaultNow(),
+    },
+    (table) => ({
+        userIdx: index('userId_idx').on(table.userId),
+        likeableIdx: index('likebleId_idx').on(table.likebleId),
+    }),
+);
 
 export const likesRelations = relations(likes, ({ one }) => ({
     user: one(users, {
@@ -97,16 +112,25 @@ export const likesRelations = relations(likes, ({ one }) => ({
     }),
 }));
 
-export const comments = pgTable('comments', {
-    id: text('id')
-        .notNull()
-        .$defaultFn(() => createId()),
-    content: text('content').notNull(),
-    userId: text('user_id').notNull(),
-    commentableId: text('commentable_id').notNull(),
-    commentType: commentEnum('comment_type').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
-});
+export const comments = pgTable(
+    'comments',
+    {
+        id: text('id')
+            .notNull()
+            .$defaultFn(() => createId()),
+        content: text('content').notNull(),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        commentableId: text('commentable_id').notNull(),
+        commentType: commentEnum('comment_type').notNull(),
+        createdAt: timestamp('created_at').defaultNow(),
+    },
+    (table) => ({
+        userIdx: index('userId_idx').on(table.userId),
+        commentableIdx: index('commentable_idx').on(table.commentableId),
+    }),
+);
 
 export const commentRelations = relations(comments, ({ one, many }) => ({
     user: one(users, {
@@ -128,14 +152,26 @@ export const commentRelations = relations(comments, ({ one, many }) => ({
     like: many(likes),
 }));
 
-export const follows = pgTable('follows', {
-    id: text('id')
-        .notNull()
-        .$defaultFn(() => createId()),
-    followerId: text('follower_id').notNull(),
-    followeeId: text('followee_id').notNull(),
-    createdAt: timestamp('created_at').defaultNow(),
-});
+export const follows = pgTable(
+    'follows',
+    {
+        id: text('id')
+            .notNull()
+            .primaryKey()
+            .$defaultFn(() => createId()),
+        followerId: text('follower_id')
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        followeeId: text('followee_id')
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        createdAt: timestamp('created_at').defaultNow(),
+    },
+    (table) => ({
+        followerIdx: index('followerId_idx').on(table.followerId),
+        followeeIdx: index('followeeId_idx').on(table.followeeId),
+    }),
+);
 
 export const followsRelations = relations(follows, ({ one }) => ({
     follower: one(users, {
@@ -166,10 +202,10 @@ export const ArticleTopics = pgTable('articletopics', {
         .primaryKey(),
     topicId: text('topic_id')
         .notNull()
-        .references(() => Topics.id),
+        .references(() => Topics.id, { onDelete: 'cascade' }),
     articleId: text('article_id')
         .notNull()
-        .references(() => articles.id),
+        .references(() => articles.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -209,20 +245,26 @@ export const UserPrefrencesRelations = relations(UserPrefrences, ({ one }) => ({
     }),
 }));
 
-export const ReadingList = pgTable('readinglist', {
-    id: text('id')
-        .notNull()
-        .$defaultFn(() => createId())
-        .primaryKey(),
-    articleId: text('article_id')
-        .notNull()
-        .unique()
-        .references(() => articles.id),
-    userId: text('user_id')
-        .notNull()
-        .references(() => users.id),
-    createdAt: timestamp('created_at').defaultNow(),
-});
+export const ReadingList = pgTable(
+    'readinglist',
+    {
+        id: text('id')
+            .notNull()
+            .$defaultFn(() => createId())
+            .primaryKey(),
+        articleId: text('article_id')
+            .notNull()
+            .unique()
+            .references(() => articles.id, { onDelete: 'cascade' }),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id, { onDelete: 'cascade' }),
+        createdAt: timestamp('created_at').defaultNow(),
+    },
+    (table) => ({
+        articleIdx: index('articleId_idx').on(table.articleId),
+    }),
+);
 
 export const ReadingListRelation = relations(ReadingList, ({ one }) => ({
     user: one(users, {
