@@ -14,6 +14,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import logger from '@utils/logger';
+import { httpStatusCode } from './types';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -30,6 +31,7 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(limiter);
+/*
 app.use(
     cors({
         origin:
@@ -40,11 +42,17 @@ app.use(
         optionsSuccessStatus: 200,
     }),
 );
+
+*/
+app.use(cors());
 app.use(express.json());
 app.use(hpp());
 app.disable('x-powered-by');
 
 //app routes
+app.get('/', (req, res) => {
+    return res.status(httpStatusCode.OK).json({ data: 'Hello developers' });
+});
 app.use(authrouter);
 app.use(blogsroutes);
 app.use(commentroutes);
