@@ -10,7 +10,7 @@
         "prebuild": "rimraf dist",
         "pre-prod": "rimraf dist && npm run build",
         "build": " npm run prebuild && tsc && tsc-alias",
-        "start": "pm2 start dist/index.js --name writedaily --instances max",
+        "start": "pm2 start dist/index.js --name writedaily --log /dev/null --out /dev/null --instances max",
         "restart": "pm2 restart writedaily",
         "generate": "drizzle-kit generate:pg",
         "push": "drizzle-kit push:pg",
