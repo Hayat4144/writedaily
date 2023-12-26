@@ -9,7 +9,7 @@
         "dev": "concurrently -n 'server,client' -c 'green,blue' \"npm run dev:server\" \"npm run dev:client\"",
         "prebuild": "rimraf dist",
         "pre-prod": "rimraf dist && npm run build",
-        "build": "tsc && tsc-alias",
+        "build": "npm run prebuild && tsc && tsc-alias",
         "start": "pm2 start dist/index.js --name writedaily --instances max",
         "restart": "pm2 restart writedaily",
         "generate": "drizzle-kit generate:pg",
