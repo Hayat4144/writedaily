@@ -10,8 +10,7 @@
         "prebuild": "rimraf dist",
         "pre-prod": "rimraf dist && npm run build",
         "build": " npm run prebuild && tsc && tsc-alias",
-        "start": "pm2 start dist/index.js --name writedaily --log /dev/null --out /dev/null --instances max",
-        "restart": "pm2 restart writedaily",
+        "start": "node dist/index.js",
         "generate": "drizzle-kit generate:pg",
         "push": "drizzle-kit push:pg",
         "pull": "drizzle-kit introspect:pg",
@@ -35,7 +34,6 @@
         "jsonwebtoken": "^9.0.2",
         "nodemailer": "^6.9.7",
         "pg": "^8.11.3",
-        "pm2": "^2.10.4",
         "winston": "^3.11.0",
         "xss-clean": "^0.1.4"
     },
