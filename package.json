@@ -7,7 +7,7 @@
         "dev:server": "npx nodemon",
         "dev:client": "cd client && npm run dev",
         "dev": "concurrently -n 'server,client' -c 'green,blue' \"npm run dev:server\" \"npm run dev:client\"",
-        "prebuild": "npm install && rimraf dist",
+        "prebuild": "npm ci && rimraf dist",
         "pre-prod": "rimraf dist && npm run build",
         "build": " npm run prebuild && tsc && tsc-alias",
         "start": "pm2 start dist/index.js --name writedaily --instances max",
@@ -40,7 +40,6 @@
         "xss-clean": "^0.1.4"
     },
     "devDependencies": {
-        "@types/bcrypt": "^5.0.2",
         "@types/cors": "^2.8.17",
         "@types/express": "^4.17.21",
         "@types/hpp": "^0.2.5",
