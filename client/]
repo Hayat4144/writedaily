@@ -1,0 +1,48 @@
+import {
+    Heading1,
+    Heading2,
+    Heading3,
+    Heading4,
+    Heading5,
+    Heading6,
+    Paragraph,
+} from '@/components/ui/typography';
+import { RenderElementProps } from 'slate-react';
+
+const RenderElements = (props: RenderElementProps) => {
+    switch (props.element.type) {
+        case 'paragraph':
+            return <p {...props.attributes}> {props.children} </p>;
+        case 'h1':
+            return (
+                <Heading1 className="text-5xl" {...props.attributes}>
+                    {props.children}
+                </Heading1>
+            );
+        case 'h2':
+            return (
+                <Heading2 className="text-4xl" {...props.attributes}>
+                    {props.children}
+                </Heading2>
+            );
+        case 'h3':
+            return (
+                <Heading3 className="text-3xl" {...props.attributes}>
+                    {props.children}
+                </Heading3>
+            );
+        case 'h4':
+            return <Heading4 {...props.attributes}>{props.children}</Heading4>;
+        case 'h5':
+            return <Heading5 {...props.attributes}>{props.children}</Heading5>;
+        case 'h6':
+            return <Heading6 {...props.attributes}>{props.children}</Heading6>;
+
+        default:
+            return (
+                <Paragraph {...props.attributes}> {props.children} </Paragraph>
+            );
+    }
+};
+
+export default RenderElements;
