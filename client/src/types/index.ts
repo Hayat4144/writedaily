@@ -32,7 +32,8 @@ export type RichText = {
     code?: boolean;
     kbd?: boolean;
     subscript?: boolean;
-    backgroundColor?: React.CSSProperties['backgroundColor'];
+    superscript?: boolean;
+    highlight?: React.CSSProperties['backgroundColor'];
     fontFamily?: React.CSSProperties['fontFamily'];
     color?: React.CSSProperties['color'];
     fontSize?: React.CSSProperties['fontSize'];

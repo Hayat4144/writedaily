@@ -1,10 +1,11 @@
 'use client';
 import { Fragment, useMemo } from 'react';
 import { Descendant, createEditor } from 'slate';
-import { Editable, RenderLeafProps, Slate, withReact } from 'slate-react';
+import { Editable, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
 import RenderElements from './RenderElements';
 import generateNodeId from '@/lib/generateNodeId';
+import renderLeafs from './RenderLeafs';
 
 const initialValue: Descendant[] = [
     {
@@ -29,7 +30,12 @@ const initialValue: Descendant[] = [
         type: 'paragraph',
         children: [
             { text: 'we are her' },
-            { italic: true, text: 'is italic working?' },
+            {
+                italic: true,
+                text: 'is italic working?',
+                highlight: 'red',
+                fontSize: '40px',
+            },
         ],
     },
     {
@@ -46,13 +52,33 @@ const initialValue: Descendant[] = [
     {
         id: generateNodeId(),
         type: 'paragraph',
-        children: [{ text: 'Hello  is id working.' }],
+        children: [
+            { text: 'Hello  is id working.' },
+            {
+                type: 'code_line',
+                children: [
+                    { text: 'The magic you find , the work you avoid.' },
+                ],
+            },
+            {
+                text: 'is color is working perfectly',
+                color: 'yellow',
+            },
+            {
+                text: 'is superscript leaf is working perfectly',
+                superscript: true,
+            },
+            {
+                text: 'hello fontFamily',
+                fontFamily: 'monospace',
+            },
+        ],
     },
     {
         id: generateNodeId(),
         type: 'todo_list',
         checked: false,
-        children: [{ text: 'This is todo list' }],
+        children: [{ text: 'This is todo list', fontWeight: 'bolder' }],
     },
     {
         id: generateNodeId(),
@@ -81,21 +107,6 @@ const WriteDailyEditor = () => {
             </Slate>
         </Fragment>
     );
-};
-
-const renderLeafs = (props: RenderLeafProps) => {
-    let { leaf, children, attributes } = props;
-    if ('bold' in leaf && leaf.bold) {
-        children = <strong>{children}</strong>;
-    }
-    if ('italic' in leaf && leaf.italic) {
-        children = <i>{children}</i>;
-    }
-    if ('underline' in leaf && leaf.underline) {
-        children = <u>{children}</u>;
-    }
-
-    return <span {...attributes}>{children}</span>;
 };
 
 export default WriteDailyEditor;

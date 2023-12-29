@@ -6,6 +6,7 @@ import {
     Heading4,
     Heading5,
     Heading6,
+    InlineCode,
     ListItem,
     Paragraph,
 } from '@/components/ui/typography';
@@ -13,21 +14,6 @@ import { RenderElementProps } from 'slate-react';
 import TodoBlockElement from './Blocks/TodoBlock';
 import BulletedList from './Blocks/BulletedList';
 import NumberList from './Blocks/NumberList';
-/*
-        case 'bulleted_list':
-            return (
-                <BulletedList {...attributes} {...element}>
-                    {children}
-                </BulletedList>
-            );
-        case 'list':
-            return (
-                <ListItem {...attributes} {...element}>
-                    {children}
-                </ListItem>
-            );
-
-*/
 
 const RenderElement = ({
     children,
@@ -85,6 +71,12 @@ const RenderElement = ({
                     children={children}
                     attributes={attributes}
                 />
+            );
+        case 'code_line':
+            return (
+                <InlineCode {...attributes} {...element}>
+                    {children}
+                </InlineCode>
             );
         default:
             return <Paragraph {...attributes}>{children}</Paragraph>;
