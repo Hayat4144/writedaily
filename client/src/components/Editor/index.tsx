@@ -4,10 +4,28 @@ import { Descendant, createEditor } from 'slate';
 import { Editable, RenderLeafProps, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
 import RenderElements from './RenderElements';
+import generateNodeId from '@/lib/generateNodeId';
 
 const initialValue: Descendant[] = [
     {
-        id: '1',
+        id: generateNodeId(),
+        type: 'blockquote',
+        children: [{ text: 'The magic you find , the work you avoid.' }],
+    },
+    {
+        id: generateNodeId(),
+        type: 'number_list',
+        children: [
+            {
+                type: 'list',
+                children: [{ text: 'Is it Number list?' }],
+                id: generateNodeId(),
+            },
+        ],
+    },
+
+    {
+        id: generateNodeId(),
         type: 'paragraph',
         children: [
             { text: 'we are her' },
@@ -15,36 +33,31 @@ const initialValue: Descendant[] = [
         ],
     },
     {
-        id: '5',
-        type: 'h1',
+        id: generateNodeId(),
+        type: 'bulleted_list',
         children: [
-            { text: "Let's check is it work not?" },
-            { italic: true, text: 'is italic working?' },
+            {
+                type: 'list',
+                children: [{ text: 'Is it list?' }],
+                id: generateNodeId(),
+            },
         ],
     },
     {
-        id: '98',
-        type: 'h1',
-        children: [{ text: "Let's check is it work not?" }],
-    },
-    {
-        id: '98',
-        type: 'h2',
-        children: [{ text: "Let's check is it work not?" }],
-    },
-    {
-        id: '98',
-        type: 'h6',
-        children: [{ text: "Let's check is it work not?" }],
-    },
-
-    {
-        id: '2',
+        id: generateNodeId(),
         type: 'paragraph',
-        children: [
-            { text: 'can you help me' },
-            { text: 'is it bold?', bold: true },
-        ],
+        children: [{ text: 'Hello  is id working.' }],
+    },
+    {
+        id: generateNodeId(),
+        type: 'todo_list',
+        checked: false,
+        children: [{ text: 'This is todo list' }],
+    },
+    {
+        id: generateNodeId(),
+        type: 'h1',
+        children: [{ text: "Let's check is it work not?" }],
     },
 ];
 

@@ -1,7 +1,43 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
+interface ListProps extends React.HTMLAttributes<HTMLLIElement> {}
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+interface InlineCodeProps extends React.HTMLAttributes<HTMLPreElement> {}
+interface BlockquoteProps extends React.HtmlHTMLAttributes<HTMLQuoteElement> {}
+
+const InlineCode = React.forwardRef<HTMLPreElement, InlineCodeProps>(
+    ({ className, ...props }, ref) => {
+        return (
+            <code
+                ref={ref}
+                className={cn(
+                    'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
+                    className,
+                )}
+                {...props}
+            />
+        );
+    },
+);
+
+const BlockQuote = React.forwardRef<HTMLQuoteElement, BlockquoteProps>(
+    ({ className, ...props }, ref) => {
+        return (
+            <blockquote
+                ref={ref}
+                className={cn('border-l-2 pl-6 my-3 italic', className)}
+                {...props}
+            />
+        );
+    },
+);
+
+const ListItem = React.forwardRef<HTMLLIElement, ListProps>(
+    ({ className, ...props }, ref) => {
+        return <li className={cn('', className)} ref={ref} {...props} />;
+    },
+);
 
 const Paragraph = React.forwardRef<
     HTMLParagraphElement,
@@ -95,6 +131,9 @@ const Heading6 = React.forwardRef<HTMLHeadingElement, HeadingProps>(
 );
 
 export {
+    InlineCode,
+    ListItem,
+    BlockQuote,
     Paragraph,
     Heading1,
     Heading2,

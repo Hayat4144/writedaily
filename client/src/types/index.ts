@@ -2,6 +2,7 @@ import { BaseEditor, Element, BaseRange, BaseElement, Descendant } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
+    ELEMENT_BLOCKQUOTE,
     ELEMENT_CODE_BLOCK,
     ELEMENT_CODE_LINE,
     ELEMENT_H1,
@@ -14,6 +15,7 @@ import {
     ELEMENT_LINK,
     ELEMENT_OL,
     ELEMENT_PARAGRAPH,
+    ELEMENT_TODO_LIST,
     ELEMENT_UL,
 } from '@/lib/constant';
 
@@ -91,7 +93,7 @@ export interface MyH6Element extends MyBlockElement {
 }
 
 export interface MyQuoteBlockElement extends MyBlockElement {
-    type: typeof ELEMENT_CODE_BLOCK;
+    type: typeof ELEMENT_BLOCKQUOTE;
 }
 
 export interface MyCodeLineELement {
@@ -126,7 +128,13 @@ export interface MyListItemElement extends MyBlockElement {
     type: typeof ELEMENT_LI;
 }
 
+export interface MyTodoItemElent extends MyBlockElement {
+    type: typeof ELEMENT_TODO_LIST;
+    checked: boolean;
+}
+
 export type MyCustomElement =
+    | MyTodoItemElent
     | MyParagraphElement
     | MyH1Element
     | MyH2Element
