@@ -1,4 +1,4 @@
-import { BaseEditor, Element, BaseRange, BaseElement, Descendant } from 'slate';
+import { BaseEditor, Element, BaseRange, BaseElement, Editor } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
@@ -167,4 +167,11 @@ declare module 'slate' {
             [key: string]: unknown;
         };
     }
+}
+
+export interface Marks {
+    id: string;
+    icon: React.ReactNode;
+    mark: string;
+    shortcut?: string;
 }
