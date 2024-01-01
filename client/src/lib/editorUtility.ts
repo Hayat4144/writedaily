@@ -1,8 +1,55 @@
 import { editorUtility as EditorUtility } from '@/types/EditorUtility';
-import { Editor, Transforms } from 'slate';
+import { Editor, Element, Node, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
+import { ReactEditor } from 'slate-react';
 
 const editorUtility: EditorUtility = {
+    isBlockActive(editor: Editor, block: string): boolean {
+        const { selection } = editor;
+        if (!selection) {
+            return false;
+        }
+        const [match] = Array.from(
+            Editor.nodes(editor, {
+                at: Editor.unhangRange(editor, selection),
+                match: (n) =>
+                    !Editor.isEditor(n) &&
+                    Element.isElement(n) &&
+                    n.type === block,
+            }),
+        );
+        return !!match;
+    },
+
+    unwrapNodes(editor: Editor, node: string) {
+        Transforms.unwrapNodes(editor, {
+            match: (n) =>
+                !Editor.isEditor(n) && Element.isElement(n) && n.type === node,
+        });
+    },
+
+    updateLink(editor: Editor, url: string) {
+        const { selection } = editor;
+        if (!selection) return;
+        const isLinkActive = editorUtility.isBlockActive(editor, 'link');
+        if (!isLinkActive) return;
+        const linkNodePath = ReactEditor.findPath(
+            editor,
+            Node.parent(editor, selection?.focus.path),
+        );
+        Transforms.setNodes(editor, { url }, { at: linkNodePath });
+    },
+    getBlock(editor: Editor, block: string) {
+        const [match] = Array.from(
+            Editor.nodes(editor, {
+                match: (n) =>
+                    !Editor.isEditor(n) &&
+                    Element.isElement(n) &&
+                    n.type === block,
+            }),
+        );
+        return match;
+    },
     getActiveMark(editor: Editor): Set<string> {
         return new Set(Object.keys(Editor.marks(editor) ?? {}));
     },
@@ -33,22 +80,6 @@ const editorUtility: EditorUtility = {
                 Transforms.insertText(editor, '    ');
             }
         }
-    },
-    isBlockActive: (editor: Editor, format: string, blockType = 'type') => {
-        const { selection } = editor;
-        if (!selection) return false;
-
-        const [match] = Array.from(
-            Editor.nodes(editor, {
-                at: Editor.unhangRange(editor, selection),
-                match: (n) =>
-                    !Editor.isEditor(n) &&
-                    Element.isElement(n) &&
-                    n[blockType as keyof typeof n] === format,
-            }),
-        );
-
-        return !!match;
     },
 };
 

@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { Editor, createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
@@ -10,6 +10,7 @@ import FloatingToolbar from './Toolbar/FloatingToolbar';
 import { initialValue } from '@/lib/constant';
 import editorUtility from '@/lib/editorUtility';
 import withLink from './Plugins/withLink';
+import Linkpopover from './Linkpopover';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -26,6 +27,7 @@ const createEditorWithPlugins = pipe(withReact, withNodeId, withLink);
 
 const WriteDailyEditor = () => {
     const editor = useMemo(() => createEditorWithPlugins(createEditor()), []);
+    const [isLinkPopver, setIsLinkPopver] = useState<boolean>(false);
 
     return (
         <Fragment>
@@ -33,9 +35,21 @@ const WriteDailyEditor = () => {
                 editor={editor}
                 initialValue={initialValue}
                 onChange={(value) => {
-                    console.log(value);
+                    const { selection } = editor;
+                    if (
+                        selection &&
+                        editorUtility.isBlockActive(editor, 'link')
+                    ) {
+                        setIsLinkPopver(true);
+                    }
                 }}
             >
+                {isLinkPopver ? (
+                    <Linkpopover
+                        isLinkPopver={isLinkPopver}
+                        linkPopoverToggle={setIsLinkPopver}
+                    />
+                ) : null}
                 <FloatingToolbar />
                 <MarksComp />
                 <Editable
