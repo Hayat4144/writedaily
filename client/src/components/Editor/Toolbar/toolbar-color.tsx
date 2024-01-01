@@ -96,10 +96,13 @@ export default function ToolBarColor() {
                                 <Button
                                     variant={'ghost'}
                                     size={'sm'}
+                                    asChild
                                     className="hover:dark:bg-[#3b3b40] rounded-none mx-0"
                                 >
-                                    <Icons.color size={17} />
-                                    <Icons.chevronsUpDown size={17} />
+                                    <p>
+                                        <Icons.color size={17} />
+                                        <Icons.chevronsUpDown size={17} />
+                                    </p>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent

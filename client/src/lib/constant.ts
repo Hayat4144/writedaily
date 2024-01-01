@@ -41,7 +41,12 @@ export const initialValue: Descendant[] = [
         id: generateNodeId(),
         type: 'paragraph',
         children: [
-            { text: 'we are her' },
+            { text: 'hello is link working' },
+            {
+                type: 'link',
+                url: 'http://google.com',
+                children: [{ text: ' click here' }],
+            },
             {
                 italic: true,
                 text: 'is italic working?',

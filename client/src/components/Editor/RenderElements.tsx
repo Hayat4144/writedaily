@@ -14,6 +14,7 @@ import { RenderElementProps } from 'slate-react';
 import TodoBlockElement from './Blocks/TodoBlock';
 import BulletedList from './Blocks/BulletedList';
 import NumberList from './Blocks/NumberList';
+import LinkBlock from './Blocks/LinkBlock';
 
 const RenderElement = ({
     children,
@@ -77,6 +78,15 @@ const RenderElement = ({
                 <InlineCode {...attributes} {...element}>
                     {children}
                 </InlineCode>
+            );
+
+        case 'link':
+            return (
+                <LinkBlock
+                    element={element}
+                    attributes={attributes}
+                    children={children}
+                />
             );
         default:
             return <Paragraph {...attributes}>{children}</Paragraph>;

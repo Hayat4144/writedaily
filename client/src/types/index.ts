@@ -1,4 +1,4 @@
-import { BaseEditor, Element, BaseRange, BaseElement, Editor } from 'slate';
+import { BaseEditor, Element, BaseRange, BaseElement, Descendant } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
@@ -111,8 +111,10 @@ export interface MyImageELement {
     type: typeof ELEMENT_CODE_BLOCK;
     children: EmptyText[];
 }
-export interface MyLinkElement extends BaseElement {
+export interface MyLinkElement {
     type: typeof ELEMENT_LINK;
+    url: string;
+    children: Descendant[];
 }
 
 export interface MyBulletedListElement extends MyBlockElement {

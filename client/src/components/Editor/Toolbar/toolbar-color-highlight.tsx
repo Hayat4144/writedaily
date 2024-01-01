@@ -105,6 +105,7 @@ export default function ToolbarColorHighligth({
                                 variant={isMarkActive() ? 'secondary' : 'ghost'}
                                 size={'icon'}
                                 className="h-8"
+                                asChild
                             >
                                 {icon}
                             </Button>
