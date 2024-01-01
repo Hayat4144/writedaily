@@ -5,7 +5,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import Portal from '../Portal';
 import { ReactEditor, useSlate } from 'slate-react';
 import editorUtility from '@/lib/editorUtility';
 import { Card, CardContent } from '../ui/card';
@@ -20,6 +19,9 @@ import {
     TooltipTrigger,
 } from '../ui/tooltip';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+
+const Portal = dynamic(() => import('@/components/Portal'), { ssr: false });
 
 interface LinkPopoverProps {
     isLinkPopver: boolean;

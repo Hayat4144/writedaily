@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Portal from '@/components/Portal';
 import { useSlate } from 'slate-react';
 import { Range, Editor } from 'slate';
 import { Separator } from '@/components/ui/separator';
@@ -8,6 +7,9 @@ import ToggleLink from './ToogleLink';
 import ToolBarColor from '../toolbar-color';
 import ToolbarColorHighligth from '../toolbar-color-highlight';
 import { Icons } from '@/components/icons';
+import dynamic from 'next/dynamic';
+
+const Portal = dynamic(() => import('@/components/Portal'), { ssr: false });
 
 const FloatingToolbar = () => {
     const toolbarRef = useRef<HTMLDivElement | null>(null);
