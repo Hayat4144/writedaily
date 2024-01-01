@@ -2,8 +2,46 @@ import { editorUtility as EditorUtility } from '@/types/EditorUtility';
 import { Editor, Element, Node, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
+import { ELEMENT_OL, ELEMENT_PARAGRAPH, ELEMENT_UL } from './constant';
 
 const editorUtility: EditorUtility = {
+    TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
+    LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
+
+    toggleBlock(editor, block) {
+        const { selection } = editor;
+        if (!selection) return;
+        const isActive = editorUtility.isBlockActive(editor, block);
+
+        Transforms.unwrapNodes(editor, {
+            match: (n) =>
+                !Editor.isEditor(n) &&
+                Element.isElement(n) &&
+                editorUtility.LIST_TYPES.includes(n.type) &&
+                !editorUtility.TEXT_ALIGN_TYPES.includes(block),
+            split: true,
+        });
+
+        let newProperties: Partial<Element>;
+
+        const isList = editorUtility.LIST_TYPES.includes(block);
+        newProperties = {
+            type: isActive
+                ? 'paragraph'
+                : isList
+                  ? 'list'
+                  : (block as keyof typeof newProperties.type),
+        };
+
+        Transforms.setNodes(editor, newProperties);
+
+        if (!isActive && isList) {
+            Transforms.wrapNodes(editor, {
+                type: block as keyof typeof newProperties.type,
+                children: [],
+            });
+        }
+    },
     isBlockActive(editor: Editor, block: string): boolean {
         const { selection } = editor;
         if (!selection) {

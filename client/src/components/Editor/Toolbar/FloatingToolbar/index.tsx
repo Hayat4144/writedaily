@@ -70,11 +70,7 @@ const FloatingToolbar = () => {
                     <Separator orientation="vertical" />
                     <ToolBarColor />
                     <Separator orientation="vertical" />
-                    <ToolbarColorHighligth
-                        format="highlight"
-                        icon={<Icons.color />}
-                        tooltipContent={'Highlight the text'}
-                    />
+                    <ToolbarColorHighligth />
                 </div>
             </div>
         </Portal>

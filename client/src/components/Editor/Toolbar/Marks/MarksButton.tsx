@@ -12,9 +12,10 @@ import { Marks } from '@/types';
 
 interface MarkButtonsProps {
     item: Marks;
+    isRounded?: boolean;
 }
 
-export default function MarkButtons({ item }: MarkButtonsProps) {
+export default function MarkButtons({ isRounded, item }: MarkButtonsProps) {
     const editor = useSlate();
     return (
         <TooltipProvider>
@@ -28,7 +29,9 @@ export default function MarkButtons({ item }: MarkButtonsProps) {
                     <Button
                         variant={'ghost'}
                         size={'sm'}
-                        className="hover:dark:bg-[#3b3b40] rounded-none"
+                        className={`${
+                            isRounded ? 'rounded-md' : 'rounded-none'
+                        } hover:dark:bg-[#3b3b40] `}
                     >
                         {item.icon}
                     </Button>

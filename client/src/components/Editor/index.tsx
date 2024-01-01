@@ -1,6 +1,6 @@
 'use client';
 import { Fragment, useMemo, useState } from 'react';
-import { Editor, createEditor } from 'slate';
+import { Descendant, Editor, createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
 import RenderElements from './RenderElements';
@@ -11,6 +11,8 @@ import { initialValue } from '@/lib/constant';
 import editorUtility from '@/lib/editorUtility';
 import withLink from './Plugins/withLink';
 import Linkpopover from './Linkpopover';
+import FixedToolbar from './Toolbar/FixedToolbar';
+import { withHistory } from 'slate-history';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -23,35 +25,40 @@ const pipe =
         return editor;
     };
 
-const createEditorWithPlugins = pipe(withReact, withNodeId, withLink);
+const createEditorWithPlugins = pipe(
+    withReact,
+    withHistory,
+    withNodeId,
+    withLink,
+);
 
 const WriteDailyEditor = () => {
     const editor = useMemo(() => createEditorWithPlugins(createEditor()), []);
     const [isLinkPopver, setIsLinkPopver] = useState<boolean>(false);
+
+    const changeHandler = (value: Descendant[]) => {
+        const { selection } = editor;
+        if (selection && editorUtility.isBlockActive(editor, 'link')) {
+            setIsLinkPopver(true);
+        }
+    };
 
     return (
         <Fragment>
             <Slate
                 editor={editor}
                 initialValue={initialValue}
-                onChange={(value) => {
-                    const { selection } = editor;
-                    if (
-                        selection &&
-                        editorUtility.isBlockActive(editor, 'link')
-                    ) {
-                        setIsLinkPopver(true);
-                    }
-                }}
+                onChange={changeHandler}
             >
+                <FixedToolbar />
+                <FloatingToolbar />
                 {isLinkPopver ? (
                     <Linkpopover
                         isLinkPopver={isLinkPopver}
                         linkPopoverToggle={setIsLinkPopver}
                     />
                 ) : null}
-                <FloatingToolbar />
-                <MarksComp />
+
                 <Editable
                     onKeyDown={(event) =>
                         editorUtility.onkeydown(event, editor)

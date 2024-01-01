@@ -45,14 +45,15 @@ const marks: Marks[] = [
 
 interface MarksProps {
     isSeperator?: boolean;
+    isRounded?: boolean;
 }
 
-const MarksComp = ({ isSeperator }: MarksProps) => {
+const MarksComp = ({ isSeperator, isRounded }: MarksProps) => {
     return (
         <React.Fragment>
             {marks.map((mark) => (
                 <React.Fragment key={mark.id}>
-                    <MarkButtons item={mark} />
+                    <MarkButtons item={mark} isRounded={isRounded} />
                     {isSeperator && Number(mark.id) !== marks.length ? (
                         <Separator orientation="vertical" />
                     ) : null}

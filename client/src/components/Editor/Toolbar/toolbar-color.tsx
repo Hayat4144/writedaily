@@ -19,6 +19,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import editorUtility from '@/lib/editorUtility';
 
 export const colorArray: ColorsBackground[] = [
     {
@@ -79,9 +80,15 @@ export interface ColorsBackground {
     value: string;
 }
 
-export default function ToolBarColor() {
+interface FuncProps {
+    isRounded?: boolean;
+}
+
+export default function ToolBarColor({ isRounded }: FuncProps) {
     const [open, setOpen] = React.useState(false);
     const editor = useSlate();
+    const isMarkActive = () =>
+        editorUtility.getActiveMark(editor).has('highlight');
     return (
         <Fragment>
             <TooltipProvider>
@@ -94,14 +101,15 @@ export default function ToolBarColor() {
                                 asChild
                             >
                                 <Button
-                                    variant={'ghost'}
+                                    variant={
+                                        isMarkActive() ? 'secondary' : 'ghost'
+                                    }
                                     size={'sm'}
-                                    asChild
                                     className="hover:dark:bg-[#3b3b40] rounded-none mx-0"
+                                    asChild
                                 >
                                     <p>
                                         <Icons.color size={17} />
-                                        <Icons.chevronsUpDown size={17} />
                                     </p>
                                 </Button>
                             </DropdownMenuTrigger>

@@ -80,21 +80,12 @@ export const colorArray: ColorsBackground[] = [
     },
 ];
 
-interface TextColorHighlightProps {
-    format: string;
-    icon: React.ReactNode;
-    tooltipContent: string;
-}
-
-export default function ToolbarColorHighligth({
-    format,
-    icon,
-    tooltipContent,
-}: TextColorHighlightProps) {
+export default function ToolbarColorHighligth() {
     const editor = useSlate();
     const [open, setOpen] = React.useState(false);
 
-    const isMarkActive = () => editorUtility.getActiveMark(editor).has(format);
+    const isMarkActive = () =>
+        editorUtility.getActiveMark(editor).has('highlight');
     return (
         <TooltipProvider>
             <Tooltip>
@@ -104,16 +95,18 @@ export default function ToolbarColorHighligth({
                             <Button
                                 variant={isMarkActive() ? 'secondary' : 'ghost'}
                                 size={'icon'}
-                                className="h-8"
+                                className="hover:dark:bg-[#3b3b40] rounded-none mx-0"
                                 asChild
                             >
-                                {icon}
+                                <p>
+                                    <Icons.bg size={18} />
+                                </p>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-52">
                             <ScrollArea className="h-72">
                                 <DropdownMenuLabel className="capitalize">
-                                    {format}
+                                    highlight
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
@@ -122,12 +115,12 @@ export default function ToolbarColorHighligth({
                                         setOpen(false);
                                         editorUtiliy.toggleMark(
                                             editor,
-                                            format,
+                                            'highlight',
                                             false,
                                         );
                                     }}
                                 >
-                                    Remove {format}
+                                    Remove highlight
                                 </DropdownMenuItem>
                                 {colorArray.map((item) => (
                                     <DropdownMenuItem
@@ -136,7 +129,7 @@ export default function ToolbarColorHighligth({
                                             setOpen(false);
                                             editorUtiliy.toggleMark(
                                                 editor,
-                                                format,
+                                                'highlight',
                                                 item.value,
                                             );
                                         }}
@@ -153,7 +146,7 @@ export default function ToolbarColorHighligth({
                     </DropdownMenu>
                 </TooltipTrigger>
                 <TooltipContent className="capitalize">
-                    {tooltipContent}
+                    Highlight your text
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

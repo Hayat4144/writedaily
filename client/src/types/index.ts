@@ -61,10 +61,14 @@ export interface MyBaseElement extends BaseElement {
     id: string;
 }
 
+export type AlignType = 'right' | 'justify' | 'left' | 'center';
+
 export interface MyBlockElement
     extends MyBaseElement,
         MyIndentListProps,
-        MyLineHeightProps {}
+        MyLineHeightProps {
+    align?: AlignType;
+}
 
 export interface MyParagraphElement extends MyBlockElement {
     type: typeof ELEMENT_PARAGRAPH;
