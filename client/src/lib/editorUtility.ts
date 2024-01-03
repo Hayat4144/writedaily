@@ -8,6 +8,31 @@ const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
     LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
 
+    isAlignmentActive(editor, type) {
+        const { selection } = editor;
+        if (!selection) return false;
+
+        const [[match]] = Array.from(
+            Editor.nodes(editor, {
+                at: Editor.unhangRange(editor, selection),
+                match: (n) => !Editor.isEditor(n) && Element.isElement(n),
+            }),
+        );
+
+        return !!match;
+    },
+
+    toggleAlignment(editor, type) {
+        const { selection } = editor;
+        if (!selection) return;
+
+        let newProperties: Partial<Element>;
+
+        newProperties = { align: type };
+
+        Transforms.setNodes(editor, newProperties);
+    },
+
     toggleBlock(editor, block) {
         const { selection } = editor;
         if (!selection) return;

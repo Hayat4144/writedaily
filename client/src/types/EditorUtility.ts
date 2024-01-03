@@ -1,8 +1,11 @@
 import { Editor, NodeEntry } from 'slate';
+import { AlignType } from '.';
 
 export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
+    isAlignmentActive(editor: Editor, type: AlignType): boolean;
+    toggleAlignment(editor: Editor, type: AlignType): void;
     toggleBlock(editor: Editor, block: string): void;
     getActiveMark(editor: Editor): Set<string>;
     toggleMark(editor: Editor, format: string, value: string | boolean): void;

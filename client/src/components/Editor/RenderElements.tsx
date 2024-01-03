@@ -21,46 +21,71 @@ const RenderElement = ({
     attributes,
     element,
 }: RenderElementProps) => {
+    const style: React.CSSProperties = { textAlign: (element as any).align };
     switch (element.type) {
         case 'paragraph':
             return (
-                <Paragraph {...attributes} {...element}>
+                <Paragraph {...attributes} {...element} style={style}>
                     {children}
                 </Paragraph>
             );
         case 'h1':
-            return <Heading1 {...attributes}>{children}</Heading1>;
+            return (
+                <Heading1 {...attributes} style={style}>
+                    {children}
+                </Heading1>
+            );
         case 'h2':
-            return <Heading2 {...attributes}>{children}</Heading2>;
+            return (
+                <Heading2 {...attributes} style={style}>
+                    {children}
+                </Heading2>
+            );
         case 'h3':
-            return <Heading3 {...attributes}>{children}</Heading3>;
+            return (
+                <Heading3 {...attributes} style={style}>
+                    {children}
+                </Heading3>
+            );
         case 'h4':
-            return <Heading4 {...attributes}>{children}</Heading4>;
+            return (
+                <Heading4 {...attributes} style={style}>
+                    {children}
+                </Heading4>
+            );
         case 'h5':
-            return <Heading5 {...attributes}>{children}</Heading5>;
+            return (
+                <Heading5 {...attributes} style={style}>
+                    {children}
+                </Heading5>
+            );
         case 'h6':
-            return <Heading6 {...attributes}>{children}</Heading6>;
+            return (
+                <Heading6 {...attributes} style={style}>
+                    {children}
+                </Heading6>
+            );
         case 'blockquote':
             return (
-                <BlockQuote {...attributes} {...element}>
+                <BlockQuote {...attributes} {...element} style={style}>
                     {children}
                 </BlockQuote>
             );
         case 'bulleted_list':
             return (
-                <BulletedList {...attributes} {...element}>
+                <BulletedList {...attributes} {...element} style={style}>
                     {children}
                 </BulletedList>
             );
         case 'list':
             return (
-                <ListItem {...attributes} {...element}>
+                <ListItem {...attributes} {...element} style={style}>
                     {children}
                 </ListItem>
             );
         case 'number_list':
             return (
-                <NumberList {...attributes} {...element}>
+                <NumberList {...attributes} {...element} style={style}>
                     {children}
                 </NumberList>
             );
@@ -68,6 +93,7 @@ const RenderElement = ({
         case 'todo_list':
             return (
                 <TodoBlockElement
+                    style={style}
                     element={element}
                     children={children}
                     attributes={attributes}
@@ -89,7 +115,11 @@ const RenderElement = ({
                 />
             );
         default:
-            return <Paragraph {...attributes}>{children}</Paragraph>;
+            return (
+                <Paragraph {...attributes} style={style}>
+                    {children}
+                </Paragraph>
+            );
     }
 };
 

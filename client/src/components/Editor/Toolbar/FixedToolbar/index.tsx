@@ -6,6 +6,9 @@ import ToolBarColor from '../toolbar-color';
 import ToolbarColorHighligth from '../toolbar-color-highlight';
 import BlockButton from './BlockButton';
 import { Redo, Undo } from 'lucide-react';
+import AlignButton from './AlignButton';
+import { Icons } from '@/components/icons';
+import TurnBlockDropDown from '../TurnBlockDropDown';
 
 export default function FixedToolbar() {
     return (
@@ -22,6 +25,17 @@ export default function FixedToolbar() {
             <ToolbarColorHighligth />
             <Separator orientation="vertical" className="h-5 font-semibold" />
             <BlockButton />
+            <Separator orientation="vertical" className="h-5 font-semibold" />
+
+            <AlignButton type="right" icon={<Icons.alignRight size={17} />} />
+            <AlignButton type="left" icon={<Icons.alignLeft size={17} />} />
+            <AlignButton type="center" icon={<Icons.alignCenter size={17} />} />
+            <AlignButton
+                type="justify"
+                icon={<Icons.alignJustify size={17} />}
+            />
+            <Separator orientation="vertical" className="h-5 font-semibold" />
+            <TurnBlockDropDown blockType="paragraph" />
         </div>
     );
 }
