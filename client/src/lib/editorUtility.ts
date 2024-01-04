@@ -1,13 +1,33 @@
 import { editorUtility as EditorUtility } from '@/types/EditorUtility';
-import { Editor, Element, Node, Transforms } from 'slate';
+import { Editor, Element, Node, Range, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
-import { ELEMENT_OL, ELEMENT_PARAGRAPH, ELEMENT_UL } from './constant';
+import { ELEMENT_OL, ELEMENT_UL } from './constant';
+import { MyCustomElement } from '@/types';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
     LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
 
+    getActiveBlock(editor) {
+        const { selection } = editor;
+        if (!selection) return null;
+
+        const [start, end] = Range.edges(selection);
+
+        //path[0] gives us the index of the top-level block.
+        let startTopLevelBlockIndex = start.path[0];
+        const endTopLevelBlockIndex = end.path[0];
+
+        let ParentElement: Element;
+        while (startTopLevelBlockIndex <= endTopLevelBlockIndex) {
+            const [node, _] = Editor.node(editor, [startTopLevelBlockIndex]);
+            ParentElement = node as Element;
+            startTopLevelBlockIndex++;
+        }
+
+        return ParentElement;
+    },
     isAlignmentActive(editor, type) {
         const { selection } = editor;
         if (!selection) return false;

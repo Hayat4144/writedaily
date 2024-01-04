@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import HistoryButton from './HistoryButton';
 import MarksComp from '../Marks';
 import { Separator } from '@/components/ui/separator';

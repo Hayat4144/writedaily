@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,6 +22,22 @@ import {
 import { cn } from '@/lib/utils';
 import editorUtility from '@/lib/editorUtility';
 import { useSlate } from 'slate-react';
+import {
+    ELEMENT_BLOCKQUOTE,
+    ELEMENT_CODE_BLOCK,
+    ELEMENT_CODE_LINE,
+    ELEMENT_H1,
+    ELEMENT_H2,
+    ELEMENT_H3,
+    ELEMENT_H4,
+    ELEMENT_H5,
+    ELEMENT_H6,
+    ELEMENT_IMAGE,
+    ELEMENT_LINK,
+    ELEMENT_OL,
+    ELEMENT_TODO_LIST,
+    ELEMENT_UL,
+} from '@/lib/constant';
 
 interface TurnIntoDropDownProps {
     blockType: string;
@@ -46,84 +62,84 @@ const blockTypes: BlockType[] = [
     {
         id: '2',
         icon: <Icons.h1 size={20} />,
-        type: 'heading',
+        type: ELEMENT_H1,
         lable: 'Heading 1',
     },
     {
         id: '3',
         lable: 'Heading 2',
         icon: <Icons.h2 size={20} />,
-        type: 'headingTwo',
+        type: ELEMENT_H2,
     },
     {
         id: '4',
         lable: 'Heading 3',
         icon: <Icons.h3 size={20} />,
-        type: 'headingThree',
+        type: ELEMENT_H3,
     },
     {
         id: '5',
         lable: 'Heading 4',
         icon: <Icons.h4 size={20} />,
-        type: 'headingFour',
+        type: ELEMENT_H4,
     },
     {
         id: '6',
         lable: 'Heading 5',
         icon: <Icons.h5 size={20} />,
-        type: 'headingFive',
+        type: ELEMENT_H5,
     },
     {
         id: '7',
         lable: 'Heading 6',
         icon: <Icons.h6 size={20} />,
-        type: 'headingSix',
+        type: ELEMENT_H6,
     },
     {
         id: '8',
         lable: 'codeblock',
         icon: <Icons.code size={20} />,
-        type: 'code-block',
+        type: ELEMENT_CODE_BLOCK,
     },
     {
         id: '9',
         lable: 'Inline code',
         icon: <Icons.code size={20} />,
-        type: 'code-line',
+        type: ELEMENT_CODE_LINE,
     },
     {
         id: '10',
         lable: 'Bullet List',
         icon: <Icons.ul size={20} />,
-        type: 'bulletedlList',
+        type: ELEMENT_UL,
     },
     {
         id: '11',
         lable: 'Number List',
         icon: <Icons.ol size={20} />,
-        type: 'numberList',
+        type: ELEMENT_OL,
     },
     {
         id: '12',
         lable: 'Quote',
         icon: <Icons.blockquote size={20} />,
-        type: 'blockQuote',
+        type: ELEMENT_BLOCKQUOTE,
     },
     {
         id: '13',
         lable: 'Image',
         icon: <Icons.image size={20} />,
-        type: 'image',
+        type: ELEMENT_IMAGE,
     },
     {
         id: '19',
         lable: 'Link',
         icon: <Icons.link size={20} />,
-        type: 'link',
+        type: ELEMENT_LINK,
     },
     {
         id: '20',
-        lable: 'Check List',
+        lable: ELEMENT_TODO_LIST,
         icon: <Icons.twitter size={20} />,
         type: 'checkList',
     },
@@ -134,24 +150,28 @@ export default function TurnBlockDropDown({
     isFloatingtoolbar,
 }: TurnIntoDropDownProps) {
     const [open, setOpen] = React.useState(false);
-    const [selectedBlock, setselectedBlock] = useState('');
-    React.useEffect(() => {
-        const selectedBlockLabel =
-            blockTypes.find((block) => block.type === blockType)?.lable || '';
-        setselectedBlock(selectedBlockLabel);
-    }, [blockType, blockTypes]);
+    const [selectedBlock, setselectedBlock] = useState('paragraph');
     const editor = useSlate();
+
+    useEffect(() => {
+        const { selection } = editor;
+        if (!selection) return;
+        const block = editorUtility.getActiveBlock(editor);
+        if (!block) return;
+        setselectedBlock(block?.type);
+    }, [editor.selection]);
     return (
         <Fragment>
             <TooltipProvider>
+                {' '}
                 <Tooltip>
-                    <TooltipTrigger className="py-0">
-                        <DropdownMenu open={open} onOpenChange={setOpen}>
-                            <DropdownMenuTrigger
-                                onClick={(e) => e.preventDefault()}
-                                className="mr-2 hover:dark:bg-[#3b3b40 hover:bg-accent"
-                                asChild
-                            >
+                    <DropdownMenu open={open} onOpenChange={setOpen}>
+                        <DropdownMenuTrigger
+                            onClick={(e) => e.preventDefault()}
+                            className="mr-2 hover:dark:bg-[#3b3b40 hover:bg-accent"
+                            asChild
+                        >
+                            <TooltipTrigger asChild>
                                 <Button
                                     variant={'ghost'}
                                     size={'sm'}
@@ -161,73 +181,71 @@ export default function TurnBlockDropDown({
                                             : 'rounded-md space-x-2'
                                     }`}
                                 >
-                                    <span> {selectedBlock}</span>
+                                    <span>
+                                        {selectedBlock.charAt(0).toUpperCase() +
+                                            selectedBlock.slice(1)}
+                                    </span>
                                     {open ? (
                                         <Icons.chevronsUpDown
                                             size={16}
-                                            className="translate-y-1"
+                                            className="translate-y-1 h-4 w-4"
                                         />
                                     ) : (
-                                        <Icons.chevronRight
+                                        <Icons.arrowDown
                                             size={16}
-                                            className="translate-y-1"
+                                            className="translate-y-1 h-4 w-4"
                                         />
                                     )}
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                className="w-[13em]"
-                                align="start"
-                            >
-                                <Command>
-                                    <CommandList>
-                                        <CommandGroup>
-                                            {blockTypes.map((block) => (
-                                                <CommandItem
-                                                    key={block.id}
-                                                    value={block.type}
-                                                    onMouseDown={() => {
-                                                        editorUtility.toggleBlock(
-                                                            editor,
-                                                            block.type,
-                                                        );
-                                                        setOpen(false);
-                                                    }}
-                                                >
-                                                    {blockType ===
-                                                    block.type ? (
-                                                        <Iconwithtext
-                                                            icons={block.icon}
-                                                            className="space-x-3"
-                                                            text={block.lable}
-                                                        />
-                                                    ) : null}
-                                                    {blockType !==
-                                                    block.type ? (
-                                                        <Iconwithtext
-                                                            icons={block.icon}
-                                                            className="space-x-3"
-                                                            text={block.lable}
-                                                        />
-                                                    ) : null}
-                                                    <Icons.check
-                                                        className={cn(
-                                                            'ml-auto h-4 w-4',
-                                                            selectedBlock ===
-                                                                block.lable
-                                                                ? 'opacity-100'
-                                                                : 'opacity-0',
-                                                        )}
+                            </TooltipTrigger>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[13em]" align="start">
+                            <Command>
+                                <CommandList>
+                                    <CommandGroup>
+                                        {blockTypes.map((block) => (
+                                            <CommandItem
+                                                key={block.id}
+                                                value={block.type}
+                                                onMouseDown={() => {
+                                                    editorUtility.toggleBlock(
+                                                        editor,
+                                                        block.type,
+                                                    );
+                                                    setOpen(false);
+                                                }}
+                                            >
+                                                {blockType === block.type ? (
+                                                    <Iconwithtext
+                                                        icons={block.icon}
+                                                        className="space-x-3"
+                                                        text={block.lable}
                                                     />
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </CommandList>
-                                </Command>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TooltipTrigger>
-                    <TooltipContent className="mb-1">Turn into</TooltipContent>
+                                                ) : null}
+                                                {blockType !== block.type ? (
+                                                    <Iconwithtext
+                                                        icons={block.icon}
+                                                        className="space-x-3"
+                                                        text={block.lable}
+                                                    />
+                                                ) : null}
+                                                <Icons.check
+                                                    className={cn(
+                                                        'ml-auto h-4 w-4',
+                                                        selectedBlock ===
+                                                            block.lable
+                                                            ? 'opacity-100'
+                                                            : 'opacity-0',
+                                                    )}
+                                                />
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <TooltipContent>Turn into</TooltipContent>
                 </Tooltip>
             </TooltipProvider>
         </Fragment>

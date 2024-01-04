@@ -1,9 +1,10 @@
-import { Editor, NodeEntry } from 'slate';
-import { AlignType } from '.';
+import { Ancestor, Editor, Node, NodeEntry } from 'slate';
+import { AlignType, MyCustomElement } from '.';
 
 export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
+    getActiveBlock(editor: Editor): null | MyCustomElement;
     isAlignmentActive(editor: Editor, type: AlignType): boolean;
     toggleAlignment(editor: Editor, type: AlignType): void;
     toggleBlock(editor: Editor, block: string): void;

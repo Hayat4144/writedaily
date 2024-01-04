@@ -6,8 +6,8 @@ import MarksComp from '../Marks';
 import ToggleLink from './ToogleLink';
 import ToolBarColor from '../toolbar-color';
 import ToolbarColorHighligth from '../toolbar-color-highlight';
-import { Icons } from '@/components/icons';
 import dynamic from 'next/dynamic';
+import TurnBlockDropDown from '../TurnBlockDropDown';
 
 const Portal = dynamic(() => import('@/components/Portal'), { ssr: false });
 
@@ -29,12 +29,6 @@ const FloatingToolbar = () => {
             el.removeAttribute('style');
             return;
         }
-        /*
-        const blocktype = editorUtiliy.gettextBlockStyle(editor);
-        if (blocktype) {
-            setblocktype(blocktype);
-        }
-        */
         const domSelection = getSelection();
         const domRange = domSelection?.getRangeAt(0);
         const rect = domRange?.getBoundingClientRect();
@@ -67,6 +61,11 @@ const FloatingToolbar = () => {
                     <MarksComp isSeperator={true} />
                     <Separator orientation="vertical" />
                     <ToggleLink />
+                    <Separator orientation="vertical" />
+                    <TurnBlockDropDown
+                        blockType={blocktype}
+                        isFloatingtoolbar
+                    />
                     <Separator orientation="vertical" />
                     <ToolBarColor />
                     <Separator orientation="vertical" />
