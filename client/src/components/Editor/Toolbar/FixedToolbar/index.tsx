@@ -9,6 +9,7 @@ import { Redo, Undo } from 'lucide-react';
 import AlignButton from './AlignButton';
 import { Icons } from '@/components/icons';
 import TurnBlockDropDown from '../TurnBlockDropDown';
+import InsertBlockComp from './InsertBlockComp';
 
 export default function FixedToolbar() {
     return (
@@ -36,6 +37,9 @@ export default function FixedToolbar() {
             />
             <Separator orientation="vertical" className="h-5 font-semibold" />
             <TurnBlockDropDown blockType="paragraph" />
+            <Separator orientation="vertical" className="h-5 font-semibold" />
+            <InsertBlockComp componentType="image" />
+            <InsertBlockComp componentType="link" />
         </div>
     );
 }

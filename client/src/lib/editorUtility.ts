@@ -2,11 +2,47 @@ import { editorUtility as EditorUtility } from '@/types/EditorUtility';
 import { Editor, Element, Node, Range, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
-import { ELEMENT_OL, ELEMENT_UL } from './constant';
+import { ELEMENT_LINK, ELEMENT_OL, ELEMENT_UL } from './constant';
+import { MyLinkElement, MyParagraphElement } from '@/types';
+import generateNodeId from './generateNodeId';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
     LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
+
+    toggleLink(editor, url) {
+        const { selection } = editor;
+
+        const isCollapsed = selection && Range.isCollapsed(selection);
+        const isLinkActive = editorUtility.isBlockActive(editor, 'link');
+        const linkElement: MyLinkElement = {
+            type: 'link',
+            url,
+            children: [{ text: 'Click here' }],
+        };
+
+        if (!selection) {
+            editorUtility.insertNode(editor, linkElement);
+            return;
+        }
+
+        if (isLinkActive && isCollapsed) {
+            return editorUtility.unwrapNodes(editor, ELEMENT_LINK);
+        }
+        Transforms.wrapNodes(editor, linkElement, { split: true });
+    },
+
+    insertNode(editor, node) {
+        Transforms.insertNodes(editor, node);
+        if (node.type === 'image') {
+            const EmptyParagraph: MyParagraphElement = {
+                id: generateNodeId(),
+                type: 'paragraph',
+                children: [{ text: '' }],
+            };
+            Transforms.insertNodes(editor, EmptyParagraph, { mode: 'highest' });
+        }
+    },
 
     removeBlock(editor, path) {
         Transforms.removeNodes(editor, { at: path });

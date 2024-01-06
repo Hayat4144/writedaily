@@ -20,6 +20,8 @@ import {
     ELEMENT_IMAGE,
 } from '@/lib/constant';
 
+export type componentType = 'link' | 'image';
+
 export type EmptyText = {
     text: string;
 };

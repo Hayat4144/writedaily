@@ -56,7 +56,7 @@ export default function ImageBlock({
         if (dragSide?.isDraging && dragSide.side === 'left') {
             rightPanelRef.current?.resize(newSize[0]);
         } else if (dragSide?.isDraging && dragSide.side === 'right') {
-            rightPanelRef.current?.resize(newSize[0]);
+            leftPanelRef.current?.resize(newSize[2]);
         }
     };
 
