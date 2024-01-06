@@ -17,6 +17,7 @@ import {
     ELEMENT_PARAGRAPH,
     ELEMENT_TODO_LIST,
     ELEMENT_UL,
+    ELEMENT_IMAGE,
 } from '@/lib/constant';
 
 export type EmptyText = {
@@ -111,10 +112,6 @@ export interface MyCodeBlockELement {
     children: MyCodeLineELement[];
 }
 
-export interface MyImageELement {
-    type: typeof ELEMENT_CODE_BLOCK;
-    children: EmptyText[];
-}
 export interface MyLinkElement {
     type: typeof ELEMENT_LINK;
     url: string;
@@ -138,6 +135,14 @@ export interface MyListItemElement extends MyBlockElement {
 export interface MyTodoItemElent extends MyBlockElement {
     type: typeof ELEMENT_TODO_LIST;
     checked: boolean;
+}
+
+export interface MyImageELement {
+    id: string;
+    type: typeof ELEMENT_IMAGE;
+    url: string;
+    caption?: string;
+    children: [EmptyText];
 }
 
 export type MyCustomElement =

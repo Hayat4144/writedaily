@@ -13,6 +13,7 @@ import withLink from './Plugins/withLink';
 import Linkpopover from './Linkpopover';
 import FixedToolbar from './Toolbar/FixedToolbar';
 import { withHistory } from 'slate-history';
+import withImage from './Plugins/withImage';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -30,6 +31,7 @@ const createEditorWithPlugins = pipe(
     withHistory,
     withNodeId,
     withLink,
+    withImage,
 );
 
 const WriteDailyEditor = () => {

@@ -22,6 +22,13 @@ export const ELEMENT_PARAGRAPH = 'paragraph';
 export const initialValue: Descendant[] = [
     {
         id: generateNodeId(),
+        type: 'image',
+        url: 'https://source.unsplash.com/kFrdX5IeQzI',
+        caption: 'Hayat github pic',
+        children: [{ text: '' }],
+    },
+    {
+        id: generateNodeId(),
         type: 'blockquote',
         children: [{ text: 'The magic you find , the work you avoid.' }],
     },

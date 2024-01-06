@@ -3,11 +3,14 @@ import { Editor, Element, Node, Range, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
 import { ELEMENT_OL, ELEMENT_UL } from './constant';
-import { MyCustomElement } from '@/types';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
     LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
+
+    removeBlock(editor, path) {
+        Transforms.removeNodes(editor, { at: path });
+    },
 
     getActiveBlock(editor) {
         const { selection } = editor;

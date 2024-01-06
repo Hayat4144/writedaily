@@ -15,6 +15,7 @@ import TodoBlockElement from './Blocks/TodoBlock';
 import BulletedList from './Blocks/BulletedList';
 import NumberList from './Blocks/NumberList';
 import LinkBlock from './Blocks/LinkBlock';
+import ImageBlock from './Blocks/ImageBlock';
 
 const RenderElement = ({
     children,
@@ -93,7 +94,6 @@ const RenderElement = ({
         case 'todo_list':
             return (
                 <TodoBlockElement
-                    style={style}
                     element={element}
                     children={children}
                     attributes={attributes}
@@ -101,7 +101,7 @@ const RenderElement = ({
             );
         case 'code_line':
             return (
-                <InlineCode {...attributes} {...element}>
+                <InlineCode {...attributes} {...element} style={style}>
                     {children}
                 </InlineCode>
             );
@@ -114,12 +114,16 @@ const RenderElement = ({
                     children={children}
                 />
             );
-        default:
+        case 'image':
             return (
-                <Paragraph {...attributes} style={style}>
-                    {children}
-                </Paragraph>
+                <ImageBlock
+                    attributes={attributes}
+                    element={element}
+                    children={children}
+                />
             );
+        default:
+            return <Paragraph {...attributes}>{children}</Paragraph>;
     }
 };
 
