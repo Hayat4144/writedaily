@@ -7,8 +7,11 @@ import {
 import Iconwithtext from '@/components/IconwithText';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
+import editorUtility from '@/lib/editorUtility';
+import { useSlate } from 'slate-react';
 
 export default function ToogleLink() {
+    const editor = useSlate();
     return (
         <TooltipProvider>
             <Tooltip>
@@ -17,6 +20,7 @@ export default function ToogleLink() {
                     className="mx-0"
                     onClick={() => {
                         const url = 'http://www.google.com';
+                        editorUtility.toggleLink(editor, url);
                     }}
                 >
                     <Button

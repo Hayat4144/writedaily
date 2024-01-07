@@ -2,14 +2,41 @@ import { editorUtility as EditorUtility } from '@/types/EditorUtility';
 import { Editor, Element, Node, Range, Transforms } from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
-import { ELEMENT_LINK, ELEMENT_OL, ELEMENT_UL } from './constant';
-import { MyLinkElement, MyParagraphElement } from '@/types';
+import {
+    ELEMENT_BLOCKQUOTE,
+    ELEMENT_H1,
+    ELEMENT_H2,
+    ELEMENT_H3,
+    ELEMENT_H4,
+    ELEMENT_H5,
+    ELEMENT_H6,
+    ELEMENT_LINK,
+    ELEMENT_OL,
+    ELEMENT_UL,
+    ELEMENT_CODE_LINE,
+} from './constant';
+import { MyBlockElement, MyCustomElement, MyLinkElement, MyParagraphElement } from '@/types';
 import generateNodeId from './generateNodeId';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
     LIST_TYPES: [ELEMENT_UL, ELEMENT_OL],
 
+    MARKDOWN_SHORTCUT: {
+        '*': ELEMENT_UL,
+        '-': ELEMENT_UL,
+        '+': ELEMENT_OL,
+        '1': ELEMENT_OL,
+        '[]': ELEMENT_LINK,
+        '>': ELEMENT_BLOCKQUOTE,
+        '#': ELEMENT_H1,
+        '##': ELEMENT_H2,
+        '###': ELEMENT_H3,
+        '####': ELEMENT_H4,
+        '#####': ELEMENT_H5,
+        '######': ELEMENT_H6,
+        '``': ELEMENT_CODE_LINE,
+    },
     toggleLink(editor, url) {
         const { selection } = editor;
 
@@ -58,7 +85,7 @@ const editorUtility: EditorUtility = {
         let startTopLevelBlockIndex = start.path[0];
         const endTopLevelBlockIndex = end.path[0];
 
-        let ParentElement: Element;
+        let ParentElement: Element | null = null;
         while (startTopLevelBlockIndex <= endTopLevelBlockIndex) {
             const [node, _] = Editor.node(editor, [startTopLevelBlockIndex]);
             ParentElement = node as Element;
@@ -85,7 +112,7 @@ const editorUtility: EditorUtility = {
         const { selection } = editor;
         if (!selection) return;
 
-        let newProperties: Partial<Element>;
+        let newProperties: Partial<MyBlockElement>;
 
         newProperties = { align: type };
 
@@ -190,7 +217,6 @@ const editorUtility: EditorUtility = {
         'mod+m': 'subscript',
     },
     onkeydown(event: React.KeyboardEvent, editor: Editor) {
-        console.log(event.key, event.code);
         for (const hotkey in editorUtility.HOT_KEYS) {
             if (isHotkey(hotkey, event)) {
                 event.preventDefault();

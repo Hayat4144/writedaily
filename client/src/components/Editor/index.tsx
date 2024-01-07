@@ -5,7 +5,6 @@ import { Editable, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
 import RenderElements from './RenderElements';
 import renderLeafs from './RenderLeafs';
-import MarksComp from './Toolbar/Marks';
 import FloatingToolbar from './Toolbar/FloatingToolbar';
 import { initialValue } from '@/lib/constant';
 import editorUtility from '@/lib/editorUtility';
@@ -14,6 +13,9 @@ import Linkpopover from './Linkpopover';
 import FixedToolbar from './Toolbar/FixedToolbar';
 import { withHistory } from 'slate-history';
 import withImage from './Plugins/withImage';
+import withMarkdown from './Plugins/withMarkdown';
+import withCodeBlock from './Plugins/withCodeBlock';
+import withHeading from './Plugins/withHeadings';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -32,6 +34,9 @@ const createEditorWithPlugins = pipe(
     withNodeId,
     withLink,
     withImage,
+    withMarkdown,
+    withCodeBlock,
+    withHeading,
 );
 
 const WriteDailyEditor = () => {

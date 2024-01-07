@@ -21,6 +21,7 @@ export interface wrapOptions<T extends Node> {
 export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
+    MARKDOWN_SHORTCUT: { [key: string]: string };
     toggleLink(editor: Editor, url: string): void;
     insertNode<T extends Element>(editor: Editor, node: T): void;
     removeBlock(editor: Editor, path: Path): void;
