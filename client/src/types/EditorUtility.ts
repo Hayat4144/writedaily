@@ -23,6 +23,11 @@ export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
     MARKDOWN_SHORTCUT: { [key: string]: string };
+    detectCommandMenu(
+        editor: Editor,
+        toggleCommandMenu: (value: boolean) => void,
+    ): void;
+    emptyNode(editor: Editor): void;
     toggleLink(editor: Editor, url: string): void;
     insertEmoji(editor: Editor, range: Range | undefined, text: any): void;
     detectEmoji<T extends EmojiDetectProps>(props: T): void;

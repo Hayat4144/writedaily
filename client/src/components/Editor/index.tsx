@@ -18,6 +18,7 @@ import withCodeBlock from './Plugins/withCodeBlock';
 import withHeading from './Plugins/withHeadings';
 import { EmojiDetectProps } from '@/types';
 import EmojiPicker from './EmojiPicker';
+import CommandMenu from './CommandMenu';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -44,7 +45,7 @@ const createEditorWithPlugins = pipe(
 const WriteDailyEditor = () => {
     const editor = useMemo(() => createEditorWithPlugins(createEditor()), []);
     const [isLinkPopver, setIsLinkPopver] = useState<boolean>(false);
-
+    const [isCommandMenu, toggleCommandMenu] = useState<boolean>(false);
     const [emojistring, setemojistring] = useState<string>('');
     const [isEmojiOpen, setemojiToggle] = useState<boolean>(false);
     const [emojiTargetRange, setEmojiTargetRange] = useState<Range>();
@@ -59,6 +60,7 @@ const WriteDailyEditor = () => {
     const changeHandler = (value: Descendant[]) => {
         const { selection } = editor;
         editorUtility.detectEmoji(emojiPatternProps);
+        editorUtility.detectCommandMenu(editor, toggleCommandMenu);
         if (selection && editorUtility.isBlockActive(editor, 'link')) {
             setIsLinkPopver(true);
         }
@@ -84,6 +86,13 @@ const WriteDailyEditor = () => {
                         searchString={emojistring}
                         emojiRange={emojiTargetRange}
                         changeEmojiRange={setEmojiTargetRange}
+                    />
+                ) : null}
+
+                {isCommandMenu ? (
+                    <CommandMenu
+                        CommandMenuToggle={toggleCommandMenu}
+                        isCommandMenu={isCommandMenu}
                     />
                 ) : null}
 

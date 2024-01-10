@@ -20,6 +20,7 @@ import {
     MyCustomElement,
     MyLinkElement,
     MyParagraphElement,
+    RichText,
 } from '@/types';
 import generateNodeId from './generateNodeId';
 
@@ -41,6 +42,29 @@ const editorUtility: EditorUtility = {
         '#####': ELEMENT_H5,
         '######': ELEMENT_H6,
         '``': ELEMENT_CODE_LINE,
+    },
+
+    emptyNode: (editor) => {
+        const { selection } = editor;
+
+        if (selection) {
+            const [start] = Range.edges(selection);
+            const characterBefore = Editor.before(editor, start, {
+                unit: 'character',
+            });
+            Transforms.delete(editor, { at: characterBefore });
+            Transforms.setNodes(editor, { text: ' ' });
+        }
+    },
+    detectCommandMenu(editor, toggleCommandMenu) {
+        const { selection } = editor;
+        if (selection && Range.isCollapsed(selection)) {
+            const [start] = Range.edges(selection);
+            const [node] = Editor.node(editor, start.path);
+            if ((node as RichText).text.endsWith('/')) {
+                toggleCommandMenu(true);
+            }
+        }
     },
 
     insertEmoji(editor, range, text) {
