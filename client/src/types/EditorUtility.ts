@@ -7,8 +7,9 @@ import {
     NodeEntry,
     NodeMatch,
     Path,
+    Range,
 } from 'slate';
-import { AlignType, MyCustomElement } from '.';
+import { AlignType, EmojiDetectProps, MyCustomElement } from '.';
 
 export interface wrapOptions<T extends Node> {
     at?: Location;
@@ -23,6 +24,8 @@ export interface editorUtility {
     TEXT_ALIGN_TYPES: string[];
     MARKDOWN_SHORTCUT: { [key: string]: string };
     toggleLink(editor: Editor, url: string): void;
+    insertEmoji(editor: Editor, range: Range | undefined, text: any): void;
+    detectEmoji<T extends EmojiDetectProps>(props: T): void;
     insertNode<T extends Element>(editor: Editor, node: T): void;
     removeBlock(editor: Editor, path: Path): void;
     getActiveBlock(editor: Editor): null | MyCustomElement;

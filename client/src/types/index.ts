@@ -1,4 +1,12 @@
-import { BaseEditor, Element, BaseRange, BaseElement, Descendant } from 'slate';
+import {
+    BaseEditor,
+    Element,
+    BaseRange,
+    BaseElement,
+    Descendant,
+    Editor,
+    Range,
+} from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import {
@@ -187,4 +195,11 @@ export interface Marks {
     icon: React.ReactNode;
     mark: string;
     shortcut?: string;
+}
+
+export interface EmojiDetectProps {
+    editor: CustomEditor;
+    setEmoji: (value: string) => void;
+    setEmojiToggle: (value: boolean) => void;
+    TargetRange: (value: Range | undefined) => void;
 }

@@ -15,7 +15,12 @@ import {
     ELEMENT_UL,
     ELEMENT_CODE_LINE,
 } from './constant';
-import { MyBlockElement, MyCustomElement, MyLinkElement, MyParagraphElement } from '@/types';
+import {
+    MyBlockElement,
+    MyCustomElement,
+    MyLinkElement,
+    MyParagraphElement,
+} from '@/types';
 import generateNodeId from './generateNodeId';
 
 const editorUtility: EditorUtility = {
@@ -37,6 +42,48 @@ const editorUtility: EditorUtility = {
         '######': ELEMENT_H6,
         '``': ELEMENT_CODE_LINE,
     },
+
+    insertEmoji(editor, range, text) {
+        if (!range) return;
+        Editor.before(editor, range, {
+            unit: 'character',
+        });
+        Transforms.delete(editor, { at: range });
+        Transforms.insertText(editor, text);
+    },
+
+    detectEmoji(props) {
+        const { editor, setEmoji, setEmojiToggle, TargetRange } = props;
+
+        const { selection } = editor;
+        if (selection && Range.isCollapsed(selection)) {
+            const [start] = Range.edges(selection);
+            const wordBefore = Editor.before(editor, start, {
+                unit: 'word',
+            });
+            const before = wordBefore && Editor.before(editor, wordBefore);
+            const beforeRange = before && Editor.range(editor, before, start);
+            const beforeText =
+                beforeRange && Editor.string(editor, beforeRange);
+
+            const beforeColonMatch = beforeText && beforeText.match(/^:(\w+)$/);
+
+            const after = Editor.after(editor, start);
+            const afterRange = Editor.range(editor, start, after);
+            const afterText = Editor.string(editor, afterRange);
+            const afterMatch = afterText.match(/^(\s|$)/);
+
+            if (beforeColonMatch && afterMatch) {
+                setEmoji(beforeColonMatch[1]);
+                setEmojiToggle(true);
+                TargetRange(beforeRange);
+            } else {
+                setEmoji('');
+                setEmojiToggle(false);
+            }
+        }
+    },
+
     toggleLink(editor, url) {
         const { selection } = editor;
 
