@@ -22,8 +22,8 @@ export default function FixedToolbar() {
             <Separator orientation="vertical" className="h-5 font-semibold" />
             <MarksComp isRounded={true} />
             <Separator orientation="vertical" className="h-5 font-semibold" />
-            <ToolBarColor />
-            <ToolbarColorHighligth />
+            <ToolBarColor isRounded />
+            <ToolbarColorHighligth isRounded />
             <Separator orientation="vertical" className="h-5 font-semibold" />
             <BlockButton />
             <Separator orientation="vertical" className="h-5 font-semibold" />

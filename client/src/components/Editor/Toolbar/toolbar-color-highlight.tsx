@@ -80,7 +80,13 @@ export const colorArray: ColorsBackground[] = [
     },
 ];
 
-export default function ToolbarColorHighligth() {
+interface ToolbarColorHighligthProps {
+    isRounded?: boolean;
+}
+
+export default function ToolbarColorHighligth({
+    isRounded,
+}: ToolbarColorHighligthProps) {
     const editor = useSlate();
     const [open, setOpen] = React.useState(false);
 
@@ -95,7 +101,9 @@ export default function ToolbarColorHighligth() {
                             <Button
                                 variant={isMarkActive() ? 'secondary' : 'ghost'}
                                 size={'icon'}
-                                className="hover:dark:bg-[#3b3b40] rounded-none mx-0"
+                                className={`hover:dark:bg-[#3b3b40] rounded-none mx-0 ${
+                                    isRounded ? 'rounded-md' : 'rounded-none'
+                                }`}
                                 asChild
                             >
                                 <p>
@@ -146,7 +154,7 @@ export default function ToolbarColorHighligth() {
                     </DropdownMenu>
                 </TooltipTrigger>
                 <TooltipContent className="capitalize">
-                    Highlight your text
+                    Highlight color
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

@@ -30,13 +30,14 @@ export const headings = [
 ];
 
 export const initialValue: Descendant[] = [
-    // {
-    //     id: generateNodeId(),
-    //     type: 'image',
-    //     url: 'https://source.unsplash.com/kFrdX5IeQzI',
-    //     caption: 'Hayat github pic',
-    //     children: [{ text: '' }],
-    // },
+    {
+        id: generateNodeId(),
+        type: 'paragraph',
+        children: [
+            { text: 'is inline work perfectly.' },
+            { type: 'code_line', children: [{ text: '@type/radixui/slot' }] },
+        ],
+    },
     // {
     //     id: generateNodeId(),
     //     type: 'blockquote',

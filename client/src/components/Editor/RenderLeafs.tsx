@@ -53,7 +53,14 @@ const renderLeafs = (props: RenderLeafProps) => {
     if ('strike' in leaf && leaf.strike) {
         children = <s>{children}</s>;
     }
-    return <span {...attributes}>{children}</span>;
+    return (
+        <span
+            className={`${leaf.text === '' ? 'pr-[0.001em]' : null}`}
+            {...attributes}
+        >
+            {children}
+        </span>
+    );
 };
 
 export default renderLeafs;

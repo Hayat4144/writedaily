@@ -105,7 +105,11 @@ export default function ToolBarColor({ isRounded }: FuncProps) {
                                         isMarkActive() ? 'secondary' : 'ghost'
                                     }
                                     size={'sm'}
-                                    className="hover:dark:bg-[#3b3b40] rounded-none mx-0"
+                                    className={`hover:dark:bg-[#3b3b40] rounded-none mx-0 ${
+                                        isRounded
+                                            ? 'rounded-md'
+                                            : 'rounded-none'
+                                    }`}
                                     asChild
                                 >
                                     <p>

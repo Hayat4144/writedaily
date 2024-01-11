@@ -110,24 +110,30 @@ const editorUtility: EditorUtility = {
 
     toggleLink(editor, url) {
         const { selection } = editor;
-
         const isCollapsed = selection && Range.isCollapsed(selection);
         const isLinkActive = editorUtility.isBlockActive(editor, 'link');
+
+        if (isLinkActive) {
+            editorUtility.unwrapNodes(editor, ELEMENT_LINK);
+        }
+
         const linkElement: MyLinkElement = {
             type: 'link',
             url,
             children: [{ text: 'Click here' }],
         };
-
         if (!selection) {
             editorUtility.insertNode(editor, linkElement);
             return;
         }
 
-        if (isLinkActive && isCollapsed) {
-            return editorUtility.unwrapNodes(editor, ELEMENT_LINK);
+        if (isCollapsed) {
+            editorUtility.insertNode(editor, linkElement);
+        } else {
+            console.log('low-level');
+            Transforms.wrapNodes(editor, linkElement, { split: true });
+            Transforms.collapse(editor, { edge: 'end' });
         }
-        Transforms.wrapNodes(editor, linkElement, { split: true });
     },
 
     insertNode(editor, node) {

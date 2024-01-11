@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import InlineChromiumBugfix from '../Editor/Blocks/InlineChromiumBugFixes';
 
 interface ListProps extends React.HTMLAttributes<HTMLLIElement> {}
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {}
@@ -7,16 +8,20 @@ interface InlineCodeProps extends React.HTMLAttributes<HTMLPreElement> {}
 interface BlockquoteProps extends React.HtmlHTMLAttributes<HTMLQuoteElement> {}
 
 const InlineCode = React.forwardRef<HTMLPreElement, InlineCodeProps>(
-    ({ className, ...props }, ref) => {
+    ({ className, children, ...props }, ref) => {
         return (
             <code
                 ref={ref}
                 className={cn(
-                    'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
+                    'relative rounded bg-muted px-[0.3rem] mx-[0.3rem] py-[0.4rem] font-mono text-sm font-semibold caret-gray-800',
                     className,
                 )}
                 {...props}
-            />
+            >
+                <InlineChromiumBugfix />
+                {children}
+                <InlineChromiumBugfix />
+            </code>
         );
     },
 );
