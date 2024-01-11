@@ -19,6 +19,7 @@ import withHeading from './Plugins/withHeadings';
 import { EmojiDetectProps } from '@/types';
 import EmojiPicker from './EmojiPicker';
 import CommandMenu from './CommandMenu';
+import withHorizontalRule from './Plugins/withHorizontalRule';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -40,6 +41,7 @@ const createEditorWithPlugins = pipe(
     withMarkdown,
     withCodeBlock,
     withHeading,
+    withHorizontalRule,
 );
 
 const WriteDailyEditor = () => {

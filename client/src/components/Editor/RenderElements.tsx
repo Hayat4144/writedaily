@@ -16,6 +16,7 @@ import BulletedList from './Blocks/BulletedList';
 import NumberList from './Blocks/NumberList';
 import LinkBlock from './Blocks/LinkBlock';
 import ImageBlock from './Blocks/ImageBlock';
+import HorizontalRuleBlock from './Blocks/HorizontalRuleBlock';
 
 const RenderElement = ({
     children,
@@ -112,6 +113,14 @@ const RenderElement = ({
                     element={element}
                     attributes={attributes}
                     children={children}
+                />
+            );
+        case 'break':
+            return (
+                <HorizontalRuleBlock
+                    attributes={attributes}
+                    children={children}
+                    element={element}
                 />
             );
         case 'image':

@@ -26,6 +26,7 @@ import {
     ELEMENT_TODO_LIST,
     ELEMENT_UL,
     ELEMENT_IMAGE,
+    ELEMENT_BREAK,
 } from '@/lib/constant';
 
 export type componentType = 'link' | 'image';
@@ -147,6 +148,12 @@ export interface MyTodoItemElent extends MyBlockElement {
     checked: boolean;
 }
 
+export interface MyBrElement {
+    id: string;
+    type: typeof ELEMENT_BREAK;
+    children: [EmptyText];
+}
+
 export interface MyImageELement {
     id: string;
     type: typeof ELEMENT_IMAGE;
@@ -171,7 +178,8 @@ export type MyCustomElement =
     | MyListItemElement
     | MyNumberListElement
     | MyBulletedListElement
-    | MyQuoteBlockElement;
+    | MyQuoteBlockElement
+    | MyBrElement;
 
 export type CustomEditor = BaseEditor &
     ReactEditor &
