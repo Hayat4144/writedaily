@@ -17,7 +17,6 @@ import {
 } from './constant';
 import {
     MyBlockElement,
-    MyCustomElement,
     MyLinkElement,
     MyParagraphElement,
     RichText,
@@ -59,9 +58,16 @@ const editorUtility: EditorUtility = {
     detectCommandMenu(editor, toggleCommandMenu) {
         const { selection } = editor;
         if (selection && Range.isCollapsed(selection)) {
-            const [start] = Range.edges(selection);
-            const [node] = Editor.node(editor, start.path);
-            if ((node as RichText).text.endsWith('/')) {
+            const [start, end] = Range.edges(selection);
+            const characterBefore = Editor.before(editor, start, {
+                unit: 'offset',
+            });
+            const before =
+                characterBefore && Editor.before(editor, characterBefore);
+            const beforeRange = before && Editor.range(editor, before, start);
+            const beforeText =
+                beforeRange && Editor.string(editor, beforeRange);
+            if (beforeText?.endsWith(' /')) {
                 toggleCommandMenu(true);
             }
         }
@@ -130,7 +136,6 @@ const editorUtility: EditorUtility = {
         if (isCollapsed) {
             editorUtility.insertNode(editor, linkElement);
         } else {
-            console.log('low-level');
             Transforms.wrapNodes(editor, linkElement, { split: true });
             Transforms.collapse(editor, { edge: 'end' });
         }

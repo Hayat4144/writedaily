@@ -102,12 +102,6 @@ const blockTypes: BlockType[] = [
         type: ELEMENT_CODE_BLOCK,
     },
     {
-        id: '9',
-        lable: 'Inline code',
-        icon: <Icons.code size={20} />,
-        type: ELEMENT_CODE_LINE,
-    },
-    {
         id: '10',
         lable: 'Bullet List',
         icon: <Icons.ul size={20} />,
@@ -130,12 +124,6 @@ const blockTypes: BlockType[] = [
         lable: 'Image',
         icon: <Icons.image size={20} />,
         type: ELEMENT_IMAGE,
-    },
-    {
-        id: '19',
-        lable: 'Link',
-        icon: <Icons.link size={20} />,
-        type: ELEMENT_LINK,
     },
     {
         id: '20',

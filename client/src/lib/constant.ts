@@ -38,11 +38,11 @@ export const initialValue: Descendant[] = [
             { type: 'code_line', children: [{ text: '@type/radixui/slot' }] },
         ],
     },
-    // {
-    //     id: generateNodeId(),
-    //     type: 'blockquote',
-    //     children: [{ text: 'The magic you find , the work you avoid.' }],
-    // },
+    {
+        id: generateNodeId(),
+        type: 'blockquote',
+        children: [{ text: 'The magic you find , the work you avoid.' }],
+    },
     // {
     //     id: generateNodeId(),
     //     type: 'number_list',
@@ -73,17 +73,17 @@ export const initialValue: Descendant[] = [
     //         },
     //     ],
     // },
-    // {
-    //     id: generateNodeId(),
-    //     type: 'bulleted_list',
-    //     children: [
-    //         {
-    //             type: 'list',
-    //             children: [{ text: 'Is it list?' }],
-    //             id: generateNodeId(),
-    //         },
-    //     ],
-    // },
+    {
+        id: generateNodeId(),
+        type: 'bulleted_list',
+        children: [
+            {
+                type: 'list',
+                children: [{ text: 'Is it list?' }],
+                id: generateNodeId(),
+            },
+        ],
+    },
     // {
     //     id: generateNodeId(),
     //     type: 'paragraph',
