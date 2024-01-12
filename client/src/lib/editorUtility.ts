@@ -17,6 +17,7 @@ import {
 } from './constant';
 import {
     MyBlockElement,
+    MyCustomElement,
     MyLinkElement,
     MyParagraphElement,
     RichText,
@@ -68,6 +69,12 @@ const editorUtility: EditorUtility = {
             const beforeText =
                 beforeRange && Editor.string(editor, beforeRange);
             if (beforeText?.endsWith(' /')) {
+                return toggleCommandMenu(true);
+            }
+
+            const [node] = Editor.node(editor, start.path);
+            const matchtext = (node as RichText).text;
+            if (matchtext.length === 1 && matchtext.endsWith('/')) {
                 toggleCommandMenu(true);
             }
         }

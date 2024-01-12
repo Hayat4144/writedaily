@@ -10,13 +10,14 @@ import {
     ListItem,
     Paragraph,
 } from '@/components/ui/typography';
-import { RenderElementProps } from 'slate-react';
+import { RenderElementProps, useSelected, useSlate } from 'slate-react';
 import TodoBlockElement from './Blocks/TodoBlock';
 import BulletedList from './Blocks/BulletedList';
 import NumberList from './Blocks/NumberList';
 import LinkBlock from './Blocks/LinkBlock';
 import ImageBlock from './Blocks/ImageBlock';
 import HorizontalRuleBlock from './Blocks/HorizontalRuleBlock';
+import { Node, Range } from 'slate';
 
 const RenderElement = ({
     children,
@@ -24,46 +25,109 @@ const RenderElement = ({
     element,
 }: RenderElementProps) => {
     const style: React.CSSProperties = { textAlign: (element as any).align };
+    const selected = useSelected();
+    const editor = useSlate();
+    const { selection } = editor;
+    const isCollapased = selection && Range.isCollapsed(selection);
+    const isEmpty =
+        Node.string(element).trim() === '' && element.children.length === 1;
     switch (element.type) {
         case 'paragraph':
             return (
-                <Paragraph {...attributes} {...element} style={style}>
+                <Paragraph
+                    {...attributes}
+                    {...element}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Paragraph>
             );
         case 'h1':
             return (
-                <Heading1 {...attributes} style={style}>
+                <Heading1
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading1>
             );
         case 'h2':
             return (
-                <Heading2 {...attributes} style={style}>
+                <Heading2
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading2>
             );
         case 'h3':
             return (
-                <Heading3 {...attributes} style={style}>
+                <Heading3
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading3>
             );
         case 'h4':
             return (
-                <Heading4 {...attributes} style={style}>
+                <Heading4
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading4>
             );
         case 'h5':
             return (
-                <Heading5 {...attributes} style={style}>
+                <Heading5
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading5>
             );
         case 'h6':
             return (
-                <Heading6 {...attributes} style={style}>
+                <Heading6
+                    {...attributes}
+                    style={style}
+                    className={`${
+                        selected && isCollapased && isEmpty
+                            ? 'selected-empty-element'
+                            : ''
+                    }`}
+                >
                     {children}
                 </Heading6>
             );
