@@ -23,6 +23,14 @@ export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
     MARKDOWN_SHORTCUT: { [key: string]: string };
+    createLinkForRange(
+        editor: Editor,
+        range: Range,
+        linkText: string,
+        linkURL: string,
+        isInsertion: boolean,
+    ): void;
+    identifyLink(editor: Editor): void;
     detectCommandMenu(
         editor: Editor,
         toggleCommandMenu: (value: boolean) => void,

@@ -1,5 +1,14 @@
 import { editorUtility as EditorUtility } from '@/types/EditorUtility';
-import { Editor, Element, Node, Range, Transforms } from 'slate';
+import {
+    BasePoint,
+    Editor,
+    Element,
+    Node,
+    Point,
+    Range,
+    Text,
+    Transforms,
+} from 'slate';
 import isHotkey from 'is-hotkey';
 import { ReactEditor } from 'slate-react';
 import {
@@ -23,6 +32,7 @@ import {
     RichText,
 } from '@/types';
 import generateNodeId from './generateNodeId';
+import isUrl from 'is-url';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
@@ -43,7 +53,105 @@ const editorUtility: EditorUtility = {
         '######': ELEMENT_H6,
         '``': ELEMENT_CODE_LINE,
     },
+    createLinkForRange: (editor, range, linkText, linkURL, isInsertion) => {
+        const linkElement: MyLinkElement = {
+            type: ELEMENT_LINK,
+            url: linkURL,
+            children: [{ text: linkText }],
+        };
+        isInsertion
+            ? Transforms.insertNodes(
+                  editor,
+                  linkElement,
+                  range != null ? { at: range } : undefined,
+              )
+            : Transforms.wrapNodes(editor, linkElement, {
+                  split: true,
+                  at: range,
+              });
+    },
+    identifyLink(editor) {
+        if (editor.selection == null || !Range.isCollapsed(editor.selection)) {
+            return;
+        }
 
+        const [node] = Editor.parent(editor, editor.selection);
+        if ((node as any).type === 'link') {
+            return;
+        }
+
+        const [currentNode, currentNodePath] = Editor.node(
+            editor,
+            editor.selection,
+        );
+        if (!Text.isText(currentNode)) {
+            return;
+        }
+
+        let [start] = Range.edges(editor.selection);
+        const cursorPoint = start;
+
+        const startPointOfLastCharacter = Editor.before(
+            editor,
+            editor.selection,
+            {
+                unit: 'character',
+            },
+        );
+        if (!startPointOfLastCharacter || !start) return;
+        let lastCharacter = Editor.string(
+            editor,
+            Editor.range(editor, startPointOfLastCharacter, cursorPoint),
+        );
+
+        if (lastCharacter !== ' ') {
+            return;
+        }
+
+        let end = startPointOfLastCharacter;
+        start = Editor.before(editor, end, {
+            unit: 'character',
+        }) as BasePoint;
+
+        const startOfTextNode = Editor.point(editor, currentNodePath, {
+            edge: 'start',
+        });
+
+        lastCharacter = Editor.string(editor, Editor.range(editor, start, end));
+
+        while (
+            lastCharacter !== ' ' &&
+            !Point.isBefore(start, startOfTextNode)
+        ) {
+            end = start;
+            start = Editor.before(editor, end, {
+                unit: 'character',
+            }) as BasePoint;
+            lastCharacter = Editor.string(
+                editor,
+                Editor.range(editor, start, end),
+            );
+        }
+
+        const lastWordRange = Editor.range(
+            editor,
+            end,
+            startPointOfLastCharacter,
+        );
+        const lastWord = Editor.string(editor, lastWordRange);
+
+        if (isUrl(lastWord)) {
+            Promise.resolve().then(() =>
+                editorUtility.createLinkForRange(
+                    editor,
+                    lastWordRange,
+                    lastWord,
+                    lastWord,
+                    false,
+                ),
+            );
+        }
+    },
     emptyNode: (editor) => {
         const { selection } = editor;
 

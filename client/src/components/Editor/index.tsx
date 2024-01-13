@@ -22,6 +22,7 @@ import CommandMenu from './CommandMenu';
 import withHorizontalRule from './Plugins/withHorizontalRule';
 import withInlines from './Plugins/withInlines';
 import withConverterBlock from './Plugins/withConverterBlock';
+import withTrailingBlock from './Plugins/withTrailingBlock';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -46,6 +47,7 @@ const createEditorWithPlugins = pipe(
     withHorizontalRule,
     withInlines,
     withConverterBlock,
+    withTrailingBlock,
 );
 
 const WriteDailyEditor = () => {
@@ -67,6 +69,7 @@ const WriteDailyEditor = () => {
         const { selection } = editor;
         editorUtility.detectEmoji(emojiPatternProps);
         editorUtility.detectCommandMenu(editor, toggleCommandMenu);
+        editorUtility.identifyLink(editor);
         if (selection && editorUtility.isBlockActive(editor, 'link')) {
             setIsLinkPopver(true);
         }
