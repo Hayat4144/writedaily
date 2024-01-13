@@ -23,6 +23,7 @@ import withHorizontalRule from './Plugins/withHorizontalRule';
 import withInlines from './Plugins/withInlines';
 import withConverterBlock from './Plugins/withConverterBlock';
 import withTrailingBlock from './Plugins/withTrailingBlock';
+import { withHTML } from './Plugins/withHtml';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -48,6 +49,7 @@ const createEditorWithPlugins = pipe(
     withInlines,
     withConverterBlock,
     withTrailingBlock,
+    withHTML,
 );
 
 const WriteDailyEditor = () => {
