@@ -32,18 +32,22 @@ const FloatingToolbar = () => {
         const domSelection = getSelection();
         const domRange = domSelection?.getRangeAt(0);
         const rect = domRange?.getBoundingClientRect();
-
         if (rect) {
             el.style.opacity = '1';
-            el.style.top = `${
-                rect.top + window.pageYOffset - el.offsetHeight
-            }px`;
-            el.style.left = `${
-                rect.left +
-                window.pageXOffset -
-                el.offsetWidth / 2 +
-                rect.width / 2
-            }px`;
+            el.style.top = `${rect.top + window.scrollY - el.offsetHeight}px`;
+            let calPos = rect.left - el.offsetWidth / 2;
+            if (!el.parentElement) return;
+
+            const ParentContainer = el.parentElement.offsetWidth;
+            if (calPos < 0) {
+                const diff = ParentContainer + calPos;
+                calPos = ParentContainer - diff;
+            }
+            if (calPos + el.offsetWidth > ParentContainer) {
+                const diff = calPos + el.offsetWidth - ParentContainer;
+                calPos = ParentContainer - diff - el.offsetWidth;
+            }
+            el.style.left = `${calPos}px`;
         }
     }, [blocktype, selection]);
     return (

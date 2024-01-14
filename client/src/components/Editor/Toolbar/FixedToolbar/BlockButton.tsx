@@ -39,7 +39,7 @@ const Blocks: BlocksType[] = [
     },
     {
         id: '3',
-        icons: <Icons.twitter size={17} />,
+        icons: <Icons.todo size={17} />,
         tooltipContent: 'convert into todo list',
         type: 'todo_list',
     },

@@ -34,7 +34,7 @@ export default function EmojiPicker({
         const CARET_TOP_OFFSET = 15;
         el.style.opacity = '1';
         el.style.top = `${
-            rect.top + rect.height + window.pageYOffset + CARET_TOP_OFFSET
+            rect.top + rect.height + window.scrollY + CARET_TOP_OFFSET
         }px`;
         let calPos = rect.left - el.offsetWidth / 2;
 
@@ -49,6 +49,10 @@ export default function EmojiPicker({
             // extra space of 10px on right side to look clean
             diff += 10;
             calPos -= diff;
+        }
+        if (calPos < 0) {
+            const diff = containerWidth + calPos;
+            calPos = containerWidth - diff - 40;
         }
 
         el.style.left = `${calPos}px`;

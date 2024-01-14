@@ -41,6 +41,12 @@ const marks: Marks[] = [
         mark: 'strike',
         shortcut: '(Ctrl+Shift+X)',
     },
+    {
+        id: '7',
+        icon: <Icons.code size={17} />,
+        mark: 'code',
+        shortcut: '(crtrl+m)',
+    },
 ];
 
 interface MarksProps {

@@ -5,7 +5,6 @@ import { BaseSelection } from 'slate';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuItem,
     DropdownMenuTrigger,
@@ -17,15 +16,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     ELEMENT_BLOCKQUOTE,
     ELEMENT_CODE_BLOCK,
-    ELEMENT_CODE_LINE,
     ELEMENT_H1,
     ELEMENT_H2,
     ELEMENT_H3,
     ELEMENT_H4,
     ELEMENT_H5,
     ELEMENT_H6,
-    ELEMENT_IMAGE,
-    ELEMENT_LINK,
     ELEMENT_OL,
     ELEMENT_TODO_LIST,
     ELEMENT_UL,
@@ -94,12 +90,6 @@ const blockTypes: BlockType[] = [
         type: ELEMENT_CODE_BLOCK,
     },
     {
-        id: '9',
-        lable: 'Inline code',
-        icon: <Icons.code size={20} />,
-        type: ELEMENT_CODE_LINE,
-    },
-    {
         id: '10',
         lable: 'Bullet List',
         icon: <Icons.ul size={20} />,
@@ -117,22 +107,11 @@ const blockTypes: BlockType[] = [
         icon: <Icons.blockquote size={20} />,
         type: ELEMENT_BLOCKQUOTE,
     },
-    {
-        id: '13',
-        lable: 'Image',
-        icon: <Icons.image size={20} />,
-        type: ELEMENT_IMAGE,
-    },
-    {
-        id: '19',
-        lable: 'Link',
-        icon: <Icons.link size={20} />,
-        type: ELEMENT_LINK,
-    },
+    ,
     {
         id: '20',
         lable: ELEMENT_TODO_LIST,
-        icon: <Icons.twitter size={20} />,
+        icon: <Icons.todo size={20} />,
         type: 'checkList',
     },
 ];
@@ -157,9 +136,16 @@ export default function CommandMenu({
         const rect = domRange?.getBoundingClientRect();
         if (rect) {
             el.style.opacity = '1';
-            el.style.top = `${
-                rect.top + window.pageYOffset - el.offsetHeight
-            }px`;
+            const loc = rect.bottom + window.scrollY;
+            if (loc > 500) {
+                el.style.top = `${
+                    rect.bottom + window.scrollY - el.offsetHeight - 40
+                }px`;
+            } else {
+                el.style.top = `${
+                    rect.top + window.scrollY - el.offsetHeight
+                }px`;
+            }
             el.style.left = `${rect.left}px`;
         }
     }, [editor, isCommandMenu]);
@@ -184,9 +170,11 @@ export default function CommandMenu({
                     onOpenChange={CommandMenuToggle}
                 >
                     <DropdownMenuTrigger></DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-72">
+                    <DropdownMenuContent align="start" className="w-[20rem]">
                         <ScrollArea className="h-56">
-                            <DropdownMenuLabel>Basic blocks</DropdownMenuLabel>
+                            <h3 className="text-muted-foreground px-2 py-1">
+                                Basic blocks
+                            </h3>
                             <DropdownMenuSeparator />
                             {blockTypes.map((block) => (
                                 <DropdownMenuItem

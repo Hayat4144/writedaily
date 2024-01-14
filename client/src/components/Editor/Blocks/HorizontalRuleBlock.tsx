@@ -9,7 +9,7 @@ export default function HorizontalRuleBlock({
         <div contentEditable={false} className="py-6" {...attributes}>
             <hr
                 className="h-[2px] cursor-pointer rounded-md bg-clip-content 
-                border-none bg-muted"
+                border-none bg-border"
             />
             {children}
         </div>

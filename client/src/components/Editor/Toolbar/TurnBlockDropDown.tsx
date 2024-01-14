@@ -25,7 +25,6 @@ import { useSlate } from 'slate-react';
 import {
     ELEMENT_BLOCKQUOTE,
     ELEMENT_CODE_BLOCK,
-    ELEMENT_CODE_LINE,
     ELEMENT_H1,
     ELEMENT_H2,
     ELEMENT_H3,
@@ -33,7 +32,6 @@ import {
     ELEMENT_H5,
     ELEMENT_H6,
     ELEMENT_IMAGE,
-    ELEMENT_LINK,
     ELEMENT_OL,
     ELEMENT_TODO_LIST,
     ELEMENT_UL,
@@ -103,7 +101,7 @@ const blockTypes: BlockType[] = [
     },
     {
         id: '10',
-        lable: 'Bullet List',
+        lable: 'Bulleted List',
         icon: <Icons.ul size={20} />,
         type: ELEMENT_UL,
     },
@@ -128,7 +126,7 @@ const blockTypes: BlockType[] = [
     {
         id: '20',
         lable: ELEMENT_TODO_LIST,
-        icon: <Icons.twitter size={20} />,
+        icon: <Icons.todo size={20} />,
         type: 'checkList',
     },
 ];
