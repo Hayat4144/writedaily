@@ -1,5 +1,6 @@
 import {
     ELEMENT_BLOCKQUOTE,
+    ELEMENT_BREAK,
     ELEMENT_CODE_BLOCK,
     ELEMENT_H1,
     ELEMENT_H2,
@@ -16,10 +17,35 @@ import {
 import { Editor, Transforms } from 'slate';
 import { jsx } from 'slate-hyperscript';
 
-function hasOnlyOneProperty(obj: Record<string, any>): boolean {
+export function hasOnlyOneProperty(obj: Record<string, any>): boolean {
     const keys = Object.keys(obj);
     return keys.length === 1;
 }
+
+export const ValidateList = (children: any[]) => {
+    let newChildren: any[] = [];
+    children.map((child: any) => {
+        if ((child as Object).hasOwnProperty('type')) {
+            child.children.flatMap((newChild: any) => {
+                if (hasOnlyOneProperty(newChild)) {
+                    newChildren.push(newChild.text);
+                } else {
+                    newChildren.push(newChild);
+                }
+            });
+        } else {
+            newChildren.push(child);
+        }
+    });
+    return newChildren;
+};
+
+export const RemoveBreakLineCharacter = (element: any[]) => {
+    const m = element.filter(
+        (item) => !item.hasOwnProperty('text') && item.text !== '\n',
+    );
+    return m.filter((item) => !item.null || !item.undefined);
+};
 
 const ELEMENT_TAGS = {
     A: (el: HTMLElement) => ({ type: 'link', url: el.getAttribute('href') }),
@@ -39,6 +65,7 @@ const ELEMENT_TAGS = {
     LI: () => ({ type: ELEMENT_LI }),
     P: () => ({ type: ELEMENT_PARAGRAPH }),
     PRE: () => ({ type: ELEMENT_CODE_BLOCK }),
+    HR: () => ({ type: ELEMENT_BREAK }),
 };
 
 const TEXT_TAGS = {
@@ -51,63 +78,39 @@ const TEXT_TAGS = {
     U: () => ({ underline: true }),
 };
 
-export const HTMLDesirializer = (el: HTMLElement) => {
-    if (el.nodeType === 3) {
-        return el.textContent;
-    }
-
-    if (el.nodeType !== 1) {
+const HTMLDesirializer = (el: HTMLElement) => {
+    if (el.nodeType === Node.TEXT_NODE) {
+        return jsx('text', {}, el.textContent);
+    } else if (el.nodeType !== Node.ELEMENT_NODE) {
         return null;
     }
-    const { nodeName } = el;
-    let parent = el;
 
-    if (
-        nodeName === 'PRE' &&
-        el.childNodes[0] &&
-        el.childNodes[0].nodeName === 'CODE'
-    ) {
-        parent = el.childNodes[0] as any;
-    }
-    let children = Array.from(parent.childNodes)
-        .map(HTMLDesirializer as any)
+    let children: any[] = Array.from(el.childNodes)
+        .map((node: any) => HTMLDesirializer(node))
         .flat();
 
     if (children.length === 0) {
         children = [{ text: '' }];
     }
 
-    if (el.nodeName === 'BODY') {
-        return jsx('fragment', {}, children);
-    }
-
-    if (ELEMENT_TAGS[nodeName as keyof typeof ELEMENT_TAGS]) {
-        const attrs = ELEMENT_TAGS[nodeName as keyof typeof ELEMENT_TAGS](el);
-
-        if (attrs.type === ELEMENT_LI) {
-            let newChildren: any[] = [];
-            children.map((child: any) => {
-                if ((child as Object).hasOwnProperty('type')) {
-                    child.children.flatMap((newChild: any) => {
-                        if (hasOnlyOneProperty(newChild)) {
-                            newChildren.push(newChild.text);
-                        } else {
-                            newChildren.push(newChild);
-                        }
-                    });
-                }
-            });
-
-            return jsx('element', attrs, newChildren);
-        } else {
-            return jsx('element', attrs, children);
+    if (ELEMENT_TAGS[el.nodeName as keyof typeof ELEMENT_TAGS]) {
+        const attrs =
+            ELEMENT_TAGS[el.nodeName as keyof typeof ELEMENT_TAGS](el);
+        if (attrs.type === ELEMENT_OL || attrs.type === ELEMENT_UL) {
+            const filtered = RemoveBreakLineCharacter(children);
+            return jsx('element', attrs, filtered);
         }
+        if (attrs.type === ELEMENT_LI) {
+            const validList = ValidateList(children);
+            return jsx('element', attrs, validList);
+        }
+        return jsx('element', attrs, children);
     }
-
-    if (TEXT_TAGS[nodeName as keyof typeof TEXT_TAGS]) {
-        const attrs = TEXT_TAGS[nodeName as keyof typeof TEXT_TAGS]();
+    if (TEXT_TAGS[el.nodeName as keyof typeof TEXT_TAGS]) {
+        const attrs = TEXT_TAGS[el.nodeName as keyof typeof TEXT_TAGS]();
         return children.map((child) => jsx('text', attrs, child));
     }
+
     return children;
 };
 
@@ -120,6 +123,7 @@ export const withHTML = (editor: Editor) => {
         if (html) {
             const parse = new DOMParser().parseFromString(html, 'text/html');
             const fragment = HTMLDesirializer(parse.body);
+            console.log(fragment);
             Transforms.insertFragment(editor, fragment as any);
             return;
         }

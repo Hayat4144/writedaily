@@ -4,7 +4,6 @@ import {
     BaseRange,
     BaseElement,
     Descendant,
-    Editor,
     Range,
 } from 'slate';
 import { ReactEditor } from 'slate-react';
@@ -172,7 +171,6 @@ export type MyCustomElement =
     | MyH5Element
     | MyH6Element
     | MyCodeBlockELement
-    | MyCodeLineELement
     | MyImageELement
     | MyLinkElement
     | MyListItemElement
