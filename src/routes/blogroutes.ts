@@ -5,6 +5,7 @@ import publishArticle from '@controller/articles/api/publishArticle';
 import readArticle from '@controller/articles/api/readArticles';
 import SearchArticle from '@controller/articles/api/searchArticle';
 import updateArticle from '@controller/articles/api/updateArticle';
+import uploadMedia from '@controller/media/uploadMedia';
 import {
     addArticleValidate,
     deleteArticleValidate,
@@ -61,5 +62,7 @@ articleroutes.post(
     publishArticle,
 );
 articleroutes.get('/api/:version/search/articles', SearchArticle);
+
+articleroutes.post('/api/:verions/upload', uploadMedia);
 
 export default articleroutes;

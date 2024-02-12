@@ -16,12 +16,14 @@ import logger from '@utils/logger';
 import { httpStatusCode } from './types';
 import { cpus } from 'os';
 import cluster from 'cluster';
+import CloudinaryConfiguration from '@config/cloudinaryConfig';
 
 const numCPUs = cpus().length;
 
 const StartServer = () => {
     const app = express();
     const port = process.env.PORT || 8080;
+    CloudinaryConfiguration();
 
     // app configuration
     const limiter = rateLimit({
