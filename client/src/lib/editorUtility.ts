@@ -26,13 +26,15 @@ import {
 } from './constant';
 import {
     MyBlockElement,
-    MyCustomElement,
+    MyImageELement,
     MyLinkElement,
     MyParagraphElement,
     RichText,
 } from '@/types';
 import generateNodeId from './generateNodeId';
 import isUrl from 'is-url';
+import uploadFile from '@/api/uploadFile';
+import { toast } from 'sonner';
 
 const editorUtility: EditorUtility = {
     TEXT_ALIGN_TYPES: ['left', 'center', 'justify', 'right'],
@@ -53,6 +55,48 @@ const editorUtility: EditorUtility = {
         '######': ELEMENT_H6,
         '``': ELEMENT_CODE_LINE,
     },
+
+    async uploadImage(editor, files, token, id) {
+        try {
+            let formData = new FormData();
+            for (const file of files) {
+                const [mime] = file.type.split('/');
+                if (mime === 'image') {
+                    formData.append('images', file);
+                }
+            }
+            const { data, error } = await uploadFile(formData);
+
+            if (error) {
+                toast(error);
+            } else {
+                data.map((image: any) => {
+                    const ImageElement: MyImageELement = {
+                        id: generateNodeId(),
+                        url: image.url,
+                        children: [{ text: '' }],
+                        type: 'image',
+                    };
+                    editorUtility.insertNode<MyImageELement>(
+                        editor,
+                        ImageElement,
+                    );
+                });
+            }
+
+            return error ? false : true;
+        } catch (error) {
+            toast('Something went wrong, please try again.', {
+                description: 'There might be a network issue.',
+                action: {
+                    label: 'Cancel',
+                    onClick: () => console.log('Cancel'),
+                },
+            });
+            return false;
+        }
+    },
+
     createLinkForRange: (editor, range, linkText, linkURL, isInsertion) => {
         const linkElement: MyLinkElement = {
             type: ELEMENT_LINK,

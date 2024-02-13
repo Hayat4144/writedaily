@@ -37,19 +37,17 @@ const StartServer = () => {
     app.use(helmet());
     app.use(limiter);
 
-    /*
     app.use(
-    cors({
-        origin:
-            process.env.NODE_ENV === 'production'
-                ? [process.env.FRONTEND_URL as string]
-                : ['http://localhost:3000'],
-        credentials: true,
-        optionsSuccessStatus: 200,
-    }),
-);
+        cors({
+            origin:
+                process.env.NODE_ENV === 'production'
+                    ? [process.env.FRONTEND_URL as string]
+                    : ['http://localhost:3000'],
+            credentials: true,
+            optionsSuccessStatus: 200,
+        }),
+    );
 
-*/
     app.use(cors());
     app.use(express.json());
     app.use(hpp());

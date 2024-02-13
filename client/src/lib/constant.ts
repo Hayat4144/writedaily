@@ -1,6 +1,7 @@
 import { Descendant } from 'slate';
 import generateNodeId from './generateNodeId';
 
+export const BASE_URL = 'http://localhost:8080';
 export const ELEMENT_H1 = 'h1';
 export const ELEMENT_H2 = 'h2';
 export const ELEMENT_H3 = 'h3';

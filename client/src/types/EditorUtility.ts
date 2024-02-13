@@ -23,6 +23,12 @@ export interface editorUtility {
     LIST_TYPES: string[];
     TEXT_ALIGN_TYPES: string[];
     MARKDOWN_SHORTCUT: { [key: string]: string };
+    uploadImage(
+        editor: Editor,
+        files: File[],
+        token?: string,
+        id?: string,
+    ): Promise<boolean>;
     createLinkForRange(
         editor: Editor,
         range: Range,

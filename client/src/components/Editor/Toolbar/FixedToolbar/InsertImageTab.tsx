@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import InsertLinkForm from '@/components/forms/ImageLinkForm';
+import UploadFile from './UploadFile';
 
 export default function InsertImageTab() {
     return (
@@ -9,7 +10,9 @@ export default function InsertImageTab() {
                 <TabsTrigger value="upload">Upload</TabsTrigger>
                 <TabsTrigger value="embed-link">Embed Link</TabsTrigger>
             </TabsList>
-            <TabsContent value="upload">Upload image</TabsContent>
+            <TabsContent value="upload">
+                <UploadFile />
+            </TabsContent>
             <TabsContent value="embed-link">
                 <InsertLinkForm compType="image" />
             </TabsContent>
