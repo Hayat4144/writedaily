@@ -7,7 +7,8 @@ import { eq } from 'drizzle-orm';
 import { NewUser, users } from 'db/schema';
 
 const Signup = asyncHandler(async (req: Request, res: Response) => {
-    const { name, email, password } = await req.body;
+    const { name, email, password, provider, providerId, profilePic } =
+        await req.body;
     const saltRound = 10;
     const IsUserExist = await db.query.users.findFirst({
         where: eq(users.email, email),
@@ -22,6 +23,9 @@ const Signup = asyncHandler(async (req: Request, res: Response) => {
         name,
         email,
         password: hashPassword,
+        provider,
+        providerId,
+        profilePic,
     };
     const createNewuser = await db
         .insert(users)

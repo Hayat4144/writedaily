@@ -183,6 +183,13 @@
       "when": 1703519087097,
       "tag": "0025_cloudy_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1707974656148,
+      "tag": "0026_striped_pestilence",
+      "breakpoints": true
     }
   ]
 }

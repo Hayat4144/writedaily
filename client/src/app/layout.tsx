@@ -3,6 +3,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { fontSans } from '@/lib/fonts';
 import { Toaster } from '@/components/ui/sonner';
+import Provider from '@/components/Provider';
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -22,7 +23,7 @@ export default function RootLayout({
                     fontSans.variable,
                 )}
             >
-                {children}
+                <Provider>{children}</Provider>
                 <Toaster />
             </body>
         </html>

@@ -17,6 +17,7 @@ import { httpStatusCode } from './types';
 import { cpus } from 'os';
 import cluster from 'cluster';
 import CloudinaryConfiguration from '@config/cloudinaryConfig';
+import userRoutes from 'routes/userroutes';
 
 const numCPUs = cpus().length;
 
@@ -57,6 +58,7 @@ const StartServer = () => {
     app.get('/', (req, res) => {
         return res.status(httpStatusCode.OK).json({ data: 'Hello developers' });
     });
+    app.use(userRoutes);
     app.use(authrouter);
     app.use(blogsroutes);
     app.use(commentroutes);

@@ -10,6 +10,7 @@ import ResetPassword from 'auth/ResetPassword';
 import ResetPasswordRequest from 'auth/ResetpasswordRequest';
 import Signin from 'auth/Signin';
 import Signup from 'auth/Singup';
+import verifySocailToken from 'auth/VerifySocialtoken';
 import express from 'express';
 import authMiddleware from 'middleware/authMiddleware';
 
@@ -43,5 +44,7 @@ authrouter.post(
     validate,
     ResetPassword,
 );
+
+authrouter.post('/api/:version/verify/socail/token', verifySocailToken);
 
 export default authrouter;

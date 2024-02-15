@@ -33,7 +33,7 @@ import {
 } from '@/types';
 import generateNodeId from './generateNodeId';
 import isUrl from 'is-url';
-import uploadFile from '@/api/uploadFile';
+import uploadFile from '@/externalapi/uploadFile';
 import { toast } from 'sonner';
 
 const editorUtility: EditorUtility = {
