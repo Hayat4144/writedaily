@@ -29,6 +29,12 @@ import { createArticle } from '@/externalapi/article';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export default function WriteDrawer() {
     const [open, setOpen] = React.useState(false);
@@ -36,13 +42,26 @@ export default function WriteDrawer() {
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button className="space-x-1" variant={'ghost'} size={'sm'}>
-                        <Icons.editing size={20} />
-                        <span className="hidden md:block">Write</span>
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <DialogTrigger asChild>
+                                <Button
+                                    className="space-x-1"
+                                    variant={'ghost'}
+                                    size={'sm'}
+                                >
+                                    <Icons.editing size={20} />
+                                    <span className="hidden md:block">
+                                        Write
+                                    </span>
+                                </Button>
+                            </DialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Create article</TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+                <DialogContent className="sm:max-w-[425px] md:max-w-[525px]">
                     <DialogHeader>
                         <DialogTitle>Edit profile</DialogTitle>
                         <DialogDescription>
