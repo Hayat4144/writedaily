@@ -25,7 +25,7 @@ const Theme = dynamic(() => import('./Theme'));
 
 export default function PrivateNavbar() {
     return (
-        <nav className="flex justify-between border-b pb-3 h-10">
+        <nav className="flex justify-between border-b px-5 h-16 items-center">
             <h1>Writedaily</h1>
 
             <div className="flex items-center justify-between space-x-2">

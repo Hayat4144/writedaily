@@ -1,8 +1,6 @@
-import WriteDailyEditor from '@/components/Editor';
-import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 import PublicNavbar from '@/components/Navbar/PublicNavbar';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Heading1, Paragraph } from '@/components/ui/typography';
+import { Paragraph } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Fragment } from 'react';
@@ -17,7 +15,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -74,7 +71,7 @@ export default function Home() {
                 </div>
             </main>
             <section className="mx-5 grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
-                <Card className="bg-accent text-accent-foreground text-center">
+                <Card className="bg-accent text-accent-foreground">
                     <CardHeader>
                         <CardTitle>
                             Our WYSIWYG Editor Rocks Simple Markdown for
@@ -87,7 +84,53 @@ export default function Home() {
                             creative flow.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent></CardContent>
+                    <CardContent className="flex flex-col z-20 mx-auto">
+                        <img
+                            src="https://cdn.hashnode.com/res/hashnode/image/upload/v1689169728263/031de5d3-ab41-4ec3-97ed-b15ec0149bb1.png?auto=format,compress"
+                            alt="pic"
+                            className="max-w-full h-auto"
+                        />
+                    </CardContent>
+                </Card>
+                <Card className="bg-accent text-accent-foreground">
+                    <CardHeader className="">
+                        <CardTitle>
+                            Here are some of the features of Writedaily's Editor
+                            provide:
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="mx-4">
+                        <ol type="1" className="list-decimal space-y-1">
+                            <li className="text-justify">
+                                <b>Markdown Magic: </b>
+                                Effortlessly apply markdown features like bold,
+                                italic, underline, highlight, and more for
+                                expressive text formatting.
+                            </li>
+                            <li className="text-justify">
+                                <b>Table: </b>
+                                Create structured content with ease using
+                                tables, perfect for organizing information in a
+                                clean layout.
+                            </li>
+                            <li className="text-justify">
+                                <b>Link</b>: Embed hyperlinks seamlessly and
+                                include images to enrich your content with
+                                relevant references.
+                            </li>
+                            <li className="text-justify">
+                                <b> List Power: </b> Utilize flexible lists and
+                                interactive to-do lists for organized content
+                                structuring and task management.
+                            </li>
+                            <li className="text-justify">
+                                <b> Image Integration: </b> Enhance visual
+                                appeal by effortlessly inserting images directly
+                                into your rich text, making your content more
+                                engaging.
+                            </li>
+                        </ol>
+                    </CardContent>
                 </Card>
                 <Card className="text-center bg-accent text-accent-foreground">
                     <CardHeader className="">
