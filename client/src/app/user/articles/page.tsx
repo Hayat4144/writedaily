@@ -1,0 +1,78 @@
+import { Button } from '@/components/ui/button';
+import { Heading3 } from '@/components/ui/typography';
+import React, { Fragment } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import userArticles from '@/externalapi/UserArticles';
+import CardItem from '@/components/user/articles/CardItem';
+
+export default async function page({
+    searchParams,
+}: {
+    searchParams?: {
+        currentTab?: string;
+    };
+}) {
+    const currentTab = searchParams?.currentTab || 'drafts';
+    const session = await getServerSession(authOptions);
+    const token = session?.user.AccessToken;
+    const { data, error } = await userArticles(token as string);
+    const draftsData = data.results.filter((item: any) => !item.isPublished);
+    const pubslishedData = data.results.filter(
+        (item: any) => item.isPubslished,
+    );
+    return (
+        <Fragment>
+            <main className="grid grid-cols-1 lg:grid-cols-4 h-screen">
+                <section className="lg:col-span-3 px-5 py-5 md:mx-5 lg:mx-10">
+                    <div className="flex items-center justify-between">
+                        <Heading3>Your Articles</Heading3>
+                        <Button className="rounded-full">
+                            Write an article
+                        </Button>
+                    </div>
+                    <Tabs defaultValue="drafts" className="w-full  my-10">
+                        <TabsList className="w-full justify-start bg-transparent border-b rounded-none">
+                            <TabsTrigger
+                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none 
+                                pb-2 rounded-none"
+                                value="drafts"
+                            >
+                                Drafts
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="published"
+                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none 
+                                 pb-2 rounded-none"
+                            >
+                                Published
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="responses"
+                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none 
+                                 pb-2 rounded-none"
+                            >
+                                Responses
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="drafts">
+                            {draftsData.map((item: any) => (
+                                <CardItem key={item.id} data={item} />
+                            ))}
+                        </TabsContent>
+                        <TabsContent value="published">
+                            Change your password here.
+                        </TabsContent>
+                        <TabsContent value="responses">
+                            Change your password here.
+                        </TabsContent>
+                    </Tabs>
+                </section>
+                <article className="hidden lg:block lg:col-span-1 lg:border-l lg:p-5">
+                    hello
+                </article>
+            </main>
+        </Fragment>
+    );
+}
