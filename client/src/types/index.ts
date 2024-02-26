@@ -209,3 +209,13 @@ export interface EmojiDetectProps {
     setEmojiToggle: (value: boolean) => void;
     TargetRange: (value: Range | undefined) => void;
 }
+
+export enum commentType {
+    article,
+    comment,
+}
+
+export enum likeType {
+    article,
+    comment,
+}

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { fontSans } from '@/lib/fonts';
 import { Toaster } from '@/components/ui/sonner';
 import Provider from '@/components/Provider';
+import { Toaster as DefaultToster} from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -25,6 +26,7 @@ export default function RootLayout({
             >
                 <Provider>{children}</Provider>
                 <Toaster />
+                <DefaultToster />
             </body>
         </html>
     );

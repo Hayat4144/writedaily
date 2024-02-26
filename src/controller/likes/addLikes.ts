@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 
 const addLike = asyncHandler(async (req: Request, res: Response) => {
     const { likebleId, likeType } = req.body;
+    console.log(req.body);
     const likeService = new LikeService();
     const toggleLike = await likeService.addlikes(
         likeType,

@@ -2,9 +2,17 @@ import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 import FeedItem from '@/components/feed/FeedItem';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { following } from '@/externalapi/Feed';
+import { getServerSession } from 'next-auth';
 import React, { Fragment } from 'react';
+import { authOptions } from '../api/auth/[...nextauth]/route';
 
-export default function page() {
+export default async function page() {
+    const session = await getServerSession(authOptions);
+    const { data, error } = await following(
+        session?.user.AccessToken as string,
+    );
+    console.log(data);
     return (
         <Fragment>
             <header>
@@ -26,10 +34,9 @@ export default function page() {
                     </Button>
                 </div>
                 <div className="space-y-2">
-                    <FeedItem />
-                    <FeedItem />
-                    <FeedItem />
-                    <FeedItem />
+                    {data.map((item: any) => (
+                        <FeedItem data={item} key={item.id} />
+                    ))}
                 </div>
             </main>
         </Fragment>

@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { Fragment, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -18,8 +19,53 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import ToggleLike from '@/externalapi/ToggleLike';
+import { useSession } from 'next-auth/react';
+import { toast } from '../ui/use-toast';
+import { Input } from '../ui/input';
+import CommentAPi from '@/externalapi/Comment';
+import { Loader } from 'lucide-react';
 
-export default function FeedItem() {
+interface FeedItemProps {
+    data: any;
+}
+
+export default function FeedItem({ data }: FeedItemProps) {
+    const session = useSession();
+    const token = session.data?.user.AccessToken;
+
+    const [commentBox, setCommentBox] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [comment, setComment] = useState('');
+
+    const LikeHandler = async (likeid: string) => {
+        const { data, error } = await ToggleLike(
+            token as string,
+            likeid,
+            'article' as any,
+        );
+        if (data) {
+            return data.deletedId
+                ? toast({ title: 'You are unlike the article.' })
+                : toast({ title: 'Like has been added successfully.' });
+        }
+        toast({ title: error, variant: 'destructive' });
+    };
+
+    const CommentHandler = async (id: string) => {
+        setIsLoading(!isLoading);
+        const { data, error } = await CommentAPi(
+            token as string,
+            comment,
+            id,
+            'article',
+        );
+        setIsLoading(false);
+        if (!error)
+            return toast({ title: 'Comment has been added successfullyly.' });
+        else return toast({ title: error, variant: 'destructive' });
+    };
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center space-x-4 py-3">
@@ -28,22 +74,16 @@ export default function FeedItem() {
                     <AvatarFallback>HI</AvatarFallback>
                 </Avatar>
                 <div>
-                    <p className="font-bold leading-none">Hayat ilyas</p>
+                    <p className="font-bold leading-none">{data.author.name}</p>
                     <CardDescription>
-                        ihayat855@gmail.com . Jul 23
+                        {data.author.email} . Jul 23
                     </CardDescription>
                 </div>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="md:col-span-2">
-                    <Heading4>
-                        Building notes app in React using React Markdown
-                    </Heading4>
-                    <CardDescription>
-                        Introduction when it come to web application
-                        development, React provides developers with the
-                        flexibility to create appli...
-                    </CardDescription>
+                    <Heading4>{data.title}</Heading4>
+                    <CardDescription>{data.description}</CardDescription>
                 </div>
                 <div className="">
                     <AspectRatio ratio={10 / 5} className="rounded-md">
@@ -64,9 +104,10 @@ export default function FeedItem() {
                                 <Button
                                     variant={'ghost'}
                                     className="text-muted-foreground"
+                                    onClick={() => LikeHandler(data.id)}
                                 >
                                     <Icons.like className="mr-2 h-4 w-4" />
-                                    246
+                                    {data.totalLikes}
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -81,9 +122,10 @@ export default function FeedItem() {
                                 <Button
                                     variant={'ghost'}
                                     className="text-muted-foreground"
+                                    onClick={() => setCommentBox(!commentBox)}
                                 >
                                     <Icons.comment className="mr-2 h-4 w-4" />
-                                    123
+                                    {data.totalComments}
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -104,6 +146,31 @@ export default function FeedItem() {
                     </Button>
                 </div>
             </CardFooter>
+            <div className={`${!commentBox ? 'hidden' : 'block px-5 py-2'}`}>
+                <form
+                    action=""
+                    className="flex space-x-3"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        CommentHandler(data.id);
+                    }}
+                >
+                    <Input
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                    />
+                    <Button disabled={isLoading}>
+                        {isLoading ? (
+                            <Fragment>
+                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                            </Fragment>
+                        ) : (
+                            <>Submit</>
+                        )}
+                    </Button>
+                </form>
+            </div>
         </Card>
     );
 }

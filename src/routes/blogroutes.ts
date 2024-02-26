@@ -1,6 +1,7 @@
 import article from '@controller/articles/api/article';
 import createArticle from '@controller/articles/api/createArticle';
 import deleteArticle from '@controller/articles/api/deleteArticle';
+import Feed from '@controller/articles/api/feed';
 import publishArticle from '@controller/articles/api/publishArticle';
 import readArticle from '@controller/articles/api/readArticles';
 import SearchArticle from '@controller/articles/api/searchArticle';
@@ -64,5 +65,6 @@ articleroutes.post(
 articleroutes.get('/api/:version/search/articles', SearchArticle);
 
 articleroutes.post('/api/:verions/upload', uploadMedia);
+articleroutes.get('/api/:version/feed/', Feed);
 
 export default articleroutes;

@@ -12,12 +12,21 @@ import {
 } from 'db/schema';
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
+import { password } from '@utils/constant';
 
 interface Articles {
     createArticle(data: NewArticle): Promise<Article[]>;
-    updateArticle(update: any, user_id: string, ArticleId: string): Promise<Article>;
+    updateArticle(
+        update: any,
+        user_id: string,
+        ArticleId: string,
+    ): Promise<Article>;
     deleteArticle(id: string, userId: string): Promise<Article>;
-    getArticles(userId: string, Skip: number, ResultPerPage: number): Promise<any>;
+    getArticles(
+        userId: string,
+        Skip: number,
+        ResultPerPage: number,
+    ): Promise<any>;
     isArticleExist(id: string): Promise<Article | undefined>;
     ArtcleById(id: string): Promise<any>;
     PublishArticle(
@@ -26,6 +35,7 @@ interface Articles {
         userId: string,
     ): Promise<publishArticleReturnType>;
     searchArticles(query: string): Promise<any>;
+    articleFeed(Skip: number, ResultPerPage: number): Promise<any>;
 }
 
 type publishArticleReturnType = {
@@ -35,6 +45,26 @@ type publishArticleReturnType = {
 const topicService = new TopicsService();
 
 class ArticleService implements Articles {
+    async articleFeed(Skip: number, ResultPerPage: number): Promise<any> {
+        const { ...articlesColumns } = getTableColumns(articles);
+        const { password, ...authorField } = getTableColumns(users);
+        const datas = db
+            .select({
+                ...articlesColumns,
+                author: authorField,
+                totalLikes: sql<number>`cast(count(distinct ${likes.id}) as int)`,
+                totalComments: sql<number>`cast(count(distinct ${comments.id}) as int)`,
+            })
+            .from(articles)
+            .limit(ResultPerPage)
+            .offset(Skip)
+            .leftJoin(likes, eq(articles.id, likes.likebleId))
+            .leftJoin(comments, eq(articles.id, comments.commentableId))
+            .leftJoin(users, eq(articles.authorId, users.id))
+            .groupBy(articles.id, users.id);
+
+        return datas;
+    }
     async PublishArticle(
         articleId: string,
         publishUnderTopicId: string[],
@@ -176,7 +206,9 @@ class ArticleService implements Articles {
         const updatedArticle = await db
             .update(articles)
             .set(updateData)
-            .where(and(eq(articles.id, ArticleId), eq(articles.authorId, userId)))
+            .where(
+                and(eq(articles.id, ArticleId), eq(articles.authorId, userId)),
+            )
             .returning();
         return updatedArticle[0];
     }
