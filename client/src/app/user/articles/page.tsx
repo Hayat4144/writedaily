@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import userArticles from '@/externalapi/UserArticles';
 import CardItem from '@/components/user/articles/CardItem';
+import WriteDrawer from '@/components/Navbar/WriteDrawer';
 
 export default async function page({
     searchParams,
@@ -28,9 +29,11 @@ export default async function page({
                 <section className="lg:col-span-3 px-5 py-5 md:mx-5 lg:mx-10">
                     <div className="flex items-center justify-between">
                         <Heading2>Your Articles</Heading2>
-                        <Button className="rounded-full">
-                            Write an article
-                        </Button>
+                        <WriteDrawer>
+                            <Button className="rounded-full">
+                                Write an article
+                            </Button>
+                        </WriteDrawer>
                     </div>
                     <Tabs defaultValue="drafts" className="w-full  my-10">
                         <TabsList className="w-full justify-start bg-transparent border-b rounded-none">

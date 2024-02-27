@@ -71,6 +71,7 @@ import {
     LogOut,
     Sun,
     Laptop,
+    MoreVertical,
 } from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
@@ -217,7 +218,8 @@ export const Icons = {
     lineHeight: WrapText,
     link: Link2,
     minus: Minus,
-    more: MoreHorizontal,
+    horizontal: MoreHorizontal,
+    verticle: MoreVertical,
     email: Mail,
     logout: LogOut,
     ol: ListOrdered,

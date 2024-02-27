@@ -12,3 +12,18 @@ export const createArticle = async (token: string, articleData: object) => {
     const { error, data } = await response.json();
     return error ? { error } : { data };
 };
+
+export const deleteArticle = async (token: string, id: string) => {
+    const response = await fetch(
+        `${BASE_URL}/api/v1/delete/article?articleId=${id}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        },
+    );
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
