@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Heading3 } from '@/components/ui/typography';
+import { Heading2, Paragraph } from '@/components/ui/typography';
 import React, { Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getServerSession } from 'next-auth';
@@ -27,7 +27,7 @@ export default async function page({
             <main className="grid grid-cols-1 lg:grid-cols-4 h-screen">
                 <section className="lg:col-span-3 px-5 py-5 md:mx-5 lg:mx-10">
                     <div className="flex items-center justify-between">
-                        <Heading3>Your Articles</Heading3>
+                        <Heading2>Your Articles</Heading2>
                         <Button className="rounded-full">
                             Write an article
                         </Button>
@@ -56,13 +56,27 @@ export default async function page({
                                 Responses
                             </TabsTrigger>
                         </TabsList>
-                        <TabsContent value="drafts">
-                            {draftsData.map((item: any) => (
-                                <CardItem key={item.id} data={item} />
-                            ))}
+                        <TabsContent value="drafts" className="space-y-2">
+                            {draftsData.length < 1 ? (
+                                <Paragraph>
+                                    You don't have any drafts articles yet.
+                                </Paragraph>
+                            ) : (
+                                draftsData.map((item: any) => (
+                                    <CardItem key={item.id} data={item} />
+                                ))
+                            )}
                         </TabsContent>
-                        <TabsContent value="published">
-                            Change your password here.
+                        <TabsContent value="published" className="space-y-2">
+                            {pubslishedData.length < 1 ? (
+                                <Paragraph>
+                                    You have not published any articles yet.
+                                </Paragraph>
+                            ) : (
+                                pubslishedData.map((item: any) => (
+                                    <CardItem key={item.id} data={item} />
+                                ))
+                            )}
                         </TabsContent>
                         <TabsContent value="responses">
                             Change your password here.

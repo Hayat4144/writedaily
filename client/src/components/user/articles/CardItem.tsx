@@ -8,9 +8,10 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import moment from 'moment';
+import { Paragraph } from '@/components/ui/typography';
 
 export default function CardItem({ data }: { data: any }) {
-    const relativeTime = moment().startOf('hour').from(data.createdAt);
+    const relativeTime = moment(data.createdAt).fromNow();
     return (
         <Fragment>
             <Card className="border-b">
@@ -20,7 +21,9 @@ export default function CardItem({ data }: { data: any }) {
                         {data.description || null}
                     </CardDescription>
                 </CardHeader>
-                <CardFooter className="pb-2">{relativeTime}</CardFooter>
+                <CardFooter className="pb-2">
+                    <Paragraph>{relativeTime}</Paragraph>
+                </CardFooter>
             </Card>
         </Fragment>
     );
