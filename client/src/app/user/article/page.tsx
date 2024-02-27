@@ -7,6 +7,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import userArticles from '@/externalapi/UserArticles';
 import CardItem from '@/components/user/articles/CardItem';
 import WriteDrawer from '@/components/Navbar/WriteDrawer';
+import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 
 export default async function page({
     searchParams,
@@ -25,6 +26,9 @@ export default async function page({
     );
     return (
         <Fragment>
+            <header>
+                <PrivateNavbar />
+            </header>
             <main className="grid grid-cols-1 lg:grid-cols-4 h-screen">
                 <section className="lg:col-span-3 px-5 py-5 md:mx-5 lg:mx-10">
                     <div className="flex items-center justify-between">

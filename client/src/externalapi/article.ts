@@ -27,3 +27,28 @@ export const deleteArticle = async (token: string, id: string) => {
     const { error, data } = await response.json();
     return error ? { error } : { data };
 };
+
+export const updateArticle = async (token: string, datas: any, id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/update/article`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, data: { ...datas } }),
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
+
+export const articleById = async (token: string, id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/article/${id}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};

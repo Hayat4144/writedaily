@@ -15,7 +15,7 @@ export default function FixedToolbar() {
     return (
         <div
             className="flex items-center space-x-1 flex-wrap px-2 
-               bg-background top-0 py-1 border-b z-50 my-5"
+               bg-background top-0 py-1 border-b z-50 md:px-10"
         >
             <HistoryButton type="undo" icon={<Undo size={17} />} />
             <HistoryButton type="redo" icon={<Redo size={17} />} />

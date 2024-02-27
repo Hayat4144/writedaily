@@ -1,6 +1,6 @@
 'use client';
 import { Fragment, useMemo, useState } from 'react';
-import { Descendant, Editor, Range, createEditor } from 'slate';
+import { Descendant, Editor, Operation, Range, createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
 import withNodeId from './Plugins/withNodeId';
 import RenderElements from './RenderElements';
@@ -24,6 +24,10 @@ import withInlines from './Plugins/withInlines';
 import withConverterBlock from './Plugins/withConverterBlock';
 import withTrailingBlock from './Plugins/withTrailingBlock';
 import { withHTML } from './Plugins/withHtml';
+import { updateArticle } from '@/externalapi/article';
+import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
+import { toast } from '../ui/use-toast';
 
 type SlatePlugin = (editor: Editor) => Editor;
 
@@ -52,7 +56,10 @@ const createEditorWithPlugins = pipe(
     withHTML,
 );
 
-const WriteDailyEditor = () => {
+const WriteDailyEditor = ({ data }: { data: any }) => {
+    const session = useSession();
+    const token = session.data?.user.AccessToken;
+    const { id } = useParams();
     const editor = useMemo(() => createEditorWithPlugins(createEditor()), []);
     const [isLinkPopver, setIsLinkPopver] = useState<boolean>(false);
     const [isCommandMenu, toggleCommandMenu] = useState<boolean>(false);
@@ -67,21 +74,38 @@ const WriteDailyEditor = () => {
         TargetRange: setEmojiTargetRange,
     };
 
-    const changeHandler = (value: Descendant[]) => {
+    const changeHandler = async (value: Descendant[]) => {
         const { selection } = editor;
+
         editorUtility.detectEmoji(emojiPatternProps);
         editorUtility.detectCommandMenu(editor, toggleCommandMenu);
         editorUtility.identifyLink(editor);
         if (selection && editorUtility.isBlockActive(editor, 'link')) {
             setIsLinkPopver(true);
         }
+
+        editorUtility.detectEmoji(emojiPatternProps);
+        const isAstChange = editor.operations.some(
+            (op: Operation) => 'set_selection' !== op.type,
+        );
+
+        if (isAstChange) {
+            const data = {
+                content: value,
+            };
+            if (!token || !id) return;
+            const { error } = await updateArticle(token, data, id as string);
+            if (error) return toast({ title: error, variant: 'destructive' });
+        }
     };
+
+    const editorValue = useMemo(() => data.content || initialValue, []);
 
     return (
         <Fragment>
             <Slate
                 editor={editor}
-                initialValue={initialValue}
+                initialValue={editorValue}
                 onChange={changeHandler}
             >
                 <FixedToolbar />
@@ -113,7 +137,7 @@ const WriteDailyEditor = () => {
                     }
                     renderElement={RenderElements}
                     renderLeaf={renderLeafs}
-                    className="my-5 mx-5 px-2 outline-none"
+                    className="my-5 mx-5 px-2 md:px-10 outline-none"
                     placeholder="Write something"
                 ></Editable>
             </Slate>

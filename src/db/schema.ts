@@ -95,7 +95,7 @@ export const likes = pgTable(
         createdAt: timestamp('created_at').defaultNow(),
     },
     (table) => ({
-        userIdx: index('userId_idx').on(table.userId),
+        userIdx: index('userID_idx').on(table.userId),
         likeableIdx: index('likebleId_idx').on(table.likebleId),
     }),
 );
