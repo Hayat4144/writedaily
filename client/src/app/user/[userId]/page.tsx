@@ -1,5 +1,5 @@
 import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
-import { Heading1 } from '@/components/ui/typography';
+import { Heading1, Paragraph } from '@/components/ui/typography';
 import ProfileHeader from '@/components/user/profile/ProfileHeader';
 import React, { Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +12,9 @@ import {
 } from '@/externalapi/UserService';
 import { httpStatusCode } from '@/types';
 import { notFound } from 'next/navigation';
+import { Feed } from '@/externalapi/Feed';
+import FeedItem from '@/components/feed/FeedItem';
+import { privateArticle } from '@/externalapi/article';
 
 export default async function page({
     params,
@@ -30,13 +33,17 @@ export default async function page({
               })();
         return;
     }
-    const [followers, following] = await Promise.all([
+    const token = session?.user.AccessToken as string;
+    const [followers, following, feedData] = await Promise.all([
         CountFollowers(params.userId),
-        CountFollowings(session?.user.AccessToken as string),
+        CountFollowings(token),
+        privateArticle(token),
     ]);
     if (followers.error || following.error) {
         throw new Error(error);
     }
+    const { results, total_result } = feedData.data;
+    console.log(results);
 
     const profileData = {
         ...data,
@@ -68,7 +75,27 @@ export default async function page({
                                 About
                             </TabsTrigger>
                         </TabsList>
-                        <TabsContent value="home">Home</TabsContent>
+                        <TabsContent value="home" className="space-y-2">
+                            {feedData.data ? (
+                                results.length > 0 ? (
+                                    results.map((item: any) => (
+                                        <FeedItem
+                                            privateComp={true}
+                                            data={item}
+                                            key={item.id}
+                                        />
+                                    ))
+                                ) : (
+                                    <Fragment>
+                                        <Paragraph>
+                                            You don't have any articles yet.
+                                        </Paragraph>
+                                    </Fragment>
+                                )
+                            ) : (
+                                <Fragment>{feedData.error}</Fragment>
+                            )}
+                        </TabsContent>
                         <TabsContent value="about">About</TabsContent>
                     </Tabs>
                 </section>

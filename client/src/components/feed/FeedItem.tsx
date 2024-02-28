@@ -25,12 +25,15 @@ import { toast } from '../ui/use-toast';
 import { Input } from '../ui/input';
 import CommentAPi from '@/externalapi/Comment';
 import { Loader } from 'lucide-react';
+import moment from 'moment';
+import { getFirstLetter } from '@/lib/utils';
 
 interface FeedItemProps {
     data: any;
+    privateComp?: boolean;
 }
 
-export default function FeedItem({ data }: FeedItemProps) {
+export default function FeedItem({ data, privateComp }: FeedItemProps) {
     const session = useSession();
     const token = session.data?.user.AccessToken;
 
@@ -66,21 +69,29 @@ export default function FeedItem({ data }: FeedItemProps) {
         else return toast({ title: error, variant: 'destructive' });
     };
 
+    const relativeTime = moment(data.createdAt).fromNow();
+
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center space-x-4 py-3">
-                <Avatar>
-                    <AvatarImage src="http://github.com/hayat4144.png"></AvatarImage>
-                    <AvatarFallback>HI</AvatarFallback>
-                </Avatar>
-                <div>
-                    <p className="font-bold leading-none">{data.author.name}</p>
-                    <CardDescription>
-                        {data.author.email} . Jul 23
-                    </CardDescription>
-                </div>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {!privateComp ? (
+                <CardHeader className="flex flex-row items-center space-x-4 py-3">
+                    <Avatar>
+                        <AvatarImage src="http://github.com/hayat4144.png"></AvatarImage>
+                        <AvatarFallback>
+                            {getFirstLetter(data.author.name)}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <p className="font-bold leading-none">
+                            {data.author.name}
+                        </p>
+                        <CardDescription>{relativeTime}</CardDescription>
+                    </div>
+                </CardHeader>
+            ) : null}
+            <CardContent
+                className={`grid grid-cols-1 md:grid-cols-3 gap-5 ${privateComp ? 'mt-2' : ''}`}
+            >
                 <div className="md:col-span-2">
                     <Heading4>{data.title}</Heading4>
                     <CardDescription>{data.description}</CardDescription>
@@ -104,6 +115,7 @@ export default function FeedItem({ data }: FeedItemProps) {
                                 <Button
                                     variant={'ghost'}
                                     className="text-muted-foreground"
+                                    disabled={!session.data ? true : false}
                                     onClick={() => LikeHandler(data.id)}
                                 >
                                     <Icons.like className="mr-2 h-4 w-4" />
@@ -121,6 +133,7 @@ export default function FeedItem({ data }: FeedItemProps) {
                             <TooltipTrigger asChild>
                                 <Button
                                     variant={'ghost'}
+                                    disabled={!session.data ? true : false}
                                     className="text-muted-foreground"
                                     onClick={() => setCommentBox(!commentBox)}
                                 >

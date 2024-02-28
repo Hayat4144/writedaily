@@ -36,9 +36,9 @@ export const SignupSchema = z
                         'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character',
                 },
             ),
-        confirmPassword: z.string(),
+        confirmpassword: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((data) => data.password === data.confirmpassword, {
         message: "Password doesn't match.",
         path: ['confirmPassword'],
     });

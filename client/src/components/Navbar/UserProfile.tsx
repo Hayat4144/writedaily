@@ -19,6 +19,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getFirstLetter } from '@/lib/utils';
 
 const SignOut = dynamic(() => import('./Signout'));
 const Theme = dynamic(() => import('./Theme'));
@@ -32,8 +33,12 @@ export default async function UserProfile() {
                     <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                             <Avatar className="cursor-pointer">
-                                <AvatarImage src="https://github.com/hayat4144.png" />
-                                <AvatarFallback>HI</AvatarFallback>
+                                <AvatarImage src={session?.user.image} />
+                                <AvatarFallback className="uppercase">
+                                    {getFirstLetter(
+                                        session?.user.name as string,
+                                    )}
+                                </AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                     </TooltipTrigger>
@@ -52,7 +57,7 @@ export default async function UserProfile() {
                         <span>Profile</span>
                     </DropdownMenuItem>
                 </Link>
-                <Link href={'/user/articles'}>
+                <Link href={'/user/article'}>
                     <DropdownMenuItem className="space-x-2 my-2  cursor-pointer">
                         <Icons.article size={20} />
                         <span>Articles</span>

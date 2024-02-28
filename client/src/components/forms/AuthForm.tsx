@@ -42,7 +42,7 @@ export default function AuthForm() {
     const onSubmit = () => {};
 
     const googleHandler = () => {
-        signIn('google', { callbackUrl: '/' });
+        signIn('google', { callbackUrl: '/feed' });
     };
 
     return (

@@ -45,7 +45,7 @@ export default function Signinform() {
         } else {
             setisLoading(false);
             toast('You are successfully signin');
-            router.push('/');
+            router.push('/feed');
         }
     };
     return (

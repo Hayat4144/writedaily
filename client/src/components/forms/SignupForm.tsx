@@ -14,11 +14,10 @@ import type { z } from 'zod';
 import { SignupSchema } from '@/lib/validation/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Icons } from '../icons';
-import { BASE_URL } from '@/lib/constant';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import { Loader2Icon } from 'lucide-react';
+import SignupUser from '@/externalapi/SignupUser';
+import { toast } from '../ui/use-toast';
 
 type SignupInput = z.infer<typeof SignupSchema>;
 
@@ -33,36 +32,18 @@ export default function SignupForm() {
             email: '',
             password: '',
             name: '',
-            confirmPassword: '',
+            confirmpassword: '',
         },
     });
 
     // handle the registeration
     const onSubmit = async (values: SignupInput) => {
-        try {
-            setIsLoading(!isLoading);
-            const RegisterResponse = await fetch(
-                `${BASE_URL}/api/auth/v/signup`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ...values }),
-                },
-            );
-            const result = await RegisterResponse.json();
-            setIsLoading(false);
-            if (RegisterResponse.status !== 200) {
-                toast(result.error);
-                return;
-            }
-            toast(result.data);
-            router.push('/signin');
-            return;
-        } catch (error) {
-            console.error(error);
-        }
+        setIsLoading((prevState) => !prevState);
+        const { data, error } = await SignupUser(values);
+        setIsLoading((prevState) => !prevState);
+        if (error) return toast({ title: error, variant: 'destructive' });
+        toast({ title: data });
+        router.push('/auth/signin');
     };
 
     return (
@@ -121,7 +102,7 @@ export default function SignupForm() {
                 ></FormField>
                 <FormField
                     control={form.control}
-                    name="confirmPassword"
+                    name="confirmpassword"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Confirm password</FormLabel>

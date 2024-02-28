@@ -1,6 +1,6 @@
 import { BASE_URL } from '@/lib/constant';
 
-const following = async (token: string) => {
+const Feed = async (token: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/feed/`, {
         method: 'GET',
         headers: {
@@ -12,4 +12,4 @@ const following = async (token: string) => {
     else return { data };
 };
 
-export { following };
+export { Feed };

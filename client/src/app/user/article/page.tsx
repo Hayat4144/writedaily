@@ -55,13 +55,6 @@ export default async function page({
                             >
                                 Published
                             </TabsTrigger>
-                            <TabsTrigger
-                                value="responses"
-                                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none 
-                                 pb-2 rounded-none"
-                            >
-                                Responses
-                            </TabsTrigger>
                         </TabsList>
                         <TabsContent value="drafts" className="space-y-2">
                             {draftsData.length < 1 ? (
@@ -84,9 +77,6 @@ export default async function page({
                                     <CardItem key={item.id} data={item} />
                                 ))
                             )}
-                        </TabsContent>
-                        <TabsContent value="responses">
-                            Change your password here.
                         </TabsContent>
                     </Tabs>
                 </section>
