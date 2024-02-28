@@ -15,3 +15,12 @@ export const findEmojis = async (search: string) => {
         return { id: item.id, native: item.skins[0].native };
     });
 };
+
+export const getFirstLetter = (str: string) => {
+    const words = str.split(' ');
+
+    const firstLetter = words.map((word) => word[0]);
+
+    const combinedLetter = firstLetter.join('');
+    return combinedLetter;
+};

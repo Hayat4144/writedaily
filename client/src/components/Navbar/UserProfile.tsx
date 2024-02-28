@@ -17,11 +17,14 @@ import {
 import { Icons } from '../icons';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 const SignOut = dynamic(() => import('./Signout'));
 const Theme = dynamic(() => import('./Theme'));
 
-export default function UserProfile() {
+export default async function UserProfile() {
+    const session = await getServerSession(authOptions);
     return (
         <DropdownMenu>
             <TooltipProvider>
@@ -43,7 +46,7 @@ export default function UserProfile() {
             <DropdownMenuContent side="bottom" className="w-56 mr-5 my-1">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <Link href={'/user/profile'}>
+                <Link href={`/user/${session?.user.id}`}>
                     <DropdownMenuItem className="space-x-2 cursor-pointer">
                         <Icons.add size={20} />
                         <span>Profile</span>
