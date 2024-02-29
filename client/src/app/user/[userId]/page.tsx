@@ -43,7 +43,6 @@ export default async function page({
         throw new Error(error);
     }
     const { results, total_result } = feedData.data;
-    console.log(results);
 
     const profileData = {
         ...data,

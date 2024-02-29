@@ -5,11 +5,10 @@ import { NewArticle } from 'db/schema';
 import { Request, Response } from 'express';
 
 const createArticle = asyncHandler(async (req: Request, res: Response) => {
-    const { title, content, description } = req.body;
+    const { title, description } = req.body;
     const service = new ArticleService();
     const data: NewArticle = {
         title,
-        content,
         description,
         authorId: req.user_id,
     };

@@ -60,7 +60,10 @@ export const addArticleValidate = [
         .isLength({ min: 5, max: 150 })
         .withMessage('Title should be between 5 and 150 characters long.'),
 
-    check('content').isArray().withMessage('Content should be an array.'),
+    check('content')
+        .optional()
+        .isArray()
+        .withMessage('Content should be an array.'),
 
     check('description')
         .optional()

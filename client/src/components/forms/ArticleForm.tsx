@@ -22,7 +22,6 @@ export function ArticleForm({ className }: React.ComponentProps<'form'>) {
         const articleData = {
             title,
             description,
-            content: [],
         };
         const { data, error } = await createArticle(token, articleData);
         setIsLoading((prevState) => !prevState);
