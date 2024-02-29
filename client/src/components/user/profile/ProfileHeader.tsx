@@ -14,7 +14,9 @@ export default async function ProfileHeader({ data }: { data: any }) {
             <div className="flex items-center space-x-5">
                 <Avatar className="h-14 w-14">
                     <AvatarImage src={data.profilePic} alt="@shadcn" />
-                    <AvatarFallback>{getFirstLetter(data.name)}</AvatarFallback>
+                    <AvatarFallback className="uppercase">
+                        {getFirstLetter(data.name)}
+                    </AvatarFallback>
                 </Avatar>
                 <div>
                     <Heading4>{data.name}</Heading4>
