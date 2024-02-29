@@ -18,7 +18,7 @@ const sidebarNavItems = [
     },
     {
         title: 'Appearance',
-        href: '/user/settings/apperance',
+        href: '/user/settings/appearance',
     },
     {
         title: 'Notifications',
