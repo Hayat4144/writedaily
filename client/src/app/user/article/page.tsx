@@ -8,6 +8,7 @@ import userArticles from '@/externalapi/UserArticles';
 import CardItem from '@/components/user/articles/CardItem';
 import WriteDrawer from '@/components/Navbar/WriteDrawer';
 import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
+import Link from 'next/link';
 
 export default async function page({
     searchParams,
@@ -20,10 +21,9 @@ export default async function page({
     const session = await getServerSession(authOptions);
     const token = session?.user.AccessToken;
     const { data, error } = await userArticles(token as string);
+    if (error) throw new Error(error);
     const draftsData = data.results.filter((item: any) => !item.isPublished);
-    const pubslishedData = data.results.filter(
-        (item: any) => item.isPubslished,
-    );
+    const pubslishedData = data.results.filter((item: any) => item.isPublished);
     return (
         <Fragment>
             <header>
@@ -74,7 +74,12 @@ export default async function page({
                                 </Paragraph>
                             ) : (
                                 pubslishedData.map((item: any) => (
-                                    <CardItem key={item.id} data={item} />
+                                    <Link
+                                        key={item.id}
+                                        href={`/user/article/${item.id}`}
+                                    >
+                                        <CardItem data={item} />
+                                    </Link>
                                 ))
                             )}
                         </TabsContent>

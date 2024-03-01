@@ -1,5 +1,17 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const listenArticle = async (encodedData: any) => {
+    const response = await fetch(`${BASE_URL}/api/v1/article/listen`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/octet-stream',
+        },
+        body: encodedData,
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
+
 export const privateArticle = async (token: string, page?: number) => {
     const response = await fetch(
         `${BASE_URL}/api/v1/read/articles?page=${page || 1}`,
