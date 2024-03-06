@@ -1,5 +1,15 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const publishArticle = async (publishedData: FormData, config: any) => {
+    const response = await fetch(`${BASE_URL}/api/v1/publish/article`, {
+        method: 'POST',
+        headers: config,
+        body: publishedData,
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
+
 export const listenArticle = async (encodedData: any) => {
     const response = await fetch(`${BASE_URL}/api/v1/article/listen`, {
         method: 'POST',

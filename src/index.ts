@@ -18,6 +18,7 @@ import { cpus } from 'os';
 import cluster from 'cluster';
 import CloudinaryConfiguration from '@config/cloudinaryConfig';
 import userRoutes from 'routes/userroutes';
+import bodyParser from 'body-parser';
 
 const numCPUs = cpus().length;
 
@@ -50,7 +51,7 @@ const StartServer = () => {
     );
 
     app.use(cors());
-    app.use(express.json());
+    app.use(bodyParser.json());
     app.use(hpp());
     app.disable('x-powered-by');
 

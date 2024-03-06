@@ -2,7 +2,7 @@ import { httpStatusCode } from '@customtype/index';
 import db from '@db/index';
 import { Topics } from '@db/schema';
 import { CustomError } from '@utils/CustomError';
-import { Column, asc, eq, sql } from 'drizzle-orm';
+import { Column, asc, eq, ilike, sql } from 'drizzle-orm';
 
 class TopicsService {
     async createTag(name: string) {
@@ -31,6 +31,14 @@ class TopicsService {
             .from(Topics)
             .limit(20)
             .orderBy(asc(Topics.name));
+        return topics;
+    }
+
+    async searchTopics(name: string) {
+        const topics = await db
+            .select({ id: Topics.id, name: Topics.name })
+            .from(Topics)
+            .where(ilike(Topics.name, `%${name}%`));
         return topics;
     }
 

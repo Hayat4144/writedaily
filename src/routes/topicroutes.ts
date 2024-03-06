@@ -2,6 +2,7 @@ import {
     addTopics,
     deleteTopics,
     readTopics,
+    searchTopics,
     updateTopics,
 } from '@controller/tags/api';
 import validate from '@validation/index';
@@ -17,22 +18,24 @@ const topicsRoutes = express.Router();
 topicsRoutes.get('/api/:version/read/tag', readTopics);
 
 topicsRoutes.post(
-    '/api/:version/add/tag',
+    '/api/:version/add/topic',
     addTopicValidate,
     validate,
     addTopics,
 );
 topicsRoutes.put(
-    '/api/:version/update/tag',
+    '/api/:version/update/topic',
     updateTopicValidate,
     validate,
     updateTopics,
 );
 topicsRoutes.delete(
-    '/api/:version/delete/tag/:deleteId/',
+    '/api/:version/delete/topic/:deleteId/',
     validateCuid('deleteId'),
     validate,
     deleteTopics,
 );
+
+topicsRoutes.get('/api/:version/search/topic', searchTopics);
 
 export default topicsRoutes;

@@ -1,5 +1,11 @@
 'use client';
-import React, { Fragment, useState, useEffect } from 'react';
+import React, {
+    Fragment,
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+} from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,24 +13,52 @@ import { Heading3, Paragraph } from '@/components/ui/typography';
 import { Icons } from '../icons';
 import { AspectRatio } from '../ui/aspect-ratio';
 import Image from 'next/image';
+import debounce from 'lodash.debounce';
+import searchTopic, { Addtopic } from '@/externalapi/Topics';
+import { toast } from '../ui/use-toast';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+    DropdownMenuItem,
+} from '../ui/dropdown-menu';
+import { publishArticle } from '@/externalapi/article';
+import { useSession } from 'next-auth/react';
 
 interface PublishedArticleFormProps {
     result: any;
 }
+
+interface topicObject {
+    id: string;
+    name: string;
+}
+
 export default function PublishedArticle({
     result,
 }: PublishedArticleFormProps) {
     const [title, setTitle] = useState<string>(result.title);
     const [description, setDescription] = useState<string>(result.description);
     const [topic, setTopic] = useState<string>('');
-    const [topicsArray, setTopicsArray] = useState<string[]>([]);
+    const [topicsArray, setTopicsArray] = useState<topicObject[]>([]);
     const [file, setFile] = useState<File | null>(null);
-    const [image, setImage] = useState<File | null>(null);
+    const [image, setImage] = useState<string | ArrayBuffer | null>(null);
+    const [topicsData, setTopicsData] = useState<[]>([]);
+    const [open, setOpen] = useState<boolean>(false);
+    const session = useSession();
 
-    const KeydownHandler = (e: React.KeyboardEvent) => {
+    const token = session.data?.user.AccessToken as string;
+
+    const KeydownHandler = async (e: React.KeyboardEvent) => {
         if (e.keyCode === 13 && topic.length > 0) {
-            setTopicsArray((prevState) => [...prevState, topic]);
-            setTopic('');
+            const id = Math.random().toString();
+            addTopic(id, topic);
+            const { data, error } = await Addtopic(topic);
+            removeTopic(id);
+            if (error) {
+                return toast({ title: error, variant: 'destructive' });
+            }
+            addTopic(data.id, data.name);
         }
     };
 
@@ -34,20 +68,88 @@ export default function PublishedArticle({
         setFile(file);
     };
 
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+
+        const droppedFiles = e.dataTransfer.files;
+
+        if (droppedFiles.length > 0) {
+            const [file] = Array.from(droppedFiles);
+
+            // Check if the dropped file is an image
+            if (file.type.startsWith('image/')) {
+                setFile(file);
+            } else {
+                toast({
+                    title: 'Invalid file type. Please drop an image.',
+                    variant: 'destructive',
+                });
+            }
+        }
+    };
+
     useEffect(() => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImage(reader.result as string);
+                setImage(reader.result);
             };
             reader.readAsDataURL(file);
         }
     }, [file]);
 
-    console.log(file);
+    const sendRequest = useCallback(async (value: string) => {
+        const { data, error } = await searchTopic(value);
+        setOpen((prevState) => !prevState);
+        if (error) {
+            return toast({ title: error, variant: 'destructive' });
+        }
+        setTopicsData(data);
+    }, []);
+
+    const debouncedSendRequest = useMemo(() => {
+        return debounce(sendRequest, 300);
+    }, [sendRequest]);
+
+    const changeHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setTopic(value);
+        debouncedSendRequest(value);
+    };
+
+    const removeTopic = (id: string) => {
+        const updatedTopics = topicsArray.filter((item) => item.id !== id);
+        setTopicsArray(updatedTopics);
+    };
+
+    const addTopic = (id: string, name: string) => {
+        setTopicsArray((prevState) => [...prevState, { id, name }]);
+        setTopic('');
+    };
+
+    const SubmitHandler = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const publishedData = new FormData();
+        publishedData.append('articleId', result.id);
+        publishedData.append(
+            'topicsId',
+            JSON.stringify(topicsArray.map((item) => item.id)),
+        );
+        publishedData.append('title', title);
+        publishedData.append('description', description);
+        if (file) {
+            publishedData.append('articleImage', file);
+        }
+        const config = {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+        };
+        const { data, error } = await publishArticle(publishedData, config);
+        console.log(data, error);
+    };
 
     return (
-        <Fragment>
+        <form onSubmit={SubmitHandler} encType={'multipart/form-data'}>
             <div className="md:col-span-2">
                 <Heading3>Article Preview</Heading3>
                 <div className="space-y-2 my-5 md:my-0">
@@ -62,27 +164,53 @@ export default function PublishedArticle({
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Your article description"
                     />
+                    <DropdownMenu open={open} onOpenChange={setOpen}>
+                        <DropdownMenuTrigger></DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" className="mx-5 w-20">
+                            {topicsData.length < 1 ? (
+                                <Paragraph className="px-2">
+                                    No topic has been found.{' '}
+                                </Paragraph>
+                            ) : null}
+                            {topicsData.length > 0
+                                ? topicsData.map((item: any) => (
+                                      <DropdownMenuItem
+                                          key={item.id}
+                                          onClick={() =>
+                                              addTopic(item.id, item.name)
+                                          }
+                                      >
+                                          {item.name}
+                                      </DropdownMenuItem>
+                                  ))
+                                : null}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <div className="border bg-accent rounded-md border-input flex items-center px-2">
                         <div className="flex items-center space-x-1">
                             {topicsArray.map((item) => (
                                 <button
-                                    key={item}
+                                    key={item.id}
                                     className="h-6 inline-flex items-center text-sm
                                 border border-input space-x-1 px-1 bg-white"
                                 >
-                                    <span>{item}</span>
-                                    <Icons.close size={14} />
+                                    <span>{item.name}</span>
+                                    <Icons.close
+                                        onClick={() => removeTopic(item.id)}
+                                        size={14}
+                                    />
                                 </button>
                             ))}
                         </div>
                         <input
+                            type="text"
                             className="outline-none px-5 py-2 h-10 my-1 
                             text-sm bg-transparent
                             w-full placeholder:text-muted-foreground placeholder:text-sm"
                             placeholder="Add topics"
+                            value={topic}
                             onKeyDown={KeydownHandler}
-                            onChange={(e) => setTopic(e.target.value)}
-                            id="topic"
+                            onChange={changeHandler}
                         />
                     </div>
                 </div>
@@ -92,7 +220,13 @@ export default function PublishedArticle({
                     Add or change topics (up to 5) so readers know what your
                     story is about
                 </Paragraph>
-                <div className="flex items-center justify-center w-full">
+                <div
+                    className="flex items-center justify-center w-full"
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                    }}
+                    onDrop={handleDrop}
+                >
                     <label
                         htmlFor="dropzone-file"
                         className="flex flex-col items-center justify-center w-full h-64 border-2                             border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700
@@ -141,6 +275,6 @@ export default function PublishedArticle({
 
                 <Button>Publish</Button>
             </section>
-        </Fragment>
+        </form>
     );
 }

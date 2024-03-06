@@ -25,6 +25,17 @@ export const updateTopics = asyncHandler(
     },
 );
 
+export const searchTopics = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { name } = req.query;
+        const topicsService = new TopicsService();
+        const topics = await topicsService.searchTopics(name as string);
+        return res.status(httpStatusCode.OK).json({
+            data: topics,
+        });
+    },
+);
+
 export const deleteTopics = asyncHandler(
     async (req: Request, res: Response) => {
         const { deleteId } = req.params;

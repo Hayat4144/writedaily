@@ -57,9 +57,9 @@ articleroutes.get(
 );
 articleroutes.post(
     '/api/:version/publish/article',
-    publishArticleValidate,
-    validate,
-    authMiddleware,
+    // publishArticleValidate,
+    // validate,
+    // authMiddleware,
     publishArticle,
 );
 articleroutes.get('/api/:version/search/articles', SearchArticle);
