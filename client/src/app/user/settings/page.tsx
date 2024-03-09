@@ -1,8 +1,16 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import ProfileForm from '@/components/forms/settings/ProfileForm';
 import { Separator } from '@/components/ui/separator';
+import { userById } from '@/externalapi/UserService';
+import { getServerSession } from 'next-auth';
 import React from 'react';
 
-export default function page() {
+export default async function page() {
+    const session = await getServerSession(authOptions);
+    const { data, error } = await userById(session?.user.id as string);
+    if (error) throw new Error(error);
+    const { name, username, bio } = data;
+    const formData = { name, username, bio };
     return (
         <div className="space-y-6">
             <div>
@@ -12,7 +20,7 @@ export default function page() {
                 </p>
             </div>
             <Separator />
-            <ProfileForm />
+            <ProfileForm values={formData} />
         </div>
     );
 }

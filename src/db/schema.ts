@@ -13,6 +13,8 @@ export const users = pgTable('user', {
     name: varchar('name', { length: 256 }).notNull(),
     email: varchar('email', { length: 256 }).notNull().unique(),
     password: varchar('password', { length: 256 }).notNull(),
+    bio: varchar('bio'),
+    username: varchar('username'),
     provider: varchar('provider'),
     providerId: varchar('providerId'),
     profilePic: varchar('profilePic'),
@@ -64,6 +66,8 @@ export const articles = pgTable('article', {
         .notNull(),
 
     content: jsonb('content'),
+    publishedImage: varchar('url'),
+    publicId: varchar('public_id'),
     createdAt: timestamp('created_at').defaultNow(),
 });
 

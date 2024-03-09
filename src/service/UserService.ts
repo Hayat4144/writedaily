@@ -30,6 +30,7 @@ interface userservice {
     isValidToken(token: string): Promise<TokenData | undefined>;
     deleteToken(id: string): Promise<DeletedData>;
     updatePassword(userId: string, password: string): Promise<updatedResponse>;
+    updateProfile(userId: string, data: any): Promise<any>;
 }
 
 class UserService implements userservice {
@@ -37,6 +38,19 @@ class UserService implements userservice {
 
     constructor() {
         this.jwtTokenOption = options;
+    }
+
+    async updateProfile(userId: string, data: any) {
+        const updatedData = await db
+            .update(users)
+            .set(data)
+            .where(eq(users.id, userId))
+            .returning({
+                name: users.name,
+                username: users.username,
+                bio: users.bio,
+            });
+        return updatedData[0];
     }
 
     async updatePassword(
@@ -60,11 +74,9 @@ class UserService implements userservice {
         return { deleted: true, id: droptoken[0].id };
     }
 
-    async isValidToken(
-        token: string,
-    ): Promise<TokenData | undefined> {
+    async isValidToken(token: string): Promise<TokenData | undefined> {
         const isValid = await db.query.tokens.findFirst({
-            where: (eq(tokens.token, token)),
+            where: eq(tokens.token, token),
         });
         return isValid;
     }

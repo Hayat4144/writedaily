@@ -11,39 +11,75 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
+import { updateProfile } from '@/externalapi/UserService';
 import { profileFormSchema } from '@/lib/validation/settings/SettingsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import React, { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-export default function ProfileForm() {
+interface formdata {
+    name: string;
+    username?: string | null;
+    bio?: string | null;
+}
+
+interface ProfileFormProps {
+    values: formdata;
+}
+
+export default function ProfileForm({ values }: ProfileFormProps) {
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
-            email: '',
-            username: '',
+            name: values.name,
+            username: values.username ?? '',
+            bio: values.bio ?? '',
         },
         mode: 'onChange',
     });
 
-    function onSubmit(data: ProfileFormValues) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { data: session, update } = useSession();
+    const token = session?.user.AccessToken as string;
+
+    async function onSubmit(value: ProfileFormValues) {
+        setIsLoading((prevState) => !prevState);
+        const { data, error } = await updateProfile(token, value);
+        setIsLoading((prevState) => !prevState);
+        if (error) return toast({ title: error, variant: 'destructive' });
         toast({
-            title: 'You submitted the following values:',
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">
-                        {JSON.stringify(data, null, 2)}
-                    </code>
-                </pre>
-            ),
+            title: 'Your profile has been updated successfully.',
+        });
+        form.reset();
+        update({
+            ...session,
+            user: {
+                ...session?.user,
+                name: data.name,
+            },
         });
     }
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Hayat ilyas" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="username"
@@ -57,22 +93,7 @@ export default function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder="ihayat855@gmail.com"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <FormField
                     control={form.control}
                     name="bio"
@@ -90,7 +111,16 @@ export default function ProfileForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Update profile</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                        <Fragment>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Please wait
+                        </Fragment>
+                    ) : (
+                        'Update profile'
+                    )}
+                </Button>
             </form>
         </Form>
     );
