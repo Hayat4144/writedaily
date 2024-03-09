@@ -34,18 +34,17 @@ import { useSession } from 'next-auth/react';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 
-const NameSchema = z.object({
-    name: z
-        .string()
-        .min(4, {
-            message: 'Name must be at least 4 characters.',
-        })
-        .max(20, {
-            message: 'Name must not be longer than 20 characters.',
-        }),
-});
+const EmailSchema = z
+    .object({
+        email: z.string().email({ message: 'Please enter a valid email.' }),
+        confirmemail: z.string(),
+    })
+    .refine((data) => data.email === data.confirmemail, {
+        message: "Email doesn't match.",
+        path: ['confirmemail'],
+    });
 
-type AccountFormValues = z.infer<typeof NameSchema>;
+type AccountFormValues = z.infer<typeof EmailSchema>;
 
 export default function AccountForm() {
     const session = useSession();
@@ -56,10 +55,12 @@ export default function AccountForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<AccountFormValues>({
-        resolver: zodResolver(NameSchema),
+        resolver: zodResolver(EmailSchema),
         defaultValues: {
-            name: '',
+            email: '',
+            confirmemail: '',
         },
+        mode: 'onChange',
     });
 
     function onSubmit(data: AccountFormValues) {}
@@ -85,22 +86,43 @@ export default function AccountForm() {
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-8"
+                    className="space-y-2"
                 >
                     <FormField
                         control={form.control}
-                        name="name"
+                        name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Your name" {...field} />
+                                    <Input
+                                        placeholder="Enter your new email"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <Button type="submit">Change Name</Button>
+
+                    <FormField
+                        control={form.control}
+                        name="confirmemail"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel> Confirm email</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Confirm your email"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button type="submit">Update Email </Button>
                 </form>
             </Form>
             <Separator />
