@@ -198,6 +198,11 @@ export default function PublishedArticle({
                                 : null}
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <Paragraph>
+                        Add or change topics (up to 5) so readers know what your
+                        story is about
+                    </Paragraph>
+
                     <div className="border bg-accent rounded-md border-input flex items-center px-2">
                         <div className="flex items-center space-x-1">
                             {topicsArray.map((item) => (
@@ -221,28 +226,24 @@ export default function PublishedArticle({
                             w-full placeholder:text-muted-foreground placeholder:text-sm"
                             placeholder="Add topics"
                             value={topic}
+                            disabled={topicsArray.length >= 5}
                             onKeyDown={KeydownHandler}
                             onChange={changeHandler}
                         />
                     </div>
-                    <Button disabled={isLoading} className="hidden md:block">
+                    <Button disabled={isLoading} className="hidden md:flex">
                         {isLoading ? (
-                            <>
-                                {' '}
+                            <Fragment>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Please wait...
-                            </>
+                                Please wait
+                            </Fragment>
                         ) : (
-                            'Published'
+                            'Publish'
                         )}
                     </Button>
                 </div>
             </div>
             <section className="space-y-2">
-                <Paragraph>
-                    Add or change topics (up to 5) so readers know what your
-                    story is about
-                </Paragraph>
                 <div
                     className="flex items-center justify-center w-full"
                     onDragOver={(e) => {
@@ -298,13 +299,12 @@ export default function PublishedArticle({
 
                 <Button disabled={isLoading} className="md:hidden">
                     {isLoading ? (
-                        <>
-                            {' '}
+                        <Fragment>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Please wait...
-                        </>
+                            Please wait
+                        </Fragment>
                     ) : (
-                        'Published'
+                        'Publish'
                     )}
                 </Button>
             </section>

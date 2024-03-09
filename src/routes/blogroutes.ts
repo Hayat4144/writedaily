@@ -18,7 +18,6 @@ import validate from '@validation/index';
 import validateCuid from '@validation/validateCuid';
 import express from 'express';
 import authMiddleware from 'middleware/authMiddleware';
-import { publishMiddleware } from 'middleware/uploadMiddleware';
 
 const articleroutes = express.Router();
 
