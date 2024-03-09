@@ -24,6 +24,7 @@ import {
 } from '../ui/dropdown-menu';
 import { publishArticle } from '@/externalapi/article';
 import { useSession } from 'next-auth/react';
+import { Loader2 } from 'lucide-react';
 
 interface PublishedArticleFormProps {
     result: any;
@@ -46,6 +47,7 @@ export default function PublishedArticle({
     const [topicsData, setTopicsData] = useState<[]>([]);
     const [open, setOpen] = useState<boolean>(false);
     const session = useSession();
+    const [isLoading, setisLoading] = useState<boolean>(false);
 
     const token = session.data?.user.AccessToken as string;
 
@@ -129,6 +131,7 @@ export default function PublishedArticle({
 
     const SubmitHandler = async (e: React.FormEvent) => {
         e.preventDefault();
+        setisLoading((prevState) => !prevState);
         const publishedData = new FormData();
         publishedData.append('articleId', result.id);
         publishedData.append(
@@ -138,19 +141,28 @@ export default function PublishedArticle({
         publishedData.append('title', title);
         publishedData.append('description', description);
         if (file) {
-            publishedData.append('articleImage', file);
+            publishedData.append('publishedImage', file);
         }
         const config = {
-            'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`,
         };
         const { data, error } = await publishArticle(publishedData, config);
-        console.log(data, error);
+        setisLoading((prevState) => !prevState);
+        if (error) return toast({ title: error, variant: 'destructive' });
+        toast({ title: data });
+        setFile(null);
+        setImage(null);
+        setTopicsArray([]);
+        topicsArray.push();
     };
 
     return (
-        <form onSubmit={SubmitHandler} encType={'multipart/form-data'}>
-            <div className="md:col-span-2">
+        <form
+            onSubmit={SubmitHandler}
+            encType={'multipart/form-data'}
+            className="grid grid-col-1 md:grid-cols-2 gap-5"
+        >
+            <div>
                 <Heading3>Article Preview</Heading3>
                 <div className="space-y-2 my-5 md:my-0">
                     <Input
@@ -213,9 +225,20 @@ export default function PublishedArticle({
                             onChange={changeHandler}
                         />
                     </div>
+                    <Button disabled={isLoading} className="hidden md:block">
+                        {isLoading ? (
+                            <>
+                                {' '}
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait...
+                            </>
+                        ) : (
+                            'Published'
+                        )}
+                    </Button>
                 </div>
             </div>
-            <section className="space-y-2 md:col-span-2">
+            <section className="space-y-2">
                 <Paragraph>
                     Add or change topics (up to 5) so readers know what your
                     story is about
@@ -273,7 +296,17 @@ export default function PublishedArticle({
                     </AspectRatio>
                 ) : null}
 
-                <Button>Publish</Button>
+                <Button disabled={isLoading} className="md:hidden">
+                    {isLoading ? (
+                        <>
+                            {' '}
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Please wait...
+                        </>
+                    ) : (
+                        'Published'
+                    )}
+                </Button>
             </section>
         </form>
     );

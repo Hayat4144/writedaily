@@ -23,13 +23,13 @@ export default async function page({ params }: PublishedProps) {
         error.status === httpStatusCode.NOT_FOUND
             ? notFound()
             : (() => {
-                  throw new Error(error.message);
-              })();
+                throw new Error(error.message);
+            })();
     }
 
     const articleData = data[0];
     return (
-        <main className="grid grid-cols-1 gap-5 md:grid-cols-4 mx-5 md:mx-10  my-10">
+        <main className="mx-5 md:mx-10 my-10">
             <PublishedArticle result={articleData} />
         </main>
     );

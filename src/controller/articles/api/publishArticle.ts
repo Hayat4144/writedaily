@@ -1,136 +1,148 @@
 import { httpStatusCode } from '@customtype/index';
 import asyncHandler from '@utils/asynHandler';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import busboy from 'busboy';
-import { v2 as cloudinary } from 'cloudinary';
-import { UploadApiResponse } from 'cloudinary';
+import { UploadApiResponse, v2 as cloudinary } from 'cloudinary'
 import { isCuid } from '@paralleldrive/cuid2';
+import { isValidCuidArray, isValidJSONArray } from '@utils/index';
+import ArticleService from '@service/ArticleService';
+import { CustomError } from '@utils/CustomError';
+import { Article } from '@db/schema';
 
-const uploadPromise = async (
-    bb: busboy.Busboy,
-): Promise<UploadApiResponse[]> => {
-    return new Promise((resolve, reject) => {
-        const uploads: UploadApiResponse[] = [];
+const articleService = new ArticleService();
 
-        const uploader = () => {
-            return cloudinary.uploader.upload_stream((error, data) => {
-                if (error) reject(error);
-                else if (data) {
-                    uploads.push(data);
-                    resolve(uploads);
-                }
-            });
-        };
-
-        bb.on('file', (name, file, info) => {
-            if (name === 'articleImage') file.pipe(uploader());
-            else reject({ error: 'Invalid file field' });
-        });
-
-        bb.on('error', (error) => {
-            reject({ error });
-        });
-    });
-};
-
-function isValidCuidArray(value: any) {
-    return Array.isArray(value) && value.every(isCuid);
-}
-
-function isValidJSONArray(str: string) {
-    try {
-        const array = JSON.parse(str);
-        return Array.isArray(array);
-    } catch (error) {
-        return false;
-    }
-}
-
-const publishArticle = asyncHandler(async (req: Request, res: Response) => {
-    const bb = busboy({
-        headers: req.headers,
-    });
-
-    let articleId;
-    let topicsId;
-    let title;
-    let description;
-    let isValidRequest = false;
+const publishArticle = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const validFields = ['articleId', 'topicsId', 'title', 'description'];
     const receivedFields: string[] = [];
+    const fieldData = new Map()
 
-    bb.on('field', (fieldname, val) => {
-        console.log('fieldname', fieldname);
-        receivedFields.push(fieldname);
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
 
-        switch (fieldname) {
-            case 'articleId':
-                if (!isCuid(val)) {
-                    return res.status(httpStatusCode.BAD_REQUEST).send({
-                        error: 'articleId must be a valid cuid',
-                    });
-                }
-                articleId = val;
-                break;
-            case 'topicsId':
-                const topicsIdArray = isValidJSONArray(val);
-                if (!topicsIdArray || !isValidCuidArray(JSON.parse(val))) {
-                    return res.status(httpStatusCode.BAD_REQUEST).json({
-                        error: 'topicsId must be a valid array of cuid',
-                    });
-                }
-                topicsId = topicsIdArray;
-                break;
-            case 'title':
-                if (val.length < 1) {
-                    return res.status(httpStatusCode.BAD_REQUEST).json({
-                        error: 'Title cannot be empty',
-                    });
-                }
-                title = val;
-                break;
-            case 'description':
-                if (val.length < 1) {
-                    return res.status(httpStatusCode.BAD_REQUEST).json({
-                        error: 'Description cannot be empty',
-                    });
-                }
-                description = val;
-                break;
-            default:
-                break;
-        }
+    const uploadedData: UploadApiResponse[] = []
+
+    const bb = busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: 1000000 * 2,
+            fields: 5,
+        },
     });
 
+    const uploader = () => {
+        try {
+            return cloudinary.uploader.upload_stream(async (error, data) => {
+                try {
+                    if (error) return res.status(httpStatusCode.BAD_REQUEST).json({ error: error.message })
+                    else if (data) {
+                        uploadedData.push(data)
+                        const updatedData: Partial<Article> = {
+                            title: fieldData.get('title'),
+                            description: fieldData.get('description'),
+                            isPublished: true,
+                        }
+                        const published = await articleService.PublishArticle(fieldData.get('articleId'), fieldData.get('topicsId'), req.user_id, updatedData)
+
+                        if (!published) {
+                            return res.status(httpStatusCode.BAD_REQUEST).json({ error: "Something went wrong please try again." })
+                        }
+                        return res.status(httpStatusCode.OK).json({ data: `${published.data.title} has been published successfully.` })
+                    }
+                } catch (error) {
+                    cloudinary.uploader.destroy(uploadedData[0].public_id)
+                    if (error instanceof CustomError) {
+                        return res.status(error.statusCode).json({ error: error.message })
+                    } else {
+                        return res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({ error: (error as any).message })
+                    }
+
+                }
+
+            })
+        } catch (error) {
+            return res.status(httpStatusCode.BAD_REQUEST).json({ error: error })
+        }
+
+    }
+
+    bb.on('field', (fieldname, value) => {
+        receivedFields.push(fieldname)
+
+
+        if (fieldname === 'articleId') {
+            if (!isCuid(value)) {
+                return res.status(httpStatusCode.BAD_REQUEST).json({ error: "ArticleId must be a cuid." })
+            }
+            fieldData.set(fieldname, value)
+        }
+        else if (fieldname === 'topicsId') {
+            const topicsArray = JSON.parse(value)
+            const topicsIdArray = isValidJSONArray(value);
+            if (!topicsIdArray || !isValidCuidArray(topicsArray)) {
+                return res.status(httpStatusCode.BAD_REQUEST).json({
+                    error: 'topicsId must be a valid array of cuid',
+                });
+            }
+            fieldData.set(fieldname, topicsArray)
+        }
+        else if (fieldname === 'title') {
+            if (!value.length) {
+                return res.status(httpStatusCode.BAD_REQUEST).json({
+                    error: 'Title cannot be empty',
+                });
+            }
+            fieldData.set(fieldname, value)
+        }
+        else if (fieldname === 'description') {
+            if (!value.length) {
+                return res.status(httpStatusCode.BAD_REQUEST).json({
+                    error: 'Description cannot be empty',
+                });
+            }
+            fieldData.set(fieldname, value)
+        }
+    })
+
+    bb.on('file', (fieldName, file, info) => {
+        if (fieldName !== 'publishedImage') {
+            return res.status(httpStatusCode.BAD_REQUEST).json({ error: `Invalid field name: ${fieldName}` })
+        }
+        if (!allowedMimeTypes.includes(info.mimeType)) {
+            return res.status(httpStatusCode.BAD_REQUEST).json({ error: "file type does not supported." })
+        }
+        const missingFields = validFields.filter(
+            (field) => !receivedFields.includes(field),
+        );
+        if (!missingFields.length) {
+            file.pipe(uploader())
+        } else {
+            file.resume()
+        }
+    })
+
+    bb.on('error', (error) => {
+        return res.status(httpStatusCode.BAD_REQUEST).json({ error })
+    })
+
+    bb.on('fieldsLimit', () => {
+        return res.status(httpStatusCode.BAD_REQUEST).json({ error: "Unknown field is submited." })
+    })
+
     bb.on('finish', () => {
-        console.log('finished');
+        console.log('finished')
         const missingFields = validFields.filter(
             (field) => !receivedFields.includes(field),
         );
 
         if (missingFields.length > 0) {
-            return res.status(httpStatusCode.BAD_REQUEST).send({
+            return res.status(httpStatusCode.BAD_REQUEST).json({
                 error: `Missing fields: ${missingFields.join(', ')}`,
             });
         }
-
-        // Continue processing or respond to the client
-    });
-    // const uploaded = await uploadPromise();
-    // const uploadedData = uploaded.map((upload) => ({
-    //     url: upload.secure_url,
-    //     publicId: upload.public_id,
-    // }));
-    //
-    // return res.status(httpStatusCode.OK).json({
-    //     data: `${uploadedData[0].url} has been published successfully.`,
-    //});
-    //
-    bb.on('file', (name, file) => {
-        console.log(name, receivedFields);
-    });
+    })
 
     req.pipe(bb);
-});
 
+})
 export default publishArticle;

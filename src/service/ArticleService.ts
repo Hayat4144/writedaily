@@ -33,6 +33,7 @@ interface Articles {
         articleId: string,
         publishUnderTopicId: string[],
         userId: string,
+        updatedData: any,
     ): Promise<publishArticleReturnType>;
     searchArticles(query: string): Promise<any>;
     articleFeed(Skip: number, ResultPerPage: number): Promise<any>;
@@ -69,6 +70,7 @@ class ArticleService implements Articles {
         articleId: string,
         publishUnderTopicId: string[],
         userId: string,
+        updatedData: any,
     ): Promise<publishArticleReturnType> {
         const isExist = await this.isArticleExist(articleId);
         if (!isExist) {
@@ -105,10 +107,9 @@ class ArticleService implements Articles {
         const publishedArticle = await db.transaction(async (trx) => {
             const updatedArticle = await trx
                 .update(articles)
-                .set({ isPublished: true })
+                .set(updatedData)
                 .where(eq(articles.id, isExist.id))
                 .returning({ title: articles.title });
-
             const articleTopicPromises = topics.map((topic) =>
                 trx
                     .insert(ArticleTopics)
