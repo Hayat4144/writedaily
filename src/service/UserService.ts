@@ -8,7 +8,7 @@ import {
 import db from '@db/index';
 import { TokenData, User, tokens, users } from '@db/schema';
 import { CustomError } from '@utils/CustomError';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, getTableColumns } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { getPrivateKeySecret, options } from '@utils/jwt';
@@ -41,15 +41,13 @@ class UserService implements userservice {
     }
 
     async updateProfile(userId: string, data: any) {
+        const { password, providerId, provider, createdAt, ...userColumn } =
+            getTableColumns(users);
         const updatedData = await db
             .update(users)
             .set(data)
             .where(eq(users.id, userId))
-            .returning({
-                name: users.name,
-                username: users.username,
-                bio: users.bio,
-            });
+            .returning(userColumn);
         return updatedData[0];
     }
 

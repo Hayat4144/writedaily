@@ -17,7 +17,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Paragraph } from '@/components/ui/typography';
+import { Heading4, Paragraph } from '@/components/ui/typography';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -33,42 +33,95 @@ import { getFirstLetter } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
+import { changePassword, updateProfilePic } from '@/externalapi/UserService';
+import { toast } from '@/components/ui/use-toast';
 
-const EmailSchema = z
+const PasswordSchema = z
     .object({
-        email: z.string().email({ message: 'Please enter a valid email.' }),
-        confirmemail: z.string(),
+        password: z
+            .string()
+            .min(4, { message: 'password must be at least 4 character long.' }),
+        confirmpassword: z.string(),
+        newpassowrd: z
+            .string()
+            .min(8, {
+                message: 'Password must be at least 8 characters long',
+            })
+            .max(100)
+            .regex(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/,
+                {
+                    message:
+                        'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character',
+                },
+            ),
     })
-    .refine((data) => data.email === data.confirmemail, {
-        message: "Email doesn't match.",
-        path: ['confirmemail'],
+    .refine((data) => data.newpassowrd === data.confirmpassword, {
+        message: "Password doesn't match.",
+        path: ['confirmpassword'],
     });
 
-type AccountFormValues = z.infer<typeof EmailSchema>;
+type AccountFormValues = z.infer<typeof PasswordSchema>;
 
 export default function AccountForm() {
-    const session = useSession();
-    const [profilePic, setProfilePic] = useState(
-        session.status !== 'loading' ? session.data?.user.image : '',
-    );
+    const { data: session, update, status } = useSession();
+    const [profilePic, setProfilePic] = useState('');
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoading2, setIsLoading2] = useState(false);
+    const token = session?.user.AccessToken as string;
 
     const form = useForm<AccountFormValues>({
-        resolver: zodResolver(EmailSchema),
+        resolver: zodResolver(PasswordSchema),
         defaultValues: {
-            email: '',
-            confirmemail: '',
+            password: '',
+            newpassowrd: '',
+            confirmpassword: '',
         },
         mode: 'onChange',
     });
 
-    function onSubmit(data: AccountFormValues) {}
+    useEffect(() => {
+        if (status !== 'loading') {
+            setProfilePic(session?.user.image as string);
+        }
+    }, [status]);
+
+    async function onSubmit(values: AccountFormValues) {
+        setIsLoading((prevState) => !prevState);
+        const { data, error } = await changePassword(token, values);
+        setIsLoading((prevState) => !prevState);
+        if (error) return toast({ title: error, variant: 'destructive' });
+        toast({ title: data });
+        form.reset();
+    }
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         const [file] = Array.from(e.target.files);
         setFile(file);
+    };
+
+    const uploadHandler = async () => {
+        setIsLoading2((prevState) => !prevState);
+        const formData = new FormData();
+        if (!file) {
+            setIsLoading2((prevState) => !prevState);
+            return toast({ title: 'There is image to upload.' });
+        }
+        formData.append('profilePic', file);
+        const { data, error } = await updateProfilePic(token, formData);
+        setIsLoading2((prevState) => !prevState);
+        if (error) return toast({ title: error, variant: 'destructive' });
+        toast({ title: 'uploaded' });
+        setProfilePic(data);
+        update({
+            ...session,
+            user: {
+                ...session?.user,
+                image: data,
+            },
+        });
     };
 
     useEffect(() => {
@@ -90,13 +143,13 @@ export default function AccountForm() {
                 >
                     <FormField
                         control={form.control}
-                        name="email"
+                        name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>Old Password</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="Enter your new email"
+                                        placeholder="Enter your old password"
                                         {...field}
                                     />
                                 </FormControl>
@@ -104,16 +157,31 @@ export default function AccountForm() {
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
-                        name="confirmemail"
+                        name="newpassowrd"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel> Confirm email</FormLabel>
+                                <FormLabel>New Password</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="Confirm your email"
+                                        placeholder="Enter your new password"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="confirmpassword"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel> Confirm password</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Confirm your password"
                                         {...field}
                                     />
                                 </FormControl>
@@ -122,7 +190,16 @@ export default function AccountForm() {
                         )}
                     />
 
-                    <Button type="submit">Update Email </Button>
+                    <Button type="submit" disabled={isLoading}>
+                        {isLoading ? (
+                            <Fragment>
+                                <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                                please wait
+                            </Fragment>
+                        ) : (
+                            'Change password'
+                        )}
+                    </Button>
                 </form>
             </Form>
             <Separator />
@@ -133,8 +210,8 @@ export default function AccountForm() {
                         <AvatarImage src={profilePic} />
                         <AvatarFallback className="uppercase">
                             {getFirstLetter(
-                                session.status !== 'loading'
-                                    ? (session.data?.user.name as string)
+                                status !== 'loading'
+                                    ? (session?.user.name as string)
                                     : '',
                             )}
                         </AvatarFallback>
@@ -189,10 +266,11 @@ export default function AccountForm() {
                     </div>
                 </div>
                 <Button
-                    className={`${file ? 'block mt-3' : 'hidden'}`}
-                    disabled={isLoading}
+                    className={`${file ? 'flex mt-3' : 'hidden'}`}
+                    disabled={isLoading2}
+                    onClick={uploadHandler}
                 >
-                    {isLoading ? (
+                    {isLoading2 ? (
                         <Fragment>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Please wait

@@ -8,7 +8,8 @@ export default function page() {
             <div>
                 <h3 className="text-lg font-medium">Account</h3>
                 <p className="text-sm text-muted-foreground">
-                    Update your account settings.{' '}
+                    Update your account by changing your password, upate profile
+                    pic and deactivate your account or delete your account.
                 </p>
             </div>
             <Separator />

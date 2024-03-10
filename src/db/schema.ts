@@ -18,6 +18,7 @@ export const users = pgTable('user', {
     provider: varchar('provider'),
     providerId: varchar('providerId'),
     profilePic: varchar('profilePic'),
+    publicId: varchar('public_id'),
     createdAt: timestamp('created_at').defaultNow(),
 });
 

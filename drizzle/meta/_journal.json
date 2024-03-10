@@ -204,6 +204,13 @@
       "when": 1709979770912,
       "tag": "0028_nervous_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "5",
+      "when": 1710048242037,
+      "tag": "0029_legal_purifiers",
+      "breakpoints": true
     }
   ]
 }

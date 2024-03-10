@@ -1,4 +1,5 @@
 import userProfile from '@controller/user/Profile';
+import userProfilePic from '@controller/user/UpdateProfilePic';
 import userById from '@controller/user/UserById';
 import userExist from '@controller/user/userExist';
 import { profileValidation } from '@validation/profileValidation';
@@ -14,6 +15,11 @@ userRoutes.post(
     authMiddleware,
     profileValidation,
     userProfile,
+);
+userRoutes.post(
+    '/api/:version/update/profile/pic',
+    authMiddleware,
+    userProfilePic,
 );
 
 export default userRoutes;
