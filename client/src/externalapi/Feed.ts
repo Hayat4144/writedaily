@@ -1,10 +1,10 @@
 import { BASE_URL } from '@/lib/constant';
 
-const Feed = async (token: string) => {
-    const response = await fetch(`${BASE_URL}/api/v1/feed/`, {
+const Feed = async (page: number) => {
+    const response = await fetch(`${BASE_URL}/api/v1/feed?page=${page}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
     });
     const { data, error } = await response.json();

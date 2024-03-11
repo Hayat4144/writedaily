@@ -10,9 +10,12 @@ const Feed = asyncHandler(async (req: Request, res: Response) => {
     if (!page) {
         page = 0;
     }
-    const skip = pagination(20, page);
-    const response = await articleService.articleFeed(skip, 20);
-    return res.status(httpStatusCode.OK).json({ data: response });
+    const resultPerPage = 20;
+    const skip = pagination(resultPerPage, page);
+    const response = await articleService.articleFeed(skip, resultPerPage);
+    return res
+        .status(httpStatusCode.OK)
+        .json({ data: { results: response[0], total_result: response[1] } });
 });
 
 export default Feed;

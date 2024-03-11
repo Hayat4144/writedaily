@@ -27,6 +27,7 @@ import CommentAPi from '@/externalapi/Comment';
 import { Loader } from 'lucide-react';
 import moment from 'moment';
 import { getFirstLetter } from '@/lib/utils';
+import Link from 'next/link';
 
 interface FeedItemProps {
     data: any;
@@ -76,8 +77,8 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
             {!privateComp ? (
                 <CardHeader className="flex flex-row items-center space-x-4 py-3">
                     <Avatar>
-                        <AvatarImage src="http://github.com/hayat4144.png"></AvatarImage>
-                        <AvatarFallback>
+                        <AvatarImage src={data.author.profilePic}></AvatarImage>
+                        <AvatarFallback className="uppercase">
                             {getFirstLetter(data.author.name)}
                         </AvatarFallback>
                     </Avatar>
@@ -92,10 +93,13 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
             <CardContent
                 className={`grid grid-cols-1 md:grid-cols-3 gap-5 ${privateComp ? 'mt-2' : ''}`}
             >
-                <div className="md:col-span-2">
+                <Link
+                    href={`/user/article/${data.id}`}
+                    className="md:col-span-2"
+                >
                     <Heading4>{data.title}</Heading4>
                     <CardDescription>{data.description}</CardDescription>
-                </div>
+                </Link>
                 <div className="">
                     <AspectRatio ratio={10 / 5} className="rounded-md">
                         <Image
@@ -146,9 +150,6 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    <p className="text-muted-foreground text-sm ml-2">
-                        5 min read
-                    </p>
                 </div>
                 <div className="flex item-center space-x-1">
                     <Button className="text-sm h-8" variant={'secondary'}>

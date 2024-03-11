@@ -46,9 +46,21 @@ type publishArticleReturnType = {
 const topicService = new TopicsService();
 
 class ArticleService implements Articles {
-    async articleFeed(Skip: number, ResultPerPage: number): Promise<any> {
-        const { ...articlesColumns } = getTableColumns(articles);
-        const { password, ...authorField } = getTableColumns(users);
+    async articleFeed(
+        Skip: number,
+        ResultPerPage: number,
+    ): Promise<[any, number]> {
+        const { content, publicId, authorId, ...articlesColumns } =
+            getTableColumns(articles);
+        const {
+            password,
+            email,
+            provider,
+            providerId,
+            bio,
+            username,
+            ...authorField
+        } = getTableColumns(users);
         const datas = db
             .select({
                 ...articlesColumns,
@@ -57,6 +69,7 @@ class ArticleService implements Articles {
                 totalComments: sql<number>`cast(count(distinct ${comments.id}) as int)`,
             })
             .from(articles)
+            .where(eq(articles.isPublished, true))
             .limit(ResultPerPage)
             .offset(Skip)
             .leftJoin(likes, eq(articles.id, likes.likebleId))
@@ -64,7 +77,15 @@ class ArticleService implements Articles {
             .leftJoin(users, eq(articles.authorId, users.id))
             .groupBy(articles.id, users.id);
 
-        return datas;
+        const [{ count }] = await db
+            .select({
+                count: sql`count(*)`.mapWith(Number).as('count'),
+            })
+            .from(articles)
+            .where(eq(articles.isPublished, true));
+
+        const feedPromise = await Promise.all([datas, count]);
+        return feedPromise;
     }
     async PublishArticle(
         articleId: string,

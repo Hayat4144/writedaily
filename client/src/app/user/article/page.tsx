@@ -9,6 +9,7 @@ import CardItem from '@/components/user/articles/CardItem';
 import WriteDrawer from '@/components/Navbar/WriteDrawer';
 import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 import Link from 'next/link';
+import PaginationControls from '@/components/feed/PaginationControls';
 
 export default async function page({
     searchParams,
