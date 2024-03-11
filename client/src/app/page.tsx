@@ -19,6 +19,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
+import Footer from '@/components/Footer';
+import { Separator } from '@/components/ui/separator';
 export default function Home() {
     return (
         <Fragment>
@@ -70,7 +72,7 @@ export default function Home() {
                     </TooltipProvider>
                 </div>
             </main>
-            <section className="mx-5 grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+            <section className="mx-5 grid grid-cols-1 md:grid-cols-2 gap-5 mb-20">
                 <Card className="bg-accent text-accent-foreground">
                     <CardHeader>
                         <CardTitle>
@@ -152,6 +154,7 @@ export default function Home() {
                     </CardContent>
                 </Card>
             </section>
+            <Footer />
         </Fragment>
     );
 }

@@ -14,14 +14,13 @@ const RefreshAccessToken = async (
 ) => {
     try {
         const tokenResponse = await fetch(
-            `${BASE_URL}/api/auth/t/getaccesstoken`,
+            `${BASE_URL}/api/v1/token/rotation?refreshtoken=${refreshtoken}`,
             {
-                method: 'POST',
+                method: 'GET',
                 cache: 'no-cache',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ refreshtoken }),
             },
         );
         const { AccessToken, Refreshtoken, error } = await tokenResponse.json();
