@@ -103,7 +103,11 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
                 <div className="">
                     <AspectRatio ratio={10 / 5} className="rounded-md">
                         <Image
-                            src="/image1.jpg"
+                            src={
+                                privateComp
+                                    ? data.publishedImage ?? ''
+                                    : '/image1.jpg'
+                            }
                             alt="pic"
                             fill
                             className="w-full h-full rounded-md"

@@ -260,9 +260,29 @@ class ArticleService implements Articles {
         userId: string,
         skip: number,
         ResultPerPage: number,
-    ): Promise<[Article[], number]> {
+    ): Promise<[any[], number]> {
         const Articles = await db.query.articles.findMany({
-            where: eq(articles.authorId, userId),
+            columns: {
+                content: false,
+                publicId: false,
+            },
+            with: {
+                author: {
+                    columns: {
+                        password: false,
+                        email: false,
+                        provider: false,
+                        providerId: false,
+                        publicId: false,
+                        bio: false,
+                        username: false,
+                    },
+                },
+            },
+            where: and(
+                eq(articles.authorId, userId),
+                eq(articles.isPublished, true),
+            ),
             limit: ResultPerPage,
             offset: skip,
             orderBy: [asc(articles.title)],
@@ -272,7 +292,12 @@ class ArticleService implements Articles {
                 count: sql`count(*)`.mapWith(Number).as('count'),
             })
             .from(articles)
-            .where(eq(articles.authorId, userId));
+            .where(
+                and(
+                    eq(articles.authorId, userId),
+                    eq(articles.isPublished, true),
+                ),
+            );
         const ArticlePromise = await Promise.all([Articles, count]);
         return ArticlePromise;
     }

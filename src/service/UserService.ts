@@ -16,7 +16,7 @@ import { getPrivateKeySecret, options } from '@utils/jwt';
 type UserDetails = Omit<User, 'password'>;
 
 interface userservice {
-    isUserExist(id: string): Promise<UserDetails | undefined>;
+    isUserExist(id: string): Promise<any | undefined>;
     changePassword(
         newpassword: string,
         oldpassword: string,
@@ -164,11 +164,15 @@ class UserService implements userservice {
         return updatePassword.updated ? { success: true } : { success: false };
     }
 
-    async isUserExist(id: string): Promise<UserDetails | undefined> {
+    async isUserExist(id: string): Promise<any | undefined> {
         const isUser = await db.query.users.findFirst({
             where: eq(users.id, id),
             columns: {
                 password: false,
+                provider: false,
+                providerId: false,
+                email: false,
+                publicId: false,
             },
         });
         return isUser;

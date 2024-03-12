@@ -1,5 +1,35 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const isFollowing = async (token: string, id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/check/following/${id}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const { error, data } = await response.json();
+    if (response.status !== 200) {
+        return { error };
+    }
+    return { data };
+};
+
+export const toggleFollowing = async (token: string, id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/follow/${id}`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const { error, data } = await response.json();
+    if (response.status !== 200) {
+        return { error };
+    }
+    return { data };
+};
+
 export const updateProfilePic = async (token: string, formData: FormData) => {
     const response = await fetch(`${BASE_URL}/api/v1/update/profile/pic`, {
         method: 'POST',
@@ -80,11 +110,10 @@ export const CountFollowers = async (id: string) => {
     return { data };
 };
 
-export const CountFollowings = async (token: string) => {
-    const response = await fetch(`${BASE_URL}/api/v1/count/following`, {
+export const CountFollowings = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/count/following/${id}`, {
         cache: 'no-store',
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
     });

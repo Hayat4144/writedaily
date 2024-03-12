@@ -86,9 +86,6 @@ export default async function page({
                         </TabsContent>
                     </Tabs>
                 </section>
-                <article className="hidden lg:block lg:col-span-1 lg:border-l lg:p-5">
-                    hello
-                </article>
             </main>
         </Fragment>
     );

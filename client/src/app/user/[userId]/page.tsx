@@ -1,4 +1,3 @@
-import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 import { Heading1, Paragraph } from '@/components/ui/typography';
 import ProfileHeader from '@/components/user/profile/ProfileHeader';
 import React, { Fragment } from 'react';
@@ -12,17 +11,24 @@ import {
 } from '@/externalapi/UserService';
 import { httpStatusCode } from '@/types';
 import { notFound } from 'next/navigation';
-import { Feed } from '@/externalapi/Feed';
 import FeedItem from '@/components/feed/FeedItem';
-import { privateArticle } from '@/externalapi/article';
+import { userArticles } from '@/externalapi/article';
+import PaginationControls from '@/components/feed/PaginationControls';
 
-export default async function page({
-    params,
-}: {
+interface UserProfilePageProp {
     params: {
         userId: string;
     };
-}) {
+    searchParams?: {
+        page: number;
+    };
+}
+
+export default async function page({
+    params,
+    searchParams,
+}: UserProfilePageProp) {
+    const currentPage = Number(searchParams?.page) ?? 1;
     const session = await getServerSession(authOptions);
     const { data, error } = await userById(params.userId);
     if (error) {
@@ -33,13 +39,12 @@ export default async function page({
               })();
         return;
     }
-    const token = session?.user.AccessToken as string;
-    const [followers, following, feedData] = await Promise.all([
+    const [followers, feedData, following] = await Promise.all([
         CountFollowers(params.userId),
-        CountFollowings(token),
-        privateArticle(token),
+        userArticles(params.userId),
+        CountFollowings(params.userId),
     ]);
-    if (followers.error || following.error) {
+    if (followers.error || following.error || feedData.error) {
         throw new Error(error);
     }
     const { results, total_result } = feedData.data;
@@ -49,6 +54,11 @@ export default async function page({
         followers: followers.data,
         following: following.data,
     };
+
+    const resultPerPage = 20;
+    const pageCount = Math.ceil(total_result / resultPerPage);
+    const NumberOfPages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
     return (
         <Fragment>
             <main className="grid grid-cols-1 md:grid-cols-3  h-screen">
@@ -95,8 +105,18 @@ export default async function page({
                                 <Fragment>{feedData.error}</Fragment>
                             )}
                         </TabsContent>
-                        <TabsContent value="about">About</TabsContent>
+                        <TabsContent value="about">
+                            {data.bio ? (
+                                <Paragraph>{data.bio}</Paragraph>
+                            ) : null}
+                        </TabsContent>
                     </Tabs>
+                    {total_result > resultPerPage ? (
+                        <PaginationControls
+                            pageNumbers={NumberOfPages}
+                            currentPage={currentPage}
+                        />
+                    ) : null}
                 </section>
                 <aside className="hidden md:block md:col-span-1 md:border-l md:p-5">
                     <ProfileHeader data={profileData} />

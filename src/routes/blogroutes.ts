@@ -46,7 +46,6 @@ articleroutes.get(
     '/api/:version/read/articles',
     readPrivateArticleValidate,
     validate,
-    authMiddleware,
     readArticle,
 );
 articleroutes.get(

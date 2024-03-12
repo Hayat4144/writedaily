@@ -22,13 +22,12 @@ export const listenArticle = async (encodedData: any) => {
     return error ? { error } : { data };
 };
 
-export const privateArticle = async (token: string, page?: number) => {
+export const userArticles = async (userId: string, page?: number) => {
     const response = await fetch(
-        `${BASE_URL}/api/v1/read/articles?page=${page || 1}`,
+        `${BASE_URL}/api/v1/read/articles?page=${page || 1}&user_id=${userId}`,
         {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         },

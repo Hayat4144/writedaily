@@ -42,6 +42,7 @@ export const readPrivateArticleValidate = [
         .isInt({ min: 10 })
         .withMessage('ResultPerPage must be greater than 10 or equal to 10')
         .toInt(),
+    validateCuid('user_id'),
 ];
 
 export const deleteArticleValidate = [
