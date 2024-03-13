@@ -1,6 +1,6 @@
 import PublicNavbar from '@/components/Navbar/PublicNavbar';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Paragraph } from '@/components/ui/typography';
+import { Heading2, Paragraph } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Fragment } from 'react';
@@ -21,6 +21,7 @@ import {
 import { Icons } from '@/components/icons';
 import Footer from '@/components/Footer';
 import { Separator } from '@/components/ui/separator';
+import TryEditor from '@/components/Editor/TryEditor';
 export default function Home() {
     return (
         <Fragment>
@@ -43,12 +44,12 @@ export default function Home() {
                             Start reading
                         </Link>
                         <Link
-                            href="/auth/signup"
+                            href="#tryEditor"
                             className={cn(
                                 buttonVariants({ variant: 'outline' }),
                             )}
                         >
-                            Get started
+                            Try our editor
                         </Link>
                     </div>
                 </div>
@@ -62,7 +63,7 @@ export default function Home() {
                                     size={'icon'}
                                     asChild
                                 >
-                                    <a href="#about">
+                                    <a href="#features">
                                         <ArrowDown size={17} />
                                     </a>
                                 </Button>
@@ -72,7 +73,10 @@ export default function Home() {
                     </TooltipProvider>
                 </div>
             </main>
-            <section className="mx-5 grid grid-cols-1 md:grid-cols-2 gap-5 mb-20">
+            <section
+                className="mx-5 md:mx-10 lg:mx-16 grid grid-cols-1 md:grid-cols-2 gap-5 my-20"
+                id="features"
+            >
                 <Card className="bg-accent text-accent-foreground">
                     <CardHeader>
                         <CardTitle>
@@ -154,6 +158,27 @@ export default function Home() {
                     </CardContent>
                 </Card>
             </section>
+            <section
+                className="mx-5 md:mx-10 lg:mx-16 mb-20 md:mb-28"
+                id="tryEditor"
+            >
+                <Heading2 className="my-5 text-center">
+                    Try our powerful Editor powered by Slate.js
+                </Heading2>
+                <Paragraph className="text-muted-foreground my-2">
+                    Note: Please don't use image upload functionality in try
+                    editor because i am using free teir service for stroring
+                    file instead use embed link feature for add image.you can
+                    use it when you are writing your article.
+                </Paragraph>
+                <Card className="shadow-lg">
+                    <CardContent>
+                        <TryEditor />
+                    </CardContent>
+                </Card>
+            </section>
+
+            <Separator className="mb-10" />
             <Footer />
         </Fragment>
     );
