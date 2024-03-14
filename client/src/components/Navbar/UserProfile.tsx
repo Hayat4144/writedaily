@@ -63,12 +63,6 @@ export default async function UserProfile() {
                         <span>Articles</span>
                     </DropdownMenuItem>
                 </Link>
-                <Link href={'/bookmars'}>
-                    <DropdownMenuItem className="space-x-2 my-2 cursor-pointer">
-                        <Icons.bookmark size={20} />
-                        <span>Bookmarks</span>
-                    </DropdownMenuItem>
-                </Link>
                 <Link href={'/user/settings'}>
                     <DropdownMenuItem className="space-x-2 my-2 cursor-pointer">
                         <Icons.settings size={20} />

@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
                         email: user.email,
                         provider: account.provider,
                         providerId: account.providerAccountId,
-                        profilePicture: user.image,
+                        profilePic: user.image,
                         name: firstName + lastName,
                     };
 
@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
             }
             return true;
         },
-        jwt: async ({ token, user, account }) => {
+        jwt: async ({ token, user, account, trigger, session }) => {
             /* Token is stored data after the successfull login
          user is return variable from the providers.the user is undefined initially.
         it is only avaible at login time at successful login 
@@ -132,6 +132,10 @@ export const authOptions: NextAuthOptions = {
                         token.AccessTokenExpiry = AccessToken.exp;
                         token.RefreshToken = user.RefreshToken;
                     }
+                }
+
+                if (trigger === 'update') {
+                    token = { ...token, ...session.user };
                 }
 
                 const shouldRefreshTime = isResfreshToken(
@@ -172,6 +176,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = accessToken.id;
                 session.user.email = accessToken.email;
                 session.user.name = accessToken.name;
+                session.user.image = (token.image as string) || token.picture;
                 session.error = token.error;
             }
 

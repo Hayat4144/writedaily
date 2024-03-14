@@ -4,6 +4,9 @@ import { Feed } from '@/externalapi/Feed';
 import React, { Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PaginationControls from '@/components/feed/PaginationControls';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import { redirect } from 'next/navigation';
 
 export default async function page({
     searchParams,
@@ -13,9 +16,11 @@ export default async function page({
         page?: number;
     };
 }) {
+    const session = await getServerSession(authOptions);
+    if (!session) return redirect('/auth/signin');
     const resultPerPage = 20;
     const currentTab = searchParams?.currentTab || 'personalized';
-    const currentPage = Number(searchParams?.page) ?? 1;
+    const currentPage = searchParams?.page ? Number(searchParams?.page) : 1;
     const { data, error } = await Feed(currentPage);
     const results = data.results;
     const totalResults = data.total_result;
