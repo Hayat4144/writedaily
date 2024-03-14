@@ -7,7 +7,7 @@ import { SignOptions } from 'jsonwebtoken';
 const RefreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
     const { refreshtoken } = req.query;
     const option: SignOptions = { ...options, expiresIn: '30d' };
-    const { id, name, email } = await verifyToken(
+    const { id, name, email, image } = await verifyToken(
         refreshtoken as string,
         option,
     );
@@ -15,6 +15,7 @@ const RefreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
         id,
         name,
         email,
+        image,
     };
     const token = await getAccessToken(payload);
     return res

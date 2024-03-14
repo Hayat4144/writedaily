@@ -63,4 +63,5 @@ export interface payload extends JwtPayload {
     email: string;
     name: string;
     id: string;
+    image?: string | null;
 }

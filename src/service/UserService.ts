@@ -146,7 +146,7 @@ class UserService implements userservice {
 
         const isValidPassword = await bcrypt.compare(
             oldpassword,
-            isUserExist.password,
+            isUserExist?.password as string,
         );
         if (!isValidPassword) {
             throw new CustomError(

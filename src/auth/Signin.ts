@@ -21,7 +21,7 @@ const Signin = asyncHandler(async (req: Request, res: Response) => {
 
     const isValidPassword = await bcrypt.compare(
         password as string,
-        IsUserExist.password,
+        IsUserExist?.password as string,
     );
     if (!isValidPassword)
         return res
@@ -31,6 +31,7 @@ const Signin = asyncHandler(async (req: Request, res: Response) => {
         id: IsUserExist.id,
         name: IsUserExist.name,
         email: IsUserExist.email,
+        image: IsUserExist.profilePic,
     };
     const token = await Promise.all([
         getAccessToken(payload),

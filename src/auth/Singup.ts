@@ -18,15 +18,11 @@ const Signup = asyncHandler(async (req: Request, res: Response) => {
             .status(httpStatusCode.BAD_REQUEST)
             .json({ error: 'User already exit.' });
     }
-    const hashPassword = await bcrypt.hash(password, saltRound);
-    const userData: NewUser = {
-        name,
-        email,
-        password: hashPassword,
-        provider,
-        providerId,
-        profilePic,
-    };
+    let userData: NewUser = { name, email, provider, providerId, profilePic };
+    if (provider !== 'google') {
+        const hashPassword = await bcrypt.hash(password, saltRound);
+        userData = { ...userData, password: hashPassword };
+    }
     const createNewuser = await db
         .insert(users)
         .values(userData)
