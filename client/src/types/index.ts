@@ -27,6 +27,8 @@ import {
     ELEMENT_IMAGE,
     ELEMENT_BREAK,
 } from '@/lib/constant';
+import { profileFormSchema } from '@/lib/validation/settings/SettingsSchema';
+import { z } from 'zod';
 
 export type componentType = 'link' | 'image';
 
@@ -231,3 +233,5 @@ export enum likeType {
     article,
     comment,
 }
+
+export type ProfileFormValues = z.infer<typeof profileFormSchema>;

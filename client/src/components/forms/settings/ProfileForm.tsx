@@ -1,4 +1,6 @@
 'use client';
+
+import { updateProfileActions } from '@/app/action';
 import { Button } from '@/components/ui/button';
 import {
     Form,
@@ -11,16 +13,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
-import { updateProfile } from '@/externalapi/UserService';
 import { profileFormSchema } from '@/lib/validation/settings/SettingsSchema';
+import { ProfileFormValues } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import React, { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface formdata {
     name: string;
@@ -49,13 +48,12 @@ export default function ProfileForm({ values }: ProfileFormProps) {
 
     async function onSubmit(value: ProfileFormValues) {
         setIsLoading((prevState) => !prevState);
-        const { data, error } = await updateProfile(token, value);
+        const { data, error } = await updateProfileActions(value, token);
         setIsLoading((prevState) => !prevState);
         if (error) return toast({ title: error, variant: 'destructive' });
         toast({
             title: 'Your profile has been updated successfully.',
         });
-        form.reset();
         update({
             ...session,
             user: {

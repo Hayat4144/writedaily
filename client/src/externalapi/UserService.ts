@@ -82,9 +82,11 @@ export const updateProfile = async (token: string, updateData: any) => {
 
 export const userById = async (id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/get/user/by/${id}`, {
-        cache: 'no-store',
         headers: {
             'Content-Type': 'application/json',
+        },
+        next: {
+            tags: ['userById'],
         },
     });
 
