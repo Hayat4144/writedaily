@@ -1,5 +1,20 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const deleteAccount = async (token: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/delete/account`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const { error, data } = await response.json();
+    if (response.status !== 200) {
+        return { error };
+    }
+    return { data };
+};
+
 export const isFollowing = async (token: string, id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/check/following/${id}`, {
         method: 'GET',

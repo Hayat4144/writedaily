@@ -39,7 +39,10 @@ export default function SignupForm() {
     // handle the registeration
     const onSubmit = async (values: SignupInput) => {
         setIsLoading((prevState) => !prevState);
-        const { data, error } = await SignupUser(values);
+        const { data, error } = await SignupUser({
+            ...values,
+            provider: 'credential',
+        });
         setIsLoading((prevState) => !prevState);
         if (error) return toast({ title: error, variant: 'destructive' });
         toast({ title: data });

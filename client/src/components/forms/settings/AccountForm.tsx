@@ -1,5 +1,4 @@
 'use client';
-import DeactiveAccount from '@/components/settings/DeactiveAccount';
 import DeleteAccount from '@/components/settings/DeleteAccount';
 import { Button } from '@/components/ui/button';
 import {
@@ -282,7 +281,6 @@ export default function AccountForm() {
             </div>
 
             <Separator />
-            <DeactiveAccount />
             <DeleteAccount />
         </Fragment>
     );

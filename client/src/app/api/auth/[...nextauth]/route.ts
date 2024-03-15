@@ -84,15 +84,12 @@ export const authOptions: NextAuthOptions = {
             if (account?.provider && account.provider === 'google') {
                 const isUser = await userExist(user.email as string);
                 if (isUser.error) {
-                    const [firstName, lastName] = user.name?.split(
-                        '  ',
-                    ) as string[];
                     const createUser = {
                         email: user.email,
                         provider: account.provider,
                         providerId: account.providerAccountId,
                         profilePic: user.image,
-                        name: firstName + lastName,
+                        name: user.name,
                     };
 
                     const signup = await SignupUser(createUser);

@@ -2,6 +2,7 @@ import userProfile from '@controller/user/Profile';
 import userProfilePic from '@controller/user/UpdateProfilePic';
 import userById from '@controller/user/UserById';
 import userExist from '@controller/user/userExist';
+import deleteAccount from '@controller/user/DeleteAccount';
 import { profileValidation } from '@validation/profileValidation';
 import express from 'express';
 import authMiddleware from 'middleware/authMiddleware';
@@ -20,6 +21,12 @@ userRoutes.post(
     '/api/:version/update/profile/pic',
     authMiddleware,
     userProfilePic,
+);
+
+userRoutes.delete(
+    '/api/:version/delete/account',
+    authMiddleware,
+    deleteAccount,
 );
 
 export default userRoutes;

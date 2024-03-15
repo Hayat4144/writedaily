@@ -8,7 +8,7 @@ import { NewUser, users } from 'db/schema';
 
 const Signup = asyncHandler(async (req: Request, res: Response) => {
     const { name, email, password, provider, providerId, profilePic } =
-        await req.body;
+        req.body;
     const saltRound = 10;
     const IsUserExist = await db.query.users.findFirst({
         where: eq(users.email, email),
@@ -23,6 +23,7 @@ const Signup = asyncHandler(async (req: Request, res: Response) => {
         const hashPassword = await bcrypt.hash(password, saltRound);
         userData = { ...userData, password: hashPassword };
     }
+    console.log(userData);
     const createNewuser = await db
         .insert(users)
         .values(userData)

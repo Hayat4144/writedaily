@@ -31,6 +31,7 @@ interface userservice {
     deleteToken(id: string): Promise<DeletedData>;
     updatePassword(userId: string, password: string): Promise<updatedResponse>;
     updateProfile(userId: string, data: any): Promise<any>;
+    deleteAccount(userId: string): Promise<boolean>;
 }
 
 class UserService implements userservice {
@@ -38,6 +39,15 @@ class UserService implements userservice {
 
     constructor() {
         this.jwtTokenOption = options;
+    }
+
+    async deleteAccount(userId: string): Promise<boolean> {
+        const deleted = await db
+            .delete(users)
+            .where(eq(users.id, userId))
+            .returning({ userId: users.id });
+        if (deleted[0].userId) return true;
+        else return false;
     }
 
     async updateProfile(userId: string, data: any) {

@@ -7,7 +7,7 @@ const SignupUser = async (createData: object) => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...createData, provider: 'credential' }),
+        body: JSON.stringify({ ...createData }),
     });
 
     const { error, data } = await response.json();

@@ -1,5 +1,3 @@
-import { httpStatusCode } from '@customtype/index';
-import { CustomError } from '@utils/CustomError';
 import { check } from 'express-validator';
 
 const signupValidation = [
@@ -14,37 +12,35 @@ const signupValidation = [
         .trim()
         .escape()
         .withMessage('Invalid email provided'),
-    check('provider').custom((value, { req }) => {
-        if (value !== 'google') {
-            if (!req.body.password || !req.body.confirmpassword) {
-                throw new Error('Password fields are required');
+    check('provider')
+        .notEmpty()
+        .withMessage('provider can not be empty.')
+        .isIn(['google', 'credential'])
+        .withMessage('Invalid provider has been given.'),
+
+    check('password')
+        .if((value, { req }) => {
+            if (req.body.provider === 'credential') return true;
+            else return false;
+        })
+        .isStrongPassword({
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        })
+        .trim()
+        .escape()
+        .withMessage(
+            'Password must contain at least 8 characters, including 1 symbol, 1 number, 1 uppercase, and 1 lowercase letter',
+        )
+        .custom((value, { req }) => {
+            if (value !== req.body.confirmpassword) {
+                throw new Error("Password doesn't match.");
             }
-        }
-        return value;
-    }),
-    // check('password')
-    //     .optional()
-    //     .isStrongPassword({
-    //         minLength: 8,
-    //         minLowercase: 1,
-    //         minUppercase: 1,
-    //         minNumbers: 1,
-    //         minSymbols: 1,
-    //     })
-    //     .trim()
-    //     .escape()
-    //     .withMessage(
-    //         'Password must contain at least 8 characters, including 1 symbol, 1 number, 1 uppercase, and 1 lowercase letter',
-    //     )
-    //     .custom((value, { req }) => {
-    //         if (
-    //             req.body.provider !== 'google' &&
-    //             value !== req.body.confirmpassword
-    //         ) {
-    //             throw new Error("Password doesn't match.");
-    //         }
-    //         return value;
-    //     }),
+            return value;
+        }),
 ];
 
 export default signupValidation;
