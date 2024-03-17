@@ -4,7 +4,6 @@ import { Descendant, Node, createEditor } from 'slate';
 import { Slate, Editable, withReact } from 'slate-react';
 import RenderElement from './RenderElements';
 import renderLeafs from './RenderLeafs';
-import pako from 'pako';
 
 interface ViewEditorProps {
     content: Descendant[];
@@ -19,9 +18,6 @@ export default function ViewEditor({ content }: ViewEditorProps) {
 
     return (
         <Slate initialValue={content} editor={editor}>
-            <audio controls className="my-2">
-                <source></source>
-            </audio>
             <Editable
                 renderElement={RenderElement}
                 renderLeaf={renderLeafs}

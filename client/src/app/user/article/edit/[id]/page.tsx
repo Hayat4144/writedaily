@@ -8,6 +8,25 @@ import UserProfile from '@/components/Navbar/UserProfile';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { articleById } from '@/externalapi/article';
+import type { Metadata, ResolvingMetadata } from 'next';
+
+type Props = {
+    params: { id: string };
+    searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+    { params, searchParams }: Props,
+    parent: ResolvingMetadata,
+): Promise<Metadata> {
+    const session = await getServerSession(authOptions);
+    const token = session?.user.AccessToken as string;
+    const { data } = await articleById(token, params.id);
+    return {
+        title: `${data[0].title} | Writedaily`,
+        description: data[0].description,
+    };
+}
 
 export default async function page({
     params,

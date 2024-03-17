@@ -11,18 +11,34 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import moment from 'moment';
 import { Button } from '@/components/ui/button';
 import ViewEditor from '@/components/Editor/ViewEditor';
+import type { Metadata, ResolvingMetadata } from 'next';
+import { getFirstLetter } from '@/lib/utils';
+import ArticleHeader from '@/components/user/articles/ArticleHeader';
 import { Separator } from '@/components/ui/separator';
+import HeaderBottom from '@/components/user/articles/header';
 
-export default async function page({
-    params,
-}: {
-    params: {
-        articleId: string;
+type Props = {
+    params: { articleId: string };
+};
+
+export async function generateMetadata(
+    { params }: Props,
+    parent: ResolvingMetadata,
+): Promise<Metadata> {
+    const session = await getServerSession(authOptions);
+    const token = session?.user.AccessToken;
+    const { data } = await articleById(token as string, params.articleId);
+    const result = data[0];
+
+    return {
+        title: result.title,
+        description: result.description,
     };
-}) {
+}
+
+export default async function page({ params }: Props) {
     const session = await getServerSession(authOptions);
     const token = session?.user.AccessToken as string;
     const { data, error } = await articleById(token, params.articleId);
@@ -35,7 +51,6 @@ export default async function page({
     }
 
     const articledData = data[0];
-    const relativetime = moment(articledData.createdAt).fromNow();
 
     return (
         <Fragment>
@@ -46,10 +61,12 @@ export default async function page({
                 <Paragraph className="text-muted-foreground">
                     {articledData.description}
                 </Paragraph>
-                <div className="flex my-5 space-x-4">
+                <div className="flex my-5 space-x-4 item-center">
                     <Avatar className="h-12 w-12">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarImage src={articledData.author.profilePic} />
+                        <AvatarFallback>
+                            {getFirstLetter(articledData.author.name)}
+                        </AvatarFallback>
                     </Avatar>
                     <div>
                         <div className="flex items-center">
@@ -58,8 +75,7 @@ export default async function page({
                                     {articledData.author.name}
                                 </HoverCardTrigger>
                                 <HoverCardContent>
-                                    The React Framework – created and maintained
-                                    by @vercel.
+                                    {articledData.author.bio}
                                 </HoverCardContent>
                             </HoverCard>
                             <Button
@@ -70,10 +86,12 @@ export default async function page({
                                 Follow
                             </Button>
                         </div>
-                        <Paragraph className="text-sm text-muted-foreground -mt-2">
-                            5 min read . {relativetime}
-                        </Paragraph>
+                        <ArticleHeader data={articledData} />
                     </div>
+                </div>
+                <Separator />
+                <div className="border-b py-2">
+                    <HeaderBottom dataValue={articledData} />
                 </div>
             </section>
             <ViewEditor content={articledData.content} />

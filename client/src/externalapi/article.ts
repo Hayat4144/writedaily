@@ -84,6 +84,9 @@ export const articleById = async (token: string, id: string) => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
+        next: {
+            tags: ['articleById'],
+        },
     });
     const { error, data } = await response.json();
     return error ? { error } : { data };

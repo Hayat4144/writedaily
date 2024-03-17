@@ -279,10 +279,7 @@ class ArticleService implements Articles {
                     },
                 },
             },
-            where: and(
-                eq(articles.authorId, userId),
-                eq(articles.isPublished, true),
-            ),
+            where: and(eq(articles.authorId, userId)),
             limit: ResultPerPage,
             offset: skip,
             orderBy: [asc(articles.title)],

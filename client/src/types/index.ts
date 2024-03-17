@@ -225,13 +225,13 @@ export interface EmojiDetectProps {
 }
 
 export enum commentType {
-    article,
-    comment,
+    article = 'article',
+    comment = 'comment',
 }
 
 export enum likeType {
-    article,
-    comment,
+    article = 'article',
+    comment = 'comment',
 }
 
 export type ProfileFormValues = z.infer<typeof profileFormSchema>;

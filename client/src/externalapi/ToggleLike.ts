@@ -12,6 +12,7 @@ const ToggleLike = async (
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
         body: JSON.stringify({ likeType, likebleId }),
     });
     const { data, error } = await response.json();
