@@ -123,6 +123,8 @@ export const authOptions: NextAuthOptions = {
                             return Promise.reject(new Error(verifyToken.error));
                         }
                         token.AccessToken = verifyToken.data;
+                        const accessToken = await decodeToken(verifyToken.data);
+                        token.AccessTokenExpiry = accessToken.exp;
                     } else {
                         const AccessToken = await decodeToken(user.AccessToken);
                         token.AccessToken = user.AccessToken;
@@ -141,6 +143,7 @@ export const authOptions: NextAuthOptions = {
                 if (!shouldRefreshTime) {
                     return token;
                 }
+
                 const refreshTokenData = await RefreshAccessToken(
                     token.AccessToken,
                     token.RefreshToken,
