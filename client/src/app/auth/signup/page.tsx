@@ -9,6 +9,13 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 import SignupForm from '@/components/forms/SignupForm';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Signup | WriteDaily',
+    description:
+        'Sign in or create an account on WriteDaily to start your writing journey. Connect with other writers, share your stories, and explore creative writing resources.',
+};
 
 export default function page() {
     return (

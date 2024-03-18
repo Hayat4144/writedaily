@@ -8,8 +8,15 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import React from 'react';
+
+export const metadata: Metadata = {
+    title: 'Signin | WriteDaily',
+    description:
+        'Sign in or create an account on WriteDaily to start your writing journey. Connect with other writers, share your stories, and explore creative writing resources.',
+};
 
 export default function Signin() {
     return (

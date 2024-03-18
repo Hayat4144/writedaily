@@ -22,6 +22,14 @@ import { Icons } from '@/components/icons';
 import Footer from '@/components/Footer';
 import { Separator } from '@/components/ui/separator';
 import TryEditor from '@/components/Editor/TryEditor';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Home | WriteDaily - Your Creative Writing Platform',
+    description:
+        'WriteDaily is your go-to platform for unleashing your creativity through writing. Join us to discover inspiring stories, connect with fellow writers, and share your own voice with the world.',
+};
+
 export default function Home() {
     return (
         <Fragment>
