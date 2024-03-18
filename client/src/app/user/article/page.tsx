@@ -4,12 +4,13 @@ import React, { Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import userArticles from '@/externalapi/UserArticles';
 import CardItem from '@/components/user/articles/CardItem';
 import WriteDrawer from '@/components/Navbar/WriteDrawer';
 import PrivateNavbar from '@/components/Navbar/PrivateNavbar';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { userArticles } from '@/externalapi/article';
 
 export const revalidate = 30;
 
@@ -28,11 +29,10 @@ export default async function page({
 }) {
     const currentTab = searchParams?.currentTab || 'drafts';
     const session = await getServerSession(authOptions);
-    const token = session?.user.AccessToken;
-    const { data, error } = await userArticles(
-        token as string,
-        session?.user.id as string,
-    );
+    if (!session) {
+        return redirect('/auth/signin');
+    }
+    const { data, error } = await userArticles(session.user.id);
     if (error) throw new Error(error);
     const draftsData = data.results.filter((item: any) => !item.isPublished);
     const pubslishedData = data.results.filter((item: any) => item.isPublished);

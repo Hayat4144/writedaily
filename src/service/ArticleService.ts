@@ -278,6 +278,16 @@ class ArticleService implements Articles {
                         username: false,
                     },
                 },
+                likes: {
+                    columns: {
+                        id: true,
+                    },
+                },
+                comments: {
+                    columns: {
+                        id: true,
+                    },
+                },
             },
             where: and(eq(articles.authorId, userId)),
             limit: ResultPerPage,

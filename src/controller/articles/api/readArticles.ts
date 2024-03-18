@@ -15,9 +15,15 @@ const readArticle = asyncHandler(async (req: Request, res: Response) => {
         skip,
         perpage,
     );
+
+    const data = Articles[0].map((item: any) => {
+        const totalLikes = item.likes.length;
+        const totalComments = item.comments.length;
+        return { ...item, totalLikes, totalComments };
+    });
     return res
         .status(httpStatusCode.OK)
-        .json({ data: { results: Articles[0], total_result: Articles[1] } });
+        .json({ data: { results: data, total_result: Articles[1] } });
 });
 
 export default readArticle;

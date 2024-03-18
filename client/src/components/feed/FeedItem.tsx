@@ -103,11 +103,7 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
                 <div className="">
                     <AspectRatio ratio={10 / 5} className="rounded-md">
                         <Image
-                            src={
-                                privateComp
-                                    ? data.publishedImage ?? ''
-                                    : '/image1.jpg'
-                            }
+                            src={data.publishedImage || ''}
                             alt="pic"
                             fill
                             className="w-full h-full rounded-md"
@@ -154,14 +150,6 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                </div>
-                <div className="flex item-center space-x-1">
-                    <Button className="text-sm h-8" variant={'secondary'}>
-                        React
-                    </Button>
-                    <Button className="text-sm h-8" variant={'default'}>
-                        Node
-                    </Button>
                 </div>
             </CardFooter>
             <div className={`${!commentBox ? 'hidden' : 'block px-5 py-2'}`}>

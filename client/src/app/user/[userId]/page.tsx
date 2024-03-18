@@ -2,8 +2,6 @@ import { Heading1, Paragraph } from '@/components/ui/typography';
 import ProfileHeader from '@/components/user/profile/ProfileHeader';
 import React, { Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import {
     CountFollowers,
     CountFollowings,
@@ -14,22 +12,31 @@ import { notFound } from 'next/navigation';
 import FeedItem from '@/components/feed/FeedItem';
 import { userArticles } from '@/externalapi/article';
 import PaginationControls from '@/components/feed/PaginationControls';
+import { Metadata, ResolvingMetadata } from 'next';
 
-interface UserProfilePageProp {
+type Props = {
     params: {
         userId: string;
     };
     searchParams?: {
         page: number;
     };
+};
+
+export async function generateMetadata(
+    { params }: Props,
+    parent: ResolvingMetadata,
+): Promise<Metadata> {
+    const { data } = await userById(params.userId);
+    return {
+        title: `${data.name} | Writedaily`,
+        description:
+            'Explore user details on WriteDaily. Discover information about users, including their published posts, bio, following, and followers.',
+    };
 }
 
-export default async function page({
-    params,
-    searchParams,
-}: UserProfilePageProp) {
+export default async function page({ params, searchParams }: Props) {
     const currentPage = Number(searchParams?.page) ?? 1;
-    const session = await getServerSession(authOptions);
     const { data, error } = await userById(params.userId);
     if (error) {
         error.status === httpStatusCode.NOT_FOUND
@@ -45,7 +52,7 @@ export default async function page({
         CountFollowings(params.userId),
     ]);
     if (followers.error || following.error || feedData.error) {
-        throw new Error(error);
+        throw new Error(following.error || followers.error || feedData.error);
     }
     const { results, total_result } = feedData.data;
 

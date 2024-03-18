@@ -7,6 +7,13 @@ import PaginationControls from '@/components/feed/PaginationControls';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Your Feed | WriteDaily',
+    description:
+        'Explore your personalized feed on WriteDaily. Discover articles tailored to your interests and preferences.',
+};
 
 export default async function page({
     searchParams,

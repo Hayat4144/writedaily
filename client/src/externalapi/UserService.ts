@@ -114,9 +114,11 @@ export const userById = async (id: string) => {
 
 export const CountFollowers = async (id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/count/followers/${id}`, {
-        cache: 'no-store',
         headers: {
             'Content-Type': 'application/json',
+        },
+        next: {
+            tags: ['CountFollowers'],
         },
     });
 
@@ -129,9 +131,11 @@ export const CountFollowers = async (id: string) => {
 
 export const CountFollowings = async (id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/count/following/${id}`, {
-        cache: 'no-store',
         headers: {
             'Content-Type': 'application/json',
+        },
+        next: {
+            tags: ['CountFollowings'],
         },
     });
 
