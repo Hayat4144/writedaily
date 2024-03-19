@@ -23,6 +23,9 @@ export default async function page({
     const resultPerPage = 20;
     const currentPage = searchParams?.page ? Number(searchParams?.page) : 1;
     const { data, error } = await Feed(currentPage);
+    if (error) {
+        throw new Error(error);
+    }
     const results = data.results;
     const totalResults = data.total_result;
 

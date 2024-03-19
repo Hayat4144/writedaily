@@ -3,8 +3,16 @@
 import CommentAPi from '@/externalapi/Comment';
 import ToggleLike from '@/externalapi/ToggleLike';
 import { updateProfile } from '@/externalapi/UserService';
+import { unpublishArticle } from '@/externalapi/article';
 import { ProfileFormValues, commentType, likeType } from '@/types';
 import { revalidateTag } from 'next/cache';
+
+export const unpublishaArticleActions = async (token: string, id: string) => {
+    const { data, error } = await unpublishArticle(token, id);
+    if (error) return { error };
+    revalidateTag('articleById');
+    return { data };
+};
 
 export const updateProfileActions = async (
     values: ProfileFormValues,

@@ -1,5 +1,32 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const unpublishArticle = async (token: string, id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/unpublish/article/${id}`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
+
+export const getpublishArticleData = async (token: string, id: string) => {
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/articleData/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const { error, data } = await response.json();
+        return error ? { error } : { data };
+    } catch (error) {
+        return { error };
+    }
+};
+
 export const publishArticle = async (publishedData: FormData, config: any) => {
     const response = await fetch(`${BASE_URL}/api/v1/publish/article`, {
         method: 'POST',
@@ -77,11 +104,10 @@ export const updateArticle = async (token: string, datas: any, id: string) => {
     return error ? { error } : { data };
 };
 
-export const articleById = async (token: string, id: string) => {
+export const articleById = async (id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/article/${id}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
         next: {

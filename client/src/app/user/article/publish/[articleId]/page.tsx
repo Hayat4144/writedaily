@@ -1,11 +1,11 @@
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import PublishedArticle from '@/components/forms/PublishedArticle';
-import { articleById } from '@/externalapi/article';
+import { articleById, getpublishArticleData } from '@/externalapi/article';
 import { httpStatusCode } from '@/types';
+import { Metadata, ResolvingMetadata } from 'next';
 import { getServerSession } from 'next-auth';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import React from 'react';
-import type { Metadata, ResolvingMetadata } from 'next';
 
 type Props = {
     params: { articleId: string };
@@ -13,25 +13,29 @@ type Props = {
 };
 
 export async function generateMetadata(
-    { params, searchParams }: Props,
+    { params }: Props,
     parent: ResolvingMetadata,
 ): Promise<Metadata> {
     const session = await getServerSession(authOptions);
-    const token = session?.user.AccessToken;
-    const { data } = await articleById(token as string, params.articleId);
-    const result = data[0];
-
+    if (!session) return redirect('/auth/signin');
+    const token = session?.user.AccessToken as string;
+    const { data, error } = await getpublishArticleData(
+        token,
+        params.articleId,
+    );
     return {
-        title: result.title,
-        description: result.description,
+        title: `Publish ${data.title || 'article'} | Writedaily`,
+        description:
+            'Publish your article on WriteDaily. Make revisions, add new content, and fine-tune your writing before publishing it to the world.',
     };
 }
 
 export default async function page({ params }: Props) {
     const session = await getServerSession(authOptions);
-    const token = session?.user.AccessToken;
-    const { data, error } = await articleById(
-        token as string,
+    if (!session) return redirect('/auth/signin');
+    const token = session?.user.AccessToken as string;
+    const { data, error } = await getpublishArticleData(
+        token,
         params.articleId,
     );
     if (error) {
@@ -42,10 +46,17 @@ export default async function page({ params }: Props) {
               })();
     }
 
-    const articleData = data[0];
+    const filteredData = data.topics.map((item: any) => {
+        if (typeof item === 'object' && item !== null) {
+            const { topics } = item;
+            return { ...topics };
+        }
+    });
+    data['topics'] = filteredData;
+
     return (
         <main className="mx-5 md:mx-10 my-10">
-            <PublishedArticle result={articleData} />
+            <PublishedArticle result={data} />
         </main>
     );
 }

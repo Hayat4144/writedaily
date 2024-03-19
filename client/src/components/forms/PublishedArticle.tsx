@@ -49,6 +49,16 @@ export default function PublishedArticle({
     const session = useSession();
     const [isLoading, setisLoading] = useState<boolean>(false);
 
+    useEffect(() => {
+        if (result.publishedImage) {
+            setImage(result.publishedImage);
+        }
+        if (result.topics) {
+            setTopicsData(result.topics);
+            setTopicsArray(result.topics);
+        }
+    }, [result]);
+
     const token = session.data?.user.AccessToken as string;
 
     const KeydownHandler = async (e: React.KeyboardEvent) => {

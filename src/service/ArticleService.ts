@@ -12,7 +12,6 @@ import {
 } from 'db/schema';
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
-import { password } from '@utils/constant';
 
 interface Articles {
     createArticle(data: NewArticle): Promise<Article[]>;
@@ -37,7 +36,17 @@ interface Articles {
     ): Promise<publishArticleReturnType>;
     searchArticles(query: string): Promise<any>;
     articleFeed(Skip: number, ResultPerPage: number): Promise<any>;
+    articleData(id: string): Promise<any>;
+    UnpublishArticle(
+        id: string,
+        user_id: string,
+    ): Promise<UnpublishArticleResponse>;
 }
+
+type UnpublishArticleResponse = {
+    unpublised: boolean;
+    message: string;
+};
 
 type publishArticleReturnType = {
     data: { title: string };
@@ -46,6 +55,56 @@ type publishArticleReturnType = {
 const topicService = new TopicsService();
 
 class ArticleService implements Articles {
+    async UnpublishArticle(
+        id: string,
+        user_id: string,
+    ): Promise<UnpublishArticleResponse> {
+        const isExist = await this.isArticleExist(id);
+        if (!isExist)
+            return { unpublised: false, message: 'Article does not exist.' };
+        const updated = await db
+            .update(articles)
+            .set({ isPublished: false })
+            .where(and(eq(articles.id, id), eq(articles.authorId, user_id)))
+            .returning({ isPublished: articles.isPublished });
+        if (!updated[0].isPublished)
+            return {
+                unpublised: true,
+                message: 'Article has been unpublised successfully.',
+            };
+        else
+            return {
+                unpublised: false,
+                message: "You don't have any right to unpublised it.",
+            };
+    }
+    async articleData(id: string): Promise<any> {
+        return db.query.articles.findFirst({
+            columns: {
+                publicId: false,
+                content: false,
+            },
+            where: eq(articles.id, id),
+            with: {
+                topics: {
+                    with: {
+                        topics: {
+                            columns: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                    columns: {
+                        id: false,
+                        articleId: false,
+                        topicId: false,
+                        createdAt: false,
+                    },
+                },
+            },
+        });
+    }
     async articleFeed(
         Skip: number,
         ResultPerPage: number,

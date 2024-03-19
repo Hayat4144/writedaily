@@ -8,7 +8,10 @@ import UserProfile from '@/components/Navbar/UserProfile';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { articleById } from '@/externalapi/article';
-import type { Metadata, ResolvingMetadata } from 'next';
+import { Metadata, ResolvingMetadata } from 'next';
+import { notFound, redirect } from 'next/navigation';
+import { httpStatusCode } from '@/types';
+import UnpublishAlert from '@/components/user/articles/UnpublishAlert';
 
 type Props = {
     params: { id: string };
@@ -16,15 +19,14 @@ type Props = {
 };
 
 export async function generateMetadata(
-    { params, searchParams }: Props,
+    { params }: Props,
     parent: ResolvingMetadata,
 ): Promise<Metadata> {
-    const session = await getServerSession(authOptions);
-    const token = session?.user.AccessToken as string;
-    const { data } = await articleById(token, params.id);
+    const { data } = await articleById(params.id);
     return {
-        title: `${data[0].title} | Writedaily`,
-        description: data[0].description,
+        title: `Edit ${data[0].title} | Writedaily`,
+        description:
+            'Edit your article on WriteDaily. Make revisions, add new content, and fine-tune your writing before publishing it to the world.',
     };
 }
 
@@ -36,8 +38,16 @@ export default async function page({
     };
 }) {
     const session = await getServerSession(authOptions);
-    const token = session?.user.AccessToken as string;
-    const { data, error } = await articleById(token, params.id);
+    if (!session) return redirect('/auth/signin');
+    const { data, error } = await articleById(params.id);
+    if (error) {
+        error.status === httpStatusCode.NOT_FOUND
+            ? notFound()
+            : (() => {
+                  throw new Error(error.message);
+              })();
+    }
+
     return (
         <Fragment>
             <header>
@@ -51,17 +61,21 @@ export default async function page({
                         </Paragraph>
                     </div>
                     <div className=" flex items-center space-x-3">
-                        <Link
-                            href={`/user/article/publish/${params.id}`}
-                            className={cn(
-                                buttonVariants({
-                                    size: 'sm',
-                                    className: 'rounded-full py-0',
-                                }),
-                            )}
-                        >
-                            Published
-                        </Link>
+                        {!data[0].isPublished ? (
+                            <Link
+                                href={`/user/article/publish/${params.id}`}
+                                className={cn(
+                                    buttonVariants({
+                                        size: 'sm',
+                                        className: 'rounded-full py-0',
+                                    }),
+                                )}
+                            >
+                                Published
+                            </Link>
+                        ) : (
+                            <UnpublishAlert title={data[0].title} />
+                        )}
                         <UserProfile />
                     </div>
                 </nav>
