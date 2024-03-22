@@ -1,20 +1,15 @@
 import { httpStatusCode, likeType } from '@customtype/index';
 import db from '@db/index';
-import {
-    Article,
-    CommentData,
-    NewLike,
-    likes,
-    users,
-} from '@db/schema';
+import { Article, CommentData, NewLike, likes, users } from '@db/schema';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import CommentService from './CommentService';
 import { CustomError } from '@utils/CustomError';
 import ArticleService from './ArticleService';
 
 type LikeType = keyof typeof likeType;
+type ArticleExistData = Omit<Article, 'content'>;
 
-type targetType = Article | CommentData | undefined | null;
+type targetType = ArticleExistData | CommentData | undefined | null;
 const { userId, ...likeColumns } = getTableColumns(likes);
 const { password, email, createdAt, ...userfield } = getTableColumns(users);
 

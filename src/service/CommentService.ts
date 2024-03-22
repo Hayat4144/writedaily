@@ -25,7 +25,9 @@ interface CommentServiceInterface {
     articleComments(commentId: string): void;
 }
 
-type targetType = CommentData | Article | undefined;
+type ArticleExistData = Omit<Article, 'content'>;
+
+type targetType = CommentData | ArticleExistData | undefined;
 
 class CommentService implements CommentServiceInterface {
     article: BlogService;

@@ -12,6 +12,9 @@ import {
 } from 'db/schema';
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
+import logger from '@utils/logger';
+
+type ExistArticledata = Omit<Article, 'content'>;
 
 interface Articles {
     createArticle(data: NewArticle): Promise<Article[]>;
@@ -26,10 +29,10 @@ interface Articles {
         Skip: number,
         ResultPerPage: number,
     ): Promise<any>;
-    isArticleExist(id: string): Promise<Article | undefined>;
+    isArticleExist(id: string): Promise<ExistArticledata | undefined>;
     ArtcleById(id: string): Promise<any>;
     PublishArticle(
-        articleId: string,
+        articleData: any,
         publishUnderTopicId: string[],
         userId: string,
         updatedData: any,
@@ -147,58 +150,40 @@ class ArticleService implements Articles {
         return feedPromise;
     }
     async PublishArticle(
-        articleId: string,
+        articleData: ExistArticledata,
         publishUnderTopicId: string[],
         userId: string,
         updatedData: any,
     ): Promise<publishArticleReturnType> {
-        const isExist = await this.isArticleExist(articleId);
-        if (!isExist) {
-            throw new CustomError(
-                `Article does not exist.`,
-                httpStatusCode.BAD_REQUEST,
-            );
-        }
-        if (isExist.isPublished) {
-            throw new CustomError(
-                `${isExist.title} is already published.`,
-                httpStatusCode.BAD_REQUEST,
-            );
-        }
-
-        if (userId !== isExist.authorId) {
+        if (userId !== articleData.authorId) {
             throw new CustomError(
                 "you are unauthorized, you don't have rights to publish it. ",
                 httpStatusCode.FORBIDDEN,
-            );
-        }
-        const topicExistPromise = publishUnderTopicId.map((item) =>
-            topicService.isTopicExistById(item),
-        );
-        const topics = await Promise.all(topicExistPromise);
-
-        const isValidTopics = topics.every((topic) => topic !== undefined);
-        if (!isValidTopics) {
-            throw new CustomError(
-                `Topics you choose does not exist.`,
-                httpStatusCode.BAD_REQUEST,
             );
         }
         const publishedArticle = await db.transaction(async (trx) => {
             const updatedArticle = await trx
                 .update(articles)
                 .set(updatedData)
-                .where(eq(articles.id, isExist.id))
+                .where(eq(articles.id, articleData.id))
                 .returning({ title: articles.title });
-            const articleTopicPromises = topics.map((topic) =>
-                trx
-                    .insert(ArticleTopics)
-                    .values({ articleId: isExist.id, topicId: topic.id }),
+            const articleTopicPromises = publishUnderTopicId.map((topic) =>
+                articleData.publishedImage
+                    ? trx
+                          .update(ArticleTopics)
+                          .set({ topicId: topic })
+                          .where(eq(ArticleTopics.articleId, articleData.id))
+                    : trx.insert(ArticleTopics).values({
+                          articleId: articleData.id,
+                          topicId: topic,
+                      }),
             );
             await Promise.all(articleTopicPromises);
 
             return {
-                data: { title: updatedArticle[0].title },
+                data: {
+                    title: `${updatedArticle[0].title} has been published successfully.`,
+                },
             };
         });
 
@@ -368,9 +353,12 @@ class ArticleService implements Articles {
         return ArticlePromise;
     }
 
-    async isArticleExist(id: string): Promise<Article | undefined> {
+    async isArticleExist(id: string): Promise<ExistArticledata | undefined> {
         const isArticleExist = await db.query.articles.findFirst({
             where: eq(articles.id, id),
+            columns: {
+                content: false,
+            },
         });
         return isArticleExist;
     }
