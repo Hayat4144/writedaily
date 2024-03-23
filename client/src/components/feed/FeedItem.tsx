@@ -28,6 +28,8 @@ import { Loader } from 'lucide-react';
 import moment from 'moment';
 import { getFirstLetter } from '@/lib/utils';
 import Link from 'next/link';
+import { CommentAction, ToggleLikeAction } from '@/app/action';
+import { commentType, likeType } from '@/types';
 
 interface FeedItemProps {
     data: any;
@@ -43,10 +45,10 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
     const [comment, setComment] = useState('');
 
     const LikeHandler = async (likeid: string) => {
-        const { data, error } = await ToggleLike(
+        const { data, error } = await ToggleLikeAction(
             token as string,
             likeid,
-            'article' as any,
+            likeType.article,
         );
         if (data) {
             return data.deletedId
@@ -58,15 +60,15 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
 
     const CommentHandler = async (id: string) => {
         setIsLoading(!isLoading);
-        const { data, error } = await CommentAPi(
+        const { error } = await CommentAction(
             token as string,
             comment,
             id,
-            'article',
+            commentType.article,
         );
         setIsLoading(false);
         if (!error)
-            return toast({ title: 'Comment has been added successfullyly.' });
+            return toast({ title: 'Comment has been added successfully.' });
         else return toast({ title: error, variant: 'destructive' });
     };
 
@@ -91,7 +93,9 @@ export default function FeedItem({ data, privateComp }: FeedItemProps) {
                 </CardHeader>
             ) : null}
             <CardContent
-                className={`grid grid-cols-1 md:grid-cols-3 gap-5 ${privateComp ? 'mt-2' : ''}`}
+                className={`grid grid-cols-1 md:grid-cols-3 gap-5 ${
+                    privateComp ? 'mt-2' : ''
+                }`}
             >
                 <Link
                     href={`/user/article/${data.id}`}

@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from 'express';
 import { httpStatusCode } from '@customtype/index';
 import asyncHandler from '@utils/asynHandler';
 import { OAuth2Client } from 'google-auth-library';
-import { getAccessToken } from '@utils/jwt';
+import { getAccessToken, getRefreshToken } from '@utils/jwt';
 import UserService from '@service/UserService';
 const client = new OAuth2Client();
 
@@ -19,12 +19,22 @@ const verifySocailToken = asyncHandler(
         const userExist = await userService.isUserByEmail(
             payload?.email as string,
         );
-        const access_token = await getAccessToken({
-            id: userExist?.id,
-            name: payload?.name,
-            email: userExist?.email,
-        });
-        return res.status(httpStatusCode.OK).json({ access_token });
+        if (!userExist) {
+            return res
+                .status(httpStatusCode.BAD_REQUEST)
+                .json({ error: 'User does not exist.' });
+        }
+
+        const tokenpayload = {
+            id: userExist.id,
+            name: userExist.name,
+            email: userExist.email,
+        };
+        const access_token = await getAccessToken(tokenpayload);
+        const refresh_token = await getRefreshToken(tokenpayload);
+        return res
+            .status(httpStatusCode.OK)
+            .json({ access_token, refresh_token });
     },
 );
 

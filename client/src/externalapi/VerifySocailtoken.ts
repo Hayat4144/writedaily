@@ -15,7 +15,10 @@ const verifySocialtoken = async (token: any) => {
     if (result.status !== 200) {
         return { error: response.error };
     }
-    return { data: response.access_token };
+    return {
+        access_token: response.access_token,
+        refresh_token: response.refresh_token,
+    };
 };
 
 export default verifySocialtoken;

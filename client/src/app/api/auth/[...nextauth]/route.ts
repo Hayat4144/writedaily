@@ -122,8 +122,11 @@ export const authOptions: NextAuthOptions = {
                         if (verifyToken.error) {
                             return Promise.reject(new Error(verifyToken.error));
                         }
-                        token.AccessToken = verifyToken.data;
-                        const accessToken = await decodeToken(verifyToken.data);
+                        token.AccessToken = verifyToken.access_token;
+                        token.RefreshToken = verifyToken.refresh_token;
+                        const accessToken = await decodeToken(
+                            verifyToken.access_token,
+                        );
                         token.AccessTokenExpiry = accessToken.exp;
                     } else {
                         const AccessToken = await decodeToken(user.AccessToken);
