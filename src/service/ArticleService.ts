@@ -12,7 +12,6 @@ import {
 } from 'db/schema';
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import TopicsService from './TopicService';
-import logger from '@utils/logger';
 
 type ExistArticledata = Omit<Article, 'content'>;
 
@@ -73,12 +72,12 @@ class ArticleService implements Articles {
         if (!updated[0].isPublished)
             return {
                 unpublised: true,
-                message: 'Article has been unpublised successfully.',
+                message: 'Article has been unpublished successfully.',
             };
         else
             return {
                 unpublised: false,
-                message: "You don't have any right to unpublised it.",
+                message: "You don't have any right to unpublished it.",
             };
     }
     async articleData(id: string): Promise<any> {
@@ -167,18 +166,18 @@ class ArticleService implements Articles {
                 .set(updatedData)
                 .where(eq(articles.id, articleData.id))
                 .returning({ title: articles.title });
+            if (articleData.publishedImage) {
+                await trx
+                    .delete(ArticleTopics)
+                    .where(eq(ArticleTopics.articleId, articleData.id));
+            }
             const articleTopicPromises = publishUnderTopicId.map((topic) =>
-                articleData.publishedImage
-                    ? trx
-                          .update(ArticleTopics)
-                          .set({ topicId: topic })
-                          .where(eq(ArticleTopics.articleId, articleData.id))
-                    : trx.insert(ArticleTopics).values({
-                          articleId: articleData.id,
-                          topicId: topic,
-                      }),
+                trx.insert(ArticleTopics).values({
+                    articleId: articleData.id,
+                    topicId: topic,
+                }),
             );
-            await Promise.all(articleTopicPromises);
+            await Promise.allSettled(articleTopicPromises);
 
             return {
                 data: {

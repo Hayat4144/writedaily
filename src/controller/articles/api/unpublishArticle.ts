@@ -10,11 +10,11 @@ const unpublishArticle = asyncHandler(async (req: Request, res: Response) => {
     if (updatedData.unpublised) {
         return res
             .status(httpStatusCode.OK)
-            .json({ error: updatedData.message });
+            .json({ data: updatedData.message });
     }
     return res
         .status(httpStatusCode.BAD_REQUEST)
-        .json({ data: updatedData.message });
+        .json({ error: updatedData.message });
 });
 
 export default unpublishArticle;
