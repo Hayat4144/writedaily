@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Descendant, Node, createEditor } from 'slate';
 import { Slate, Editable, withReact } from 'slate-react';
 import RenderElement from './RenderElements';

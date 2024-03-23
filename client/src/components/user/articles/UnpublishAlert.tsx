@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { unpublishArticle } from '@/externalapi/article';
 import { unpublishaArticleActions } from '@/app/action';
 import { toast } from '@/components/ui/use-toast';
 

@@ -10,7 +10,7 @@ interface props {
 export default function ArticleHeader({ data }: props) {
     const [readTime, setReadTime] = useState<number>();
     useEffect(() => {
-        const articleText = serialize(data.content);
+        const articleText = serialize(data.content || []);
         setReadTime(CalculateAverageTimeToRead(articleText, 200));
     }, []);
 

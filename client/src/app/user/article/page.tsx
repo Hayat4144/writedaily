@@ -79,20 +79,23 @@ export default async function page({
                                 ))
                             )}
                         </TabsContent>
-                        <TabsContent value="published" className="space-y-2">
+                        <TabsContent value="published" className="space-y-3">
                             {pubslishedData.length < 1 ? (
                                 <Paragraph>
                                     You have not published any articles yet.
                                 </Paragraph>
                             ) : (
-                                pubslishedData.map((item: any) => (
-                                    <Link
-                                        key={item.id}
-                                        href={`/user/article/${item.id}`}
-                                    >
-                                        <CardItem data={item} />
-                                    </Link>
-                                ))
+                                <ul className="space-y-3">
+                                    {pubslishedData.map((item: any) => (
+                                        <li key={item.id}>
+                                            <Link
+                                                href={`/user/article/${item.id}`}
+                                            >
+                                                <CardItem data={item} />
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
                             )}
                         </TabsContent>
                     </Tabs>

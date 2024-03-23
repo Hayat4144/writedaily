@@ -88,7 +88,7 @@ export default async function page({ params }: Props) {
                     <HeaderBottom dataValue={articledData} />
                 </div>
             </section>
-            <ViewEditor content={articledData.content} />
+            <ViewEditor content={articledData.content || []} />
         </Fragment>
     );
 }

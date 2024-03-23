@@ -3,6 +3,7 @@ import { BASE_URL } from '@/lib/constant';
 export const unpublishArticle = async (token: string, id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/unpublish/article/${id}`, {
         method: 'GET',
+        cache: 'no-cache',
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -56,6 +57,9 @@ export const userArticles = async (userId: string, page?: number) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+            },
+            next: {
+                tags: ['userArticles'],
             },
         },
     );

@@ -22,9 +22,10 @@ import {
     DropdownMenuTrigger,
     DropdownMenuItem,
 } from '../ui/dropdown-menu';
-import { publishArticle } from '@/externalapi/article';
 import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
+import { publishArticleAction } from '@/app/action';
+import { redirect, useRouter } from 'next/navigation';
 
 interface PublishedArticleFormProps {
     result: any;
@@ -48,6 +49,13 @@ export default function PublishedArticle({
     const [open, setOpen] = useState<boolean>(false);
     const session = useSession();
     const [isLoading, setisLoading] = useState<boolean>(false);
+    const [removedImage, setremovedImage] = useState<boolean>(false);
+    const { push } = useRouter();
+
+    const removeImageHandler = () => {
+        setremovedImage((prevState) => !removedImage);
+        setImage(null);
+    };
 
     useEffect(() => {
         if (result.publishedImage) {
@@ -135,6 +143,12 @@ export default function PublishedArticle({
     };
 
     const addTopic = (id: string, name: string) => {
+        const isTopicExist = topicsArray.filter((item) => item.id === id);
+        if (isTopicExist.length) {
+            return toast({
+                title: `${isTopicExist[0].name} is already exist.`,
+            });
+        }
         setTopicsArray((prevState) => [...prevState, { id, name }]);
         setTopic('');
     };
@@ -142,6 +156,10 @@ export default function PublishedArticle({
     const SubmitHandler = async (e: React.FormEvent) => {
         e.preventDefault();
         setisLoading((prevState) => !prevState);
+        if (!result.publishedImage && !file) {
+            setisLoading((prevState) => !prevState);
+            return toast({ title: 'Please add an image.' });
+        }
         const publishedData = new FormData();
         publishedData.append('articleId', result.id);
         publishedData.append(
@@ -150,20 +168,21 @@ export default function PublishedArticle({
         );
         publishedData.append('title', title);
         publishedData.append('description', description);
+        publishedData.append('removedImage', JSON.stringify(removedImage));
         if (file) {
             publishedData.append('publishedImage', file);
         }
         const config = {
             Authorization: `Bearer ${token}`,
         };
-        const { data, error } = await publishArticle(publishedData, config);
+        const { data, error } = await publishArticleAction(
+            publishedData,
+            config,
+        );
         setisLoading((prevState) => !prevState);
         if (error) return toast({ title: error, variant: 'destructive' });
         toast({ title: data });
-        setFile(null);
-        setImage(null);
-        setTopicsArray([]);
-        topicsArray.push();
+        push('/user/article');
     };
 
     return (
@@ -217,6 +236,7 @@ export default function PublishedArticle({
                         <div className="flex items-center space-x-1">
                             {topicsArray.map((item) => (
                                 <button
+                                    type="button"
                                     key={item.id}
                                     className="h-6 inline-flex items-center text-sm
                                 border border-input space-x-1 px-1 bg-white"
@@ -241,7 +261,11 @@ export default function PublishedArticle({
                             onChange={changeHandler}
                         />
                     </div>
-                    <Button disabled={isLoading} className="hidden md:flex">
+                    <Button
+                        disabled={isLoading}
+                        className="hidden md:flex"
+                        type="submit"
+                    >
                         {isLoading ? (
                             <Fragment>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -303,7 +327,13 @@ export default function PublishedArticle({
                 </div>
                 {image ? (
                     <AspectRatio ratio={16 / 9} className="rounded-md">
-                        <Image src={image} fill />
+                        <Image src={image} fill alt={'publishedImage'} />
+                        <Button
+                            className="absolute top-5 right-5"
+                            onClick={removeImageHandler}
+                        >
+                            <Icons.close size={'18'} />
+                        </Button>
                     </AspectRatio>
                 ) : null}
 

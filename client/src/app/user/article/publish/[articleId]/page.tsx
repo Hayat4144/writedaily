@@ -23,6 +23,13 @@ export async function generateMetadata(
         token,
         params.articleId,
     );
+    if (!data || error) {
+        !data
+            ? notFound()
+            : (() => {
+                  throw new Error(error);
+              })();
+    }
     return {
         title: `Publish ${data.title || 'article'} | Writedaily`,
         description:
@@ -38,14 +45,13 @@ export default async function page({ params }: Props) {
         token,
         params.articleId,
     );
-    if (error) {
-        error.status === httpStatusCode.NOT_FOUND
+    if (!data || error) {
+        !data
             ? notFound()
             : (() => {
-                  throw new Error(error.message);
+                  throw new Error(error);
               })();
     }
-
     const filteredData = data.topics.map((item: any) => {
         if (typeof item === 'object' && item !== null) {
             const { topics } = item;
