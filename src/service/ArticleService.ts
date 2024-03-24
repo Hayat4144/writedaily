@@ -224,8 +224,15 @@ class ArticleService implements Articles {
                 httpStatusCode.BAD_REQUEST,
             );
         const { ...rest } = getTableColumns(articles);
-        const { password, email, createdAt, ...userfield } =
-            getTableColumns(users);
+        const {
+            password,
+            email,
+            publicId,
+            provider,
+            providerId,
+            createdAt,
+            ...userfield
+        } = getTableColumns(users);
         const article = await db
             .select({
                 ...rest,
@@ -237,8 +244,9 @@ class ArticleService implements Articles {
             .where(eq(articles.id, id))
             .leftJoin(users, eq(articles.authorId, users.id))
             .leftJoin(likes, eq(articles.id, likes.likebleId))
+            .leftJoin(ArticleTopics, eq(articles.id, ArticleTopics.articleId))
             .leftJoin(comments, eq(articles.id, comments.commentableId))
-            .groupBy(articles.id, users.id)
+            .groupBy(articles.id, users.id, ArticleTopics.id)
             .orderBy(asc(articles.title));
         return article;
     }

@@ -1,6 +1,7 @@
 import {
     addTopics,
     deleteTopics,
+    getArticleTopics,
     readTopics,
     searchTopics,
     updateTopics,
@@ -14,6 +15,8 @@ import validateCuid from '@validation/validateCuid';
 import express from 'express';
 
 const topicsRoutes = express.Router();
+
+topicsRoutes.get('/api/:version/article/topics/:id', getArticleTopics);
 
 topicsRoutes.get('/api/:version/read/tag', readTopics);
 

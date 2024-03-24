@@ -3,6 +3,15 @@ import TopicsService from '@service/TopicService';
 import asyncHandler from '@utils/asynHandler';
 import { Request, Response } from 'express';
 
+const topicsService = new TopicsService();
+
+export const getArticleTopics = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const result = await topicsService.articleTopics(id);
+        return res.status(httpStatusCode.OK).json({ data: result });
+    },
+);
 export const addTopics = asyncHandler(async (req: Request, res: Response) => {
     const { name } = req.body;
     const tagService = new TopicsService();

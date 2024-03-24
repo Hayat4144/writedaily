@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heading1, Paragraph } from '@/components/ui/typography';
-import { articleById } from '@/externalapi/article';
+import { articleById, articleTopics } from '@/externalapi/article';
 import { httpStatusCode } from '@/types';
 import { notFound } from 'next/navigation';
 import React, { Fragment } from 'react';
@@ -16,6 +16,12 @@ import { getFirstLetter } from '@/lib/utils';
 import ArticleHeader from '@/components/user/articles/ArticleHeader';
 import { Separator } from '@/components/ui/separator';
 import HeaderBottom from '@/components/user/articles/header';
+import { Badge } from '@/components/ui/badge';
+import LikeSheet from '@/components/user/articles/LikeSheet';
+import { store } from '@/app/store';
+import CommentSheet from '@/components/user/articles/CommentSheet';
+
+export const revalidate = 30;
 
 type Props = {
     params: { articleId: string };
@@ -35,16 +41,30 @@ export async function generateMetadata(
 }
 
 export default async function page({ params }: Props) {
-    const { data, error } = await articleById(params.articleId);
-    if (error) {
-        error.status === httpStatusCode.NOT_FOUND
+    store.setData(params.articleId);
+    const [articleResult, articletopics] = await Promise.all([
+        articleById(params.articleId),
+        articleTopics(params.articleId),
+    ]);
+    if (articleResult.error) {
+        articleResult.error.status === httpStatusCode.NOT_FOUND
             ? notFound()
             : (() => {
-                  throw new Error(error.message);
+                  throw new Error(articleResult.error.message);
               })();
     }
+    if (articletopics.data) {
+        const articledData = articletopics.data.topics;
+        const filteredData = articledData.map((item: any) => {
+            if (typeof item === 'object' && item !== null) {
+                const { topics } = item;
+                return { ...topics };
+            }
+        });
+        articletopics.data['topics'] = filteredData;
+    }
 
-    const articledData = data[0];
+    const articledData = articleResult.data[0];
 
     return (
         <Fragment>
@@ -89,6 +109,28 @@ export default async function page({ params }: Props) {
                 </div>
             </section>
             <ViewEditor content={articledData.content || []} />
+            <Separator />
+            <div className="space-x-2 my-3">
+                {articletopics.data.topics.map((topic: any) => (
+                    <Badge
+                        key={topic.id}
+                        className="h-10 rounded-md"
+                        variant={'secondary'}
+                    >
+                        {topic.name}
+                    </Badge>
+                ))}
+            </div>
+            <footer className="my-5">
+                <LikeSheet
+                    title={articledData.title}
+                    totalLikes={articledData.totalLikes}
+                />
+                <CommentSheet
+                    title={articledData.title}
+                    totalComments={articledData.totalComments}
+                />
+            </footer>
         </Fragment>
     );
 }

@@ -1,10 +1,45 @@
 import { httpStatusCode } from '@customtype/index';
 import db from '@db/index';
-import { Topics } from '@db/schema';
+import { Topics, articles } from '@db/schema';
 import { CustomError } from '@utils/CustomError';
 import { Column, asc, eq, ilike, sql } from 'drizzle-orm';
 
 class TopicsService {
+    async articleTopics(articleId: string) {
+        return db.query.articles.findFirst({
+            columns: {
+                publicId: false,
+                content: false,
+                publishedImage: false,
+                title: false,
+                id: false,
+                authorId: false,
+                createdAt: false,
+                description: false,
+                isPublished: false,
+            },
+            where: eq(articles.id, articleId),
+            with: {
+                topics: {
+                    with: {
+                        topics: {
+                            columns: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                    columns: {
+                        id: false,
+                        articleId: false,
+                        topicId: false,
+                        createdAt: false,
+                    },
+                },
+            },
+        });
+    }
+
     async createTag(name: string) {
         const [existingTopic] = await db
             .select()

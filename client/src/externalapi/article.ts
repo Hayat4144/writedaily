@@ -1,5 +1,13 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const articleTopics = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/article/topics/${id}`, {
+        method: 'GET',
+    });
+    const { error, data } = await response.json();
+    return error ? { error } : { data };
+};
+
 export const unpublishArticle = async (token: string, id: string) => {
     const response = await fetch(`${BASE_URL}/api/v1/unpublish/article/${id}`, {
         method: 'GET',

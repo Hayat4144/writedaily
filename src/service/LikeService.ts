@@ -11,7 +11,15 @@ type ArticleExistData = Omit<Article, 'content'>;
 
 type targetType = ArticleExistData | CommentData | undefined | null;
 const { userId, ...likeColumns } = getTableColumns(likes);
-const { password, email, createdAt, ...userfield } = getTableColumns(users);
+const {
+    password,
+    email,
+    createdAt,
+    provider,
+    providerId,
+    publicId,
+    ...userfield
+} = getTableColumns(users);
 
 const articleService = new ArticleService();
 const commentService = new CommentService(articleService);
