@@ -14,8 +14,6 @@ import { getArticleLikes } from '@/externalapi/Like';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getFirstLetter } from '@/lib/utils';
 import { Paragraph } from '@/components/ui/typography';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import FollowButton from '../profile/FollowButton';
 
 type Props = {
@@ -27,7 +25,6 @@ export default async function LikeSheet({ title, totalLikes }: Props) {
     const id = store.getData();
     if (!id) return;
     const { data, error } = await getArticleLikes(id);
-    const session = await getServerSession(authOptions);
 
     return (
         <Sheet>

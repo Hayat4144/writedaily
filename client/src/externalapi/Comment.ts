@@ -1,5 +1,16 @@
 import { BASE_URL } from '@/lib/constant';
 
+export const getArticleComments = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/api/v1/article/comments/${id}`, {
+        next: {
+            tags: ['articleComments'],
+        },
+    });
+    const { data, error } = await response.json();
+    if (response.status !== 200) return { error };
+    else return { data };
+};
+
 const CommentAPi = async (
     token: string,
     content: string,

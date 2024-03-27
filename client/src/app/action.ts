@@ -16,7 +16,6 @@ export const publishArticleAction = async (
     config: any,
 ) => {
     const { data, error } = await publishArticle(publishedData, config);
-    console.log(data, error);
     if (error) return { error };
     revalidateTag('articleById');
     revalidateTag('userArticles');
@@ -34,7 +33,6 @@ export const unpublishaArticleActions = async (token: string, id: string) => {
     if (!token) return { error: 'Token is not provided.' };
     else if (!id) return { error: 'Id is not provider' };
     const { data, error } = await unpublishArticle(token, id);
-    console.log(JSON.stringify({ data, error }));
     if (error) return { error };
     revalidateTag('articleById');
     return { data };
